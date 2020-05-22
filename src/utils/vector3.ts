@@ -1,3 +1,4 @@
+import { QuaternionReadonly } from './quaternion_readonly';
 import { Vector3Readonly } from './vector3_readonly';
 
 /** A three-dimensional vector. */
@@ -107,19 +108,14 @@ export class Vector3 extends Vector3Readonly {
 		this._z = z;
 	}
 
-// /**
-// 	 * Sets this to b rotated by a.
-// 	 * @param {Quaternion} a
-// 	 * @param {Vector3Readonly} b
-// 	 */
-// 	rotate(a, b) {
-// 		this.throwIfFrozen();
-// 		let x = 2 * (a._v[1] * b._v[2] - a._v[2] * b._v[1]);
-// 		let y = 2 * (a._v[2] * b._v[0] - a._v[0] * b._v[2]);
-// 		let z = 2 * (a._v[0] * b._v[1] - a._v[1] * b._v[0]);
-// 		this._v[0] = b._v[0] + a._w * x + a._v[1] * z - a._v[2] * y;
-// 		this._v[1] = b._v[1] + a._w * y + a._v[2] * x - a._v[0] * z;
-// 		this._v[2] = b._v[2] + a._w * z + a._v[0] * y - a._v[1] * x;
-// 		// from http://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
-// 	}
+	/** Sets *this* to *b* rotated by *a*. */
+	rotate(a: QuaternionReadonly, b: Vector3Readonly): void {
+		const x = 2 * (a.y * b.z - a.z * b.y);
+		const y = 2 * (a.z * b.x - a.x * b.z);
+		const z = 2 * (a.x * b.y - a.y * b.x);
+		this._x = b.x + a.w * x + a.y * z - a.z * y;
+		this._y = b.y + a.w * y + a.z * x - a.x * z;
+		this._z = b.z + a.w * z + a.x * y - a.y * x;
+		// from http://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	}
 }
