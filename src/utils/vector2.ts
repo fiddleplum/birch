@@ -1,106 +1,83 @@
+import { Vector2Readonly } from './vector2_readonly';
+
 /** A two-dimensional vector. */
-export class Vector2 {
-	x: number;
-	y: number;
-
-	/** A zero vector. */
-	static Zero = new Vector2(0, 0);
-
-	/** A one vector. */
-	static One = new Vector2(1, 1);
-
-	/** The constructor. Defaults to the zero vector. */
-	constructor(x = 0, y = 0) {
-		this.x = x;
-		this.y = y;
+export class Vector2 extends Vector2Readonly {
+	/** Sets the *x* component. */
+	set x(x: number) {
+		this._x = x;
 	}
 
-	/** Gets *this* as a string. */
-	public toString(): string {
-		return '[' + this.x + ', ' + this.y + ']';
-	}
-
-	/** Returns true if *this* equals *a*. */
-	equals(a: Vector2): boolean {
-		return this.x === a.x && this.y === a.y;
+	/** Sets the *y* component. */
+	set y(y: number) {
+		this._y = y;
 	}
 
 	/** Copies *a* to *this*. */
-	copy(a: Vector2): void {
-		this.x = a.x;
-		this.y = a.y;
+	copy(a: Vector2Readonly): void {
+		this._x = a.x;
+		this._y = a.y;
 	}
 
 	/** Sets *this* to the components *x* and *y*. */
 	set(x: number, y: number): void {
-		this.x = x;
-		this.y = y;
+		this._x = x;
+		this._y = y;
 	}
 
 	/** Sets *this* to -*a*. */
-	neg(a: Vector2): void {
-		this.x = -a.x;
-		this.y = -a.y;
+	neg(a: Vector2Readonly): void {
+		this._x = -a.x;
+		this._y = -a.y;
 	}
 
 	/** Sets *this* to *a* + *b*. */
-	add(a: Vector2, b: Vector2): void {
-		this.x = a.x + b.x;
-		this.y = a.y + b.y;
+	add(a: Vector2Readonly, b: Vector2Readonly): void {
+		this._x = a.x + b.x;
+		this._y = a.y + b.y;
 	}
 
 	/** Sets *this* to *a* - *b*. */
-	sub(a: Vector2, b: Vector2): void {
-		this.x = a.x - b.x;
-		this.y = a.y - b.y;
+	sub(a: Vector2Readonly, b: Vector2Readonly): void {
+		this._x = a.x - b.x;
+		this._y = a.y - b.y;
 	}
 
 	/** Sets *this* to *a* * *b*. */
-	mult(a: Vector2, b: number): void {
-		this.x = a.x * b;
-		this.y = a.y * b;
+	mult(a: Vector2Readonly, b: number): void {
+		this._x = a.x * b;
+		this._y = a.y * b;
 	}
 
 	/** Sets *this* to *a* scaled by *b*, component-wise. */
-	scale(a: Vector2, b: Vector2): void {
-		this.x = a.x * b.x;
-		this.y = a.y * b.y;
+	scale(a: Vector2Readonly, b: Vector2Readonly): void {
+		this._x = a.x * b.x;
+		this._y = a.y * b.y;
 	}
 
 	/** Sets *this* to *a* inverse-scaled by *b*, component-wise. */
-	scaleInv(a: Vector2, b: Vector2): void {
-		this.x = a.x / b.x;
-		this.y = a.y / b.y;
-	}
-
-	/** Gets the dot product between *this* and *a*. */
-	dot(a: Vector2): number {
-		return this.x * a.x + this.y * a.y;
-	}
-
-	/** Gets the norm of *this*. */
-	norm(): number {
-		return Math.sqrt(this.dot(this));
+	scaleInv(a: Vector2Readonly, b: Vector2Readonly): void {
+		this._x = a.x / b.x;
+		this._y = a.y / b.y;
 	}
 
 	/** Sets *this* to *a* normalized. */
-	normalize(a: Vector2): void {
+	normalize(a: Vector2Readonly): void {
 		const n = a.norm();
 		if (n !== 0) {
-			this.x = a.x / n;
-			this.y = a.y / n;
+			this._x = a.x / n;
+			this._y = a.y / n;
 		}
 	}
 
 	/** Sets *this* to *a*, clamped between *min* and *max*. */
-	clamp(a: Vector2, min: Vector2, max: Vector2): void {
-		this.x = Math.max(min.x, Math.min(max.x, a.x));
-		this.y = Math.max(min.y, Math.min(max.y, a.y));
+	clamp(a: Vector2Readonly, min: Vector2Readonly, max: Vector2Readonly): void {
+		this._x = Math.max(min.x, Math.min(max.x, a.x));
+		this._y = Math.max(min.y, Math.min(max.y, a.y));
 	}
 
 	/** Sets *this* to the lerp between *a* and *b*, with lerp factor *u*. */
-	lerp(a: Vector2, b: Vector2, u: number): void {
-		this.x = a.x + (b.x - a.x) * u;
-		this.y = a.y + (b.y - a.y) * u;
+	lerp(a: Vector2Readonly, b: Vector2Readonly, u: number): void {
+		this._x = a.x + (b.x - a.x) * u;
+		this._y = a.y + (b.y - a.y) * u;
 	}
 }
