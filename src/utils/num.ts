@@ -19,4 +19,19 @@ export class Num {
 	static lerp(a: number, b: number, u: number): number {
 		return a === b ? a : (a * (1 - u) + b * u);
 	}
+
+	/** Returns true if *a* is a power of two. */
+	static isPow2(a: number): boolean {
+		return Math.log2(a) % 1 === 0;
+	}
+
+	/** Returns the next power of two that is <= *a*. */
+	static floorPow2(a: number): number {
+		return Math.pow(2, Math.floor(Math.log2(a)));
+	}
+
+	/** Returns the next power of two that is >= *a*. */
+	static ceilPow2(a: number): number {
+		return Math.pow(2, Math.ceil(Math.log2(a)));
+	}
 }
