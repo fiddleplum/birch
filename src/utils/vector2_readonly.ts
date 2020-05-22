@@ -9,6 +9,18 @@ export class Vector2Readonly {
 	/** The one vector. */
 	static One = new Vector2Readonly(1, 1);
 
+	/** The unit X vector. */
+	static UnitX = new Vector2Readonly(1, 0);
+
+	/** The unit Y vector. */
+	static UnitY = new Vector2Readonly(0, 1);
+
+	/** The unit negative X vector. */
+	static UnitNegX = new Vector2Readonly(-1, 0);
+
+	/** The unit negative Y vector. */
+	static UnitNegY = new Vector2Readonly(0, -1);
+
 	/** The constructor. Defaults to the zero vector. */
 	constructor(x = 0, y = 0) {
 		this._m = [x, y];
@@ -22,6 +34,16 @@ export class Vector2Readonly {
 	/** Gets the *y* component. */
 	get y(): number {
 		return this._m[1];
+	}
+
+	/** Gets the norm of *this*. */
+	get norm(): number {
+		return Math.sqrt(this.dot(this));
+	}
+
+	/** Gets the underlying array. */
+	get array(): readonly number[] {
+		return this._m;
 	}
 
 	/** Gets *this* as a string. */
@@ -39,13 +61,8 @@ export class Vector2Readonly {
 		return this._m[0] * a._m[0] + this._m[1] * a._m[1];
 	}
 
-	/** Gets the norm of *this*. */
-	norm(): number {
-		return Math.sqrt(this.dot(this));
-	}
-
-	/** Gets the underlying array. */
-	get array(): readonly number[] {
-		return this._m;
+	/** Gets the cross product between *this* and *a*, which is: sin(the angle in radians from *a* to *b*) X norm(*a*) X norm(*b*). */
+	cross(a: Vector2Readonly): number {
+		return this._m[0] * a._m[1] - this._m[1] * a._m[0];
 	}
 }

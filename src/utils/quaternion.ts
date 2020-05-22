@@ -4,45 +4,45 @@ import { Vector3Readonly } from './vector3_readonly';
 /** A quaternion. */
 export class Quaternion extends QuaternionReadonly {
 	set w(w: number) {
-		this._w = w;
+		this._m[0] = w;
 	}
 
 	set x(x: number) {
-		this._x = x;
+		this._m[1] = x;
 	}
 
 	set y(y: number) {
-		this._y = y;
+		this._m[2] = y;
 	}
 
 	set z(z: number) {
-		this._z = z;
+		this._m[3] = z;
 	}
 
 	/** Copies *a* to *this*. */
 	copy(a: QuaternionReadonly): void {
-		this._w = a.w;
-		this._x = a.x;
-		this._y = a.y;
-		this._z = a.z;
+		this._m[0] = a.w;
+		this._m[1] = a.x;
+		this._m[2] = a.y;
+		this._m[3] = a.z;
 	}
 
 	/** Sets *this* to the components *w*, *x*, *y*, and *z*. */
 	set(w: number, x: number, y: number, z: number): void {
-		this._w = w;
-		this._x = x;
-		this._y = y;
-		this._z = z;
+		this._m[0] = w;
+		this._m[1] = x;
+		this._m[2] = y;
+		this._m[3] = z;
 	}
 
 	/** Sets *this* to the quaternion represented by the rotation *angle* in radians about the *axis*, which should be normalized. */
 	setFromAxisAngle(axis: Vector3Readonly, angle: number): void {
 		const cosHalfAngle = Math.cos(angle * 0.5);
 		const sinHalfAngle = Math.sin(angle * 0.5);
-		this._w = cosHalfAngle;
-		this._x = sinHalfAngle * Math.cos(axis.x);
-		this._y = sinHalfAngle * Math.cos(axis.y);
-		this._z = sinHalfAngle * Math.cos(axis.z);
+		this._m[0] = cosHalfAngle;
+		this._m[1] = sinHalfAngle * Math.cos(axis.x);
+		this._m[2] = sinHalfAngle * Math.cos(axis.y);
+		this._m[3] = sinHalfAngle * Math.cos(axis.z);
 	}
 
 	/** Sets *this* to the quaterion represented by the roll (*x*), pitch (*y*), and yaw (*z*) rotations. The order of application is *x*, *y*, then *z*. */
@@ -53,18 +53,18 @@ export class Quaternion extends QuaternionReadonly {
 		const sy = Math.sin(y * 0.5);
 		const cz = Math.cos(z * 0.5);
 		const sz = Math.sin(z * 0.5);
-		this._w = cx * cy * cz + sx * sy * sz;
-		this._x = cx * cy * sz - sx * sy * cz;
-		this._y = cx * sy * cz + sx * cy * sz;
-		this._z = sx * cy * cz - cx * sy * sz;
+		this._m[0] = cx * cy * cz + sx * sy * sz;
+		this._m[1] = cx * cy * sz - sx * sy * cz;
+		this._m[2] = cx * sy * cz + sx * cy * sz;
+		this._m[3] = sx * cy * cz - cx * sy * sz;
 	}
 
 	/** Sets this to the inverse of *a*. */
 	inverse(a: QuaternionReadonly): void {
-		this._w = a.w;
-		this._x = -a.x;
-		this._y = -a.y;
-		this._z = -a.z;
+		this._m[0] = a.w;
+		this._m[1] = -a.x;
+		this._m[2] = -a.y;
+		this._m[3] = -a.z;
 	}
 
 	/** Sets this to *a* * *b*. */
@@ -80,10 +80,10 @@ export class Quaternion extends QuaternionReadonly {
 	normalize(a: QuaternionReadonly): void {
 		const n = a.norm();
 		if (n !== 0) {
-			this._w = a.w / n;
-			this._x = a.x / n;
-			this._y = a.y / n;
-			this._z = a.z / n;
+			this._m[0] = a.w / n;
+			this._m[1] = a.x / n;
+			this._m[2] = a.y / n;
+			this._m[3] = a.z / n;
 		}
 	}
 }

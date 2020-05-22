@@ -9,6 +9,24 @@ export class Vector3Readonly {
 	/** The one vector. */
 	static One = new Vector3Readonly(1, 1, 1);
 
+	/** The unit X vector. */
+	static UnitX = new Vector3Readonly(1, 0, 0);
+
+	/** The unit Y vector. */
+	static UnitY = new Vector3Readonly(0, 1, 0);
+
+	/** The unit Z vector. */
+	static UnitZ = new Vector3Readonly(0, 0, 1);
+
+	/** The unit negative X vector. */
+	static UnitNegX = new Vector3Readonly(-1, 0, 0);
+
+	/** The unit negative Y vector. */
+	static UnitNegY = new Vector3Readonly(0, -1, 0);
+
+	/** The unit negative Z vector. */
+	static UnitNegZ = new Vector3Readonly(0, 0, -1);
+
 	/** The constructor. Defaults to the zero vector. */
 	constructor(x = 0, y = 0, z = 0) {
 		this._m = [x, y, z];
@@ -29,6 +47,16 @@ export class Vector3Readonly {
 		return this._m[2];
 	}
 
+	/** Gets the norm of *this*. */
+	get norm(): number {
+		return Math.sqrt(this.dot(this));
+	}
+
+	/** Gets the underlying array. */
+	get array(): readonly number[] {
+		return this._m;
+	}
+
 	/** Gets *this* as a string. */
 	public toString(): string {
 		return '[' + this._m[0] + ', ' + this._m[1] + ', ' + this._m[2] + ']';
@@ -42,15 +70,5 @@ export class Vector3Readonly {
 	/** Gets the dot product between *this* and *a*. */
 	dot(a: Vector3Readonly): number {
 		return this._m[0] * a._m[0] + this._m[1] * a._m[1] + this._m[2] * a._m[2];
-	}
-
-	/** Gets the norm of *this*. */
-	norm(): number {
-		return Math.sqrt(this.dot(this));
-	}
-
-	/** Gets the underlying array. */
-	get array(): readonly number[] {
-		return this._m;
 	}
 }
