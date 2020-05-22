@@ -1,5 +1,6 @@
 import { QuaternionReadonly } from './quaternion_readonly';
 import { Vector3Readonly } from './vector3_readonly';
+import { Vector3 } from './vector3';
 
 /** A quaternion. */
 export class Quaternion extends QuaternionReadonly {
@@ -59,6 +60,21 @@ export class Quaternion extends QuaternionReadonly {
 		this._m[3] = sx * cy * cz - cx * sy * sz;
 	}
 
+	/** Sets *this* to the quaternion represented by a rotation from *a* to *b*, which should be normalized. */
+	setFromVectorRotation(a: Vector3Readonly, b: Vector3Readonly): void {
+		this._m[0] = 1 + a.dot(b);
+		if (this._m[0] !== 0) {
+			Quaternion.tempVector3.cross(a, b);
+		}
+		else {
+			Quaternion.tempVector3.perp(a);
+		}
+		this._m[1] = Quaternion.tempVector3.x;
+		this._m[2] = Quaternion.tempVector3.y;
+		this._m[3] = Quaternion.tempVector3.z;
+		this.normalize(this);
+	}
+
 	/** Sets this to the inverse of *a*. */
 	inverse(a: QuaternionReadonly): void {
 		this._m[0] = a.w;
@@ -86,4 +102,6 @@ export class Quaternion extends QuaternionReadonly {
 			this._m[3] = a.z / n;
 		}
 	}
+
+	static tempVector3 = new Vector3();
 }

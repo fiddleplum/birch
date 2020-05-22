@@ -82,13 +82,13 @@ export class Vector2 extends Vector2Readonly {
 		this._m[1] = Num.lerp(a.y, b.y, u);
 	}
 
-	/** Sets *this* to *a* rotated by *b* radians. */
-	rot(a: Vector2Readonly, b: number): void {
-		const cosb = Math.cos(b);
-		const sinb = Math.sin(b);
+	/** Sets *this* to *a* rotated by *angle* radians. */
+	rot(a: Vector2Readonly, angle: number): void {
+		const cosAngle = Math.cos(angle);
+		const sinAngle = Math.sin(angle);
 		const ax = a.x; // In case this is a.
-		this._m[0] = a.x * cosb - a.y * sinb;
-		this._m[1] = ax * sinb + a.y * cosb;
+		this._m[0] = a.x * cosAngle - a.y * sinAngle;
+		this._m[1] = ax * sinAngle + a.y * cosAngle;
 	}
 
 	/** Sets *this* to *a* rotated by 90 degrees counter-clockwise. */

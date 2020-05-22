@@ -109,6 +109,16 @@ export class Vector3 extends Vector3Readonly {
 		this._m[2] = z;
 	}
 
+	/** Sets *this* to a vector that is perpendicular to *a*. It tries on the xy-plane first otherwise chooses the X axis. */
+	perp(a: Vector3Readonly): void {
+		if (a.y !== 0 || a.x !== 0) {
+			this.set(-a.y, a.x, 0);
+		}
+		else {
+			this.set(1, 0, 0);
+		}
+	}
+
 	/** Sets *this* to *b* rotated by *a*. */
 	rotate(a: QuaternionReadonly, b: Vector3Readonly): void {
 		const x = 2 * (a.y * b.z - a.z * b.y);
@@ -118,5 +128,15 @@ export class Vector3 extends Vector3Readonly {
 		this._m[1] = b.y + a.w * y + a.z * x - a.x * z;
 		this._m[2] = b.z + a.w * z + a.x * y - a.y * x;
 		// from http://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+	}
+
+	/** Sets *this* to the axis *i* (0, 1, or 2) of the quaternion *a*. */
+	quatAxis(a: QuaternionReadonly, i: number): void {
+		const j = (i + 1) % 3;
+		const k = (i + 2) % 3;
+		const q = a.array;
+		this._m[i] = 1 - 2 * (q[1 + j] * q[1 + j] + q[1 + k] * q[1 + k]);
+		this._m[j] = 2 * (q[1 + i] * q[1 + j] + q[1 + k] * q[0]);
+		this._m[k] = 2 * (q[1 + i] * q[1 + k] - q[1 + j] * q[0]);
 	}
 }
