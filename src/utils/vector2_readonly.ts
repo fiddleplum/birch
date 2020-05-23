@@ -61,7 +61,7 @@ export class Vector2Readonly {
 		return this._m[0] * a._m[0] + this._m[1] * a._m[1];
 	}
 
-	/** Gets the cross product between *this* and *a*, which is: sin(the angle in radians from *a* to *b*) X norm(*a*) X norm(*b*). */
+	/** Gets the cross product between *this* and *a*, which is: sin(the angle in radians from *this* to *a*) X norm(*this*) X norm(*a*). */
 	cross(a: Vector2Readonly): number {
 		return this._m[0] * a._m[1] - this._m[1] * a._m[0];
 	}

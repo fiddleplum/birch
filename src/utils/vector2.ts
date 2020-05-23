@@ -49,14 +49,20 @@ export class Vector2 extends Vector2Readonly {
 		this._m[1] = a.y * b;
 	}
 
-	/** Sets *this* to *a* scaled by *b*, component-wise. */
-	scale(a: Vector2Readonly, b: Vector2Readonly): void {
+	/** Sets *this* to *a* / *b*. */
+	div(a: Vector2Readonly, b: number): void {
+		this._m[0] = a.x / b;
+		this._m[1] = a.y / b;
+	}
+
+	/** Sets *this* to *a* * *b*, component-wise. */
+	multV(a: Vector2Readonly, b: Vector2Readonly): void {
 		this._m[0] = a.x * b.x;
 		this._m[1] = a.y * b.y;
 	}
 
-	/** Sets *this* to *a* inverse-scaled by *b*, component-wise. */
-	scaleInv(a: Vector2Readonly, b: Vector2Readonly): void {
+	/** Sets *this* to *a* / *b*, component-wise. */
+	divV(a: Vector2Readonly, b: Vector2Readonly): void {
 		this._m[0] = a.x / b.x;
 		this._m[1] = a.y / b.y;
 	}
@@ -71,7 +77,13 @@ export class Vector2 extends Vector2Readonly {
 	}
 
 	/** Sets *this* to *a*, clamped between *min* and *max*. */
-	clamp(a: Vector2Readonly, min: Vector2Readonly, max: Vector2Readonly): void {
+	clamp(a: Vector2Readonly, min: number, max: number): void {
+		this._m[0] = Num.clamp(a.x, min, max);
+		this._m[1] = Num.clamp(a.y, min, max);
+	}
+
+	/** Sets *this* to *a*, clamped between *min* and *max*, component-wise. */
+	clampV(a: Vector2Readonly, min: Vector2Readonly, max: Vector2Readonly): void {
 		this._m[0] = Num.clamp(a.x, min.x, max.x);
 		this._m[1] = Num.clamp(a.y, min.y, max.y);
 	}

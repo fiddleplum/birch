@@ -61,15 +61,22 @@ export class Vector3 extends Vector3Readonly {
 		this._m[2] = a.z * b;
 	}
 
-	/** Sets *this* to *a* scaled by *b*, component-wise. */
-	scale(a: Vector3Readonly, b: Vector3Readonly): void {
+	/** Sets *this* to *a* / *b*. */
+	div(a: Vector3Readonly, b: number): void {
+		this._m[0] = a.x / b;
+		this._m[1] = a.y / b;
+		this._m[2] = a.z / b;
+	}
+
+	/** Sets *this* to *a* * *b*, component-wise. */
+	multV(a: Vector3Readonly, b: Vector3Readonly): void {
 		this._m[0] = a.x * b.x;
 		this._m[1] = a.y * b.y;
 		this._m[2] = a.z * b.z;
 	}
 
-	/** Sets *this* to *a* inverse-scaled by *b*, component-wise. */
-	scaleInv(a: Vector3Readonly, b: Vector3Readonly): void {
+	/** Sets *this* to *a* / *b*, component-wise. */
+	divV(a: Vector3Readonly, b: Vector3Readonly): void {
 		this._m[0] = a.x / b.x;
 		this._m[1] = a.y / b.y;
 		this._m[2] = a.z / b.z;
@@ -86,7 +93,14 @@ export class Vector3 extends Vector3Readonly {
 	}
 
 	/** Sets *this* to *a*, clamped between *min* and *max*. */
-	clamp(a: Vector3Readonly, min: Vector3Readonly, max: Vector3Readonly): void {
+	clamp(a: Vector3Readonly, min: number, max: number): void {
+		this._m[0] = Num.clamp(a.x, min, max);
+		this._m[1] = Num.clamp(a.y, min, max);
+		this._m[2] = Num.clamp(a.z, min, max);
+	}
+
+	/** Sets *this* to *a*, clamped between *min* and *max*, component-wise. */
+	clampV(a: Vector3Readonly, min: Vector3Readonly, max: Vector3Readonly): void {
 		this._m[0] = Num.clamp(a.x, min.x, max.x);
 		this._m[1] = Num.clamp(a.y, min.y, max.y);
 		this._m[2] = Num.clamp(a.z, min.z, max.z);
