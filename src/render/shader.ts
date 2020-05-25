@@ -53,13 +53,21 @@ export class Shader {
 	}
 
 	/** Gets the uniform location from its name. Returns undefined if the name is not found. */
-	getUniformLocation(name: string): WebGLUniformLocation | undefined {
-		return this._uniformNamesToLocations.get(name);
+	getUniformLocation(name: string): WebGLUniformLocation {
+		const location = this._uniformNamesToLocations.get(name);
+		if (location === undefined) {
+			throw new Error('Could not get location for uniform ' + name + '.');
+		}
+		return location;
 	}
 
 	/** Gets the attribute location from its name. Returns undefined if the name is not found. */
-	getAttributeLocation(name: string): number | undefined {
-		return this._attributeNamesToLocations.get(name);
+	getAttributeLocation(name: string): number {
+		const location = this._attributeNamesToLocations.get(name);
+		if (location === undefined) {
+			throw new Error('Could not get location for attribute ' + name + '.');
+		}
+		return location;
 	}
 
 	/** Sets the uniform location to an integer value. */
@@ -218,7 +226,7 @@ export class Shader {
 			if (activeAttrib === null) {
 				throw new Error('Error getting the attribute ' + i + ' on the shader.');
 			}
-			this._attributeNamesToLocations.set(name, this._gl.getAttribLocation(this._program, activeAttrib.name));
+			this._attributeNamesToLocations.set(activeAttrib.name, this._gl.getAttribLocation(this._program, activeAttrib.name));
 		}
 	}
 

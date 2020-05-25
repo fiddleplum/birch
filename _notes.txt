@@ -1,0 +1,9 @@
+Implement Uniform Buffer Objects as the main way to implement uniforms.
+
+Use 16-bit or 32-bit indices for meshes automatically.
+
+Use vertex array objects.
+
+In shaders, use "#version 300 es" as first line.
+
+Prefix glsl variables with a, v, or u.

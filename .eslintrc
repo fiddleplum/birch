@@ -32,9 +32,10 @@
 			"named": "never"
 		}],
 		"yoda": "off",
-		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/no-this-alias": "off",
+		"@typescript-eslint/no-use-before-define": "off",
 		"@typescript-eslint/strict-boolean-expressions": ["error", {
 		}]
 	}
