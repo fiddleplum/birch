@@ -9,7 +9,7 @@ function render(renderer: Birch.Renderer, mesh: Birch.Mesh): void {
 }
 
 window.addEventListener('load', () => {
-	const renderer = new Birch.Renderer(document.querySelector('canvas') as HTMLCanvasElement);
+	const renderer = new Birch.Renderer(document.querySelector('canvas') as HTMLCanvasElement, true);
 
 	const shader = new Birch.Shader(renderer.gl, vertexShader, fragmentShader);
 	shader.activate();
@@ -17,11 +17,11 @@ window.addEventListener('load', () => {
 	mesh.addVertexComponent(shader.getAttributeLocation('a_position'), 0, 2);
 	mesh.vertices = [
 		0, 0,
-		0.5, 0,
+		1, 0,
 		0, 0.5,
 	];
-	mesh.indices = [0, 1, 2];
-	mesh.numVerticesPerPrimitive = 3;
+	mesh.indices = [0, 1, 0, 2, 1, 2];
+	mesh.numVerticesPerPrimitive = 2;
 
 	render(renderer, mesh);
 });

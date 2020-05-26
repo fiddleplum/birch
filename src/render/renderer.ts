@@ -7,28 +7,29 @@ export class Renderer {
 
 	private _canvasResizeInterval: number;
 
-	constructor(canvas: HTMLCanvasElement) {
+	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
 		// Save the canvas.
 		this._canvas = canvas;
 		canvas.width = canvas.clientWidth * devicePixelRatio;
 		canvas.height = canvas.clientHeight * devicePixelRatio;
+		canvas.style.imageRendering = 'crisp-edges';
+		canvas.style.imageRendering = 'pixelated';
 
 		// Get the WebGL context.
-		const gl = this._canvas.getContext('webgl2');
+		const gl = this._canvas.getContext('webgl2', { antialias: antialias });
 		if (gl === null) {
 			throw new Error('Could not get a WebGL 2.0 context. Your browser may not support WebGL 2.0.');
 		}
 		this._gl = gl;
 
 		// Check the canvas size once a second and resize if needed.
-		this._canvasResizeInterval = setInterval(function (gl: WebGL2RenderingContext): void {
+		this._canvasResizeInterval = setInterval(function (): void {
 			if (canvas.width !== canvas.clientWidth * devicePixelRatio) {
 				canvas.width = canvas.clientWidth * devicePixelRatio;
 			}
 			if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
 				canvas.height = canvas.clientHeight * devicePixelRatio;
 			}
-			gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 		}, 1000, this._gl);
 	}
 
