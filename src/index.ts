@@ -13,15 +13,13 @@ window.addEventListener('load', () => {
 
 	const shader = new Birch.Shader(renderer.gl, vertexShader, fragmentShader);
 	shader.activate();
-	const mesh = new Birch.Mesh(renderer.gl);
-	mesh.addVertexComponent(shader.getAttributeLocation('a_position'), 0, 2);
-	mesh.vertices = [
+	const mesh = new Birch.Mesh(renderer.gl, 2, [[new Birch.Mesh.Component(0, 'float', 2)]]);
+	mesh.setVertices(0, [
 		0, 0,
 		1, 0,
 		0, 0.5,
-	];
-	mesh.indices = [0, 1, 0, 2, 1, 2];
-	mesh.numVerticesPerPrimitive = 2;
+	]);
+	mesh.setIndices([0, 1, 0, 2, 1, 2]);
 
 	render(renderer, mesh);
 });

@@ -1,10 +1,13 @@
 /** A mesh. */
 export class Mesh {
 	/**  The WebGL context. */
-	private _gl: WebGLRenderingContext;
+	private _gl: WebGL2RenderingContext;
 
-	/** The WebGL vertex buffer that will be rendered. It uses interleaved vertices. */
-	private _vertexBuffer: WebGLBuffer;
+	/** The vertex array object. */
+	private _vertexArrayObject: WebGLVertexArrayObject;
+
+	/** The vertex buffers. */
+	private _vertexBuffers: WebGLBuffer[];
 
 	/** The WebGL index buffer that will be rendered. */
 	private _indexBuffer: WebGLBuffer;
@@ -12,26 +15,27 @@ export class Mesh {
 	/** The type of primitive to render. It can be points, lines, or triangles. */
 	private _mode: GLenum;
 
-	/** The list of components that make up a vertex. */
-	private _vertexComponents: Mesh.VertexComponent[];
-
-	/** The number of bytes per vertex, calculated from the vertex components. */
-	private _bytesPerVertex: number;
-
 	/** The number of indices, used in rendering. */
 	private _numIndices: number;
 
-	/** The constructor. */
-	constructor(gl: WebGLRenderingContext) {
+	/** The constructor.
+	 * @param numVerticesPerPrimitive - The number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles.
+	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
+	 * and each sub-array refers to the list of components (in order) of each vertex.
+	*/
+	constructor(gl: WebGL2RenderingContext, numVerticesPerPrimitive: number, vertexFormat: Mesh.Component[][]) {
 		// Save the WebGL context.
 		this._gl = gl;
 
-		// Create the vertex buffer.
-		const vertexBuffer = this._gl.createBuffer();
-		if (vertexBuffer === null) {
-			throw new Error('Could not create the vertex buffer.');
+		// Create the vertex array object.
+		const vertexArrayObject = this._gl.createVertexArray();
+		if (vertexArrayObject === null) {
+			throw new Error('Could not create the vertex array object.');
 		}
-		this._vertexBuffer = vertexBuffer;
+		this._vertexArrayObject = vertexArrayObject;
+
+		// Setup the vertex buffers array.
+		this._vertexBuffers = [];
 
 		// Create the index buffer.
 		const indexBuffer = this._gl.createBuffer();
@@ -40,27 +44,10 @@ export class Mesh {
 		}
 		this._indexBuffer = indexBuffer;
 
-		// Set the mode to triangles.
-		this._mode = this._gl.TRIANGLES;
-
-		// Initialize the vertex components to be empty.
-		this._vertexComponents = [];
-
-		// Since there are no components, set the bytes per vertex to zero.
-		this._bytesPerVertex = 0;
-
 		// Since there are no indices, set the number of indices to zero.
 		this._numIndices = 0;
-	}
 
-	/** Destroys the mesh. */
-	destroy(): void {
-		this._gl.deleteBuffer(this._vertexBuffer);
-		this._gl.deleteBuffer(this._indexBuffer);
-	}
-
-	/** Sets the number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles. Defaults to 3. */
-	set numVerticesPerPrimitive(numVerticesPerPrimitive: number) {
+		// Set the mode.
 		if (numVerticesPerPrimitive === 1) {
 			this._mode = this._gl.POINTS;
 		}
@@ -73,28 +60,31 @@ export class Mesh {
 		else {
 			throw new Error('Invalid number of vertices per primitive.');
 		}
+
+		// Set the vertex format.
+		this._setVertexFormat(vertexFormat);
 	}
 
-	/** Adds a component to definition of the vertex.
-	 * @param location - The WebGL location of the component.
-	 * @param offset - The offset in bytes of the component from the beginning of each vertex.
-	 * @param dimensions - The number of dimensions of the component (1, 2, 3, or 4). */
-	addVertexComponent(location: number, offset: number, dimensions: number): void {
-		const vertexComponent = new Mesh.VertexComponent(location, offset, dimensions);
-		this._vertexComponents.push(vertexComponent);
-		if (this._bytesPerVertex < (offset + dimensions) * 4) {
-			this._bytesPerVertex = (offset + dimensions) * 4;
+	/** Destroys the mesh. */
+	destroy(): void {
+		for (let i = 0; i < this._vertexBuffers.length; i++) {
+			this._gl.deleteBuffer(this._vertexBuffers[i]);
 		}
+		this._gl.deleteBuffer(this._indexBuffer);
+		this._gl.deleteVertexArray(this._vertexArrayObject);
 	}
 
-	/** Sets the vertices. They must be in the same format as the vertex component definitions from `addVertexComponent()`. */
-	set vertices(vertices: number[]) {
-		this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuffer);
+	/** Sets the *vertices* to the buffer at the *index*. They must be in the same format as the vertex component definitions from `addVertexComponent()`. */
+	setVertices(index: number, vertices: number[]): void {
+		if (index < 0 || this._vertexBuffers.length <= index) {
+			throw new Error('Index out of bounds');
+		}
+		this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuffers[index]);
 		this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
 	}
 
-	/** Sets the indices. */
-	set indices(indices: number[]) {
+	/** Sets the *indices*. */
+	setIndices(indices: number[]): void {
 		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this._gl.STATIC_DRAW);
 		this._numIndices = indices.length;
@@ -102,15 +92,8 @@ export class Mesh {
 
 	/** Renders the mesh. */
 	render(): void {
-		// Bind the vertex buffer.
-		this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuffer);
-
-		// Enable the vertex attribute arrays for each component.
-		for (let componentIndex = 0; componentIndex < this._vertexComponents.length; componentIndex++) {
-			const component = this._vertexComponents[componentIndex];
-			this._gl.enableVertexAttribArray(component.location);
-			this._gl.vertexAttribPointer(component.location, component.dimensions, this._gl.FLOAT, false, this._bytesPerVertex, component.offset * 4);
-		}
+		// Bind the vertex array object.
+		this._gl.bindVertexArray(this._vertexArrayObject);
 
 		// Bind the index buffer.
 		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
@@ -118,24 +101,93 @@ export class Mesh {
 		// Draw the mesh.
 		this._gl.drawElements(this._mode, this._numIndices, this._gl.UNSIGNED_SHORT, 0);
 	}
+
+	/** Sets the vertex format. Each element refers to a separate array of vertices,
+	 * and each sub-array refers to the list of components (in order) of each vertex. */
+	private _setVertexFormat(vertexFormat: Mesh.Component[][]): void {
+		// Bind the vertex array.
+		this._gl.bindVertexArray(this._vertexArrayObject);
+
+		// Go through each vertex buffer.
+		for (let i = 0; i < vertexFormat.length; i++) {
+			const components = vertexFormat[i];
+
+			// Create and bind the vertex buffer.
+			const vertexBuffer = this._gl.createBuffer();
+			if (vertexBuffer === null) {
+				throw new Error('Could not create the vertex buffer.');
+			}
+			this._vertexBuffers.push(vertexBuffer);
+			this._gl.bindBuffer(this._gl.ARRAY_BUFFER, vertexBuffer);
+
+			// Calculate the bytes per vertex.
+			let bytesPerVertex = 0;
+			for (let j = 0; j < components.length; j++) {
+				const component = components[j];
+				bytesPerVertex += component.numBytes;
+			}
+
+			// Setup the vertex array objectt.
+			let offset = 0;
+			for (let j = 0; j < components.length; j++) {
+				const component = components[j];
+
+				// Enable the attribute location.
+				this._gl.enableVertexAttribArray(component.location);
+
+				// Get the WebGL type.
+				let glType = this._gl.FLOAT;
+				switch (component.type) {
+					case 'float': glType = this._gl.FLOAT; break;
+					case 'byte': glType = this._gl.BYTE; break;
+					case 'ubyte': glType = this._gl.UNSIGNED_BYTE; break;
+					case 'short': glType = this._gl.SHORT; break;
+					case 'ushort': glType = this._gl.UNSIGNED_SHORT; break;
+				}
+
+				// Assign the currently bound vertex buffer to the attribute location with the given format.
+				this._gl.vertexAttribPointer(component.location, component.dimensions, glType, false, bytesPerVertex, offset);
+
+				// Increase the offset.
+				offset += component.numBytes;
+			}
+		}
+	}
 }
 
 export namespace Mesh {
-	export class VertexComponent {
+	export class Component {
 		/** The WebGL location of the component. */
 		location: number;
 
-		/** The offset in bytes from the beginning of a vertex. */
-		offset: number;
+		/** The type of component, either 'float', 'byte', 'ubyte' | 'short', 'ushort'. */
+		type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort';
 
 		/** The number of dimensions of the component. */
 		dimensions: number;
 
-		/** The constructor. */
-		constructor(location: number, offset: number, dimensions: number) {
+		/** The number of bytes for the component. */
+		numBytes: number;
+
+		constructor(location: number, type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort', dimensions: number) {
+			// Assign the members.
 			this.location = location;
-			this.offset = offset;
+			this.type = type;
 			this.dimensions = dimensions;
+
+			// Calculate the number of bytes for the component.
+			let bytesPerDimension = 1;
+			if (this.type === 'float') {
+				bytesPerDimension = 4;
+			}
+			switch (this.type) {
+				case 'float': bytesPerDimension = 4; break;
+				case 'byte': bytesPerDimension = 1; break;
+				case 'ubyte': bytesPerDimension = 1; break;
+				case 'short': bytesPerDimension = 2; break;
+				case 'ushort': bytesPerDimension = 2; break;
+			}
+			this.numBytes = bytesPerDimension * this.dimensions;
 		}
 	}
 }

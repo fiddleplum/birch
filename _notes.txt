@@ -7,3 +7,6 @@ Use vertex array objects.
 In shaders, use "#version 300 es" as first line.
 
 Prefix glsl variables with a, v, or u.
+
+If I use vertex array objects, I should use glBindAttribLocation.
+If I don't, I should use glGetAttribLocation.

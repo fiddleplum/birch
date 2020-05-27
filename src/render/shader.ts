@@ -2,7 +2,7 @@
 
 export class Shader {
 	/**  The WebGL context. */
-	private _gl: WebGLRenderingContext;
+	private _gl: WebGL2RenderingContext;
 
 	/** A mapping from uniform names to locations. */
 	private _uniformNamesToLocations: Map<string, WebGLUniformLocation>;
@@ -17,7 +17,7 @@ export class Shader {
 	private _program: WebGLProgram;
 
 	/** The constructor. */
-	constructor(gl: WebGLRenderingContext, vertexCode: string, fragmentCode: string) {
+	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string) {
 		// Save the WebGL context.
 		this._gl = gl;
 
