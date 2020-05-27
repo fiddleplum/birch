@@ -14,7 +14,7 @@
 	],
 	"rules": {
 		"brace-style": ["error", "stroustrup"],
-		"indent": ["error", "tab"],
+		"indent": ["error", "tab", { "SwitchCase": 1 }],
 		"no-multiple-empty-lines": ["error", {
 			"max": 1,
 			"maxEOF": 0,
