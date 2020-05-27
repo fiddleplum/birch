@@ -13,41 +13,46 @@ window.addEventListener('load', () => {
 
 	const shader = new Birch.Shader(renderer.gl, vertexShader, fragmentShader);
 	shader.activate();
-	const mesh = new Birch.Mesh(renderer.gl, 2, [[new Birch.Mesh.Component(0, 'float', 2)]]);
+	const mesh = new Birch.Mesh(renderer.gl, 2, [
+		[
+			new Birch.Mesh.Component(0, 'float', 2, false)],
+		[
+			new Birch.Mesh.Component(1, 'float', 4, true),
+			new Birch.Mesh.Component(2, 'float', 2, true)]]);
 	mesh.setVertices(0, [
 		0, 0,
 		1, 0,
 		0, 0.5,
-	]);
+	], false);
+	mesh.setVertices(1, [
+		1, 0, 0, 1, 0, 0,
+		0, 1, 0, 1, 0.5, 0,
+		0, 0, 1, 1, -0.5, 0], false);
 	mesh.setIndices([0, 1, 0, 2, 1, 2]);
+	mesh.setNumInstances(3);
 
 	render(renderer, mesh);
 });
 
 const vertexShader = `#version 300 es
  
-// an attribute is an input (in) to a vertex shader.
-// It will receive data from a buffer
-in vec4 a_position;
- 
-// all shaders have a main function
+in vec2 a_position;
+in vec4 a_color;
+in vec2 a_offset;
+out vec4 v_color;
+
 void main() {
- 
-  // gl_Position is a special variable a vertex shader
-  // is responsible for setting
-  gl_Position = a_position;
+  gl_Position = vec4(a_position + a_offset, 0.0, 1.0);
+  v_color = a_color;
 }`;
 
 const fragmentShader = `#version 300 es
 
-// fragment shaders don't have a default precision so we need
-// to pick one. highp is a good default. It means "high precision"
 precision highp float;
- 
-// we need to declare an output for the fragment shader
-out vec4 outColor;
+
+in vec4 v_color;
+out vec4 o_color;
  
 void main() {
-  // Just set the output to a constant reddish-purple
-  outColor = vec4(1, 1, 1, 1);
+  o_color = v_color;
 }`;

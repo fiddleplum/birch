@@ -15,8 +15,11 @@ export class Mesh {
 	/** The type of primitive to render. It can be points, lines, or triangles. */
 	private _mode: GLenum;
 
-	/** The number of indices, used in rendering. */
+	/** The number of indices to render, calculated in `setIndices`. */
 	private _numIndices: number;
+
+	/** The number of instanes to render. */
+	private _numInstances: number;
 
 	/** The constructor.
 	 * @param numVerticesPerPrimitive - The number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles.
@@ -47,6 +50,9 @@ export class Mesh {
 		// Since there are no indices, set the number of indices to zero.
 		this._numIndices = 0;
 
+		// Set the initial number of instances to 1.
+		this._numInstances = 1;
+
 		// Set the mode.
 		if (numVerticesPerPrimitive === 1) {
 			this._mode = this._gl.POINTS;
@@ -74,13 +80,21 @@ export class Mesh {
 		this._gl.deleteVertexArray(this._vertexArrayObject);
 	}
 
-	/** Sets the *vertices* to the buffer at the *index*. They must be in the same format as the vertex component definitions from `addVertexComponent()`. */
-	setVertices(index: number, vertices: number[]): void {
+	/** Sets the *vertices* for a particular buffer.
+	 * @param index - The buffer index to use.
+	 * @param vertices - The actual vertex data. It must be in the same format as specified in the constructor.
+	 * @param dynamic - Specifies if the data will be changed often or not. If you are unsure, set it to false.
+	 * @param instanced - Specifies if the data is instanced or not. */
+	setVertices(index: number, vertices: number[], dynamic: boolean): void {
 		if (index < 0 || this._vertexBuffers.length <= index) {
 			throw new Error('Index out of bounds');
 		}
+		let glUsage = this._gl.STATIC_DRAW;
+		if (dynamic) {
+			glUsage = this._gl.DYNAMIC_DRAW;
+		}
 		this._gl.bindBuffer(this._gl.ARRAY_BUFFER, this._vertexBuffers[index]);
-		this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), this._gl.STATIC_DRAW);
+		this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), glUsage);
 	}
 
 	/** Sets the *indices*. */
@@ -88,6 +102,11 @@ export class Mesh {
 		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this._gl.STATIC_DRAW);
 		this._numIndices = indices.length;
+	}
+
+	/** Sets the number of instances. */
+	setNumInstances(numInstances: number): void {
+		this._numInstances = numInstances;
 	}
 
 	/** Renders the mesh. */
@@ -99,7 +118,7 @@ export class Mesh {
 		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
 		// Draw the mesh.
-		this._gl.drawElements(this._mode, this._numIndices, this._gl.UNSIGNED_SHORT, 0);
+		this._gl.drawElementsInstanced(this._mode, this._numIndices, this._gl.UNSIGNED_SHORT, 0, this._numInstances);
 	}
 
 	/** Sets the vertex format. Each element refers to a separate array of vertices,
@@ -148,6 +167,11 @@ export class Mesh {
 				// Assign the currently bound vertex buffer to the attribute location with the given format.
 				this._gl.vertexAttribPointer(component.location, component.dimensions, glType, false, bytesPerVertex, offset);
 
+				// Set whether this component is instanced or not.
+				if (component.instanced) {
+					this._gl.vertexAttribDivisor(component.location, 1);
+				}
+
 				// Increase the offset.
 				offset += component.numBytes;
 			}
@@ -166,14 +190,18 @@ export namespace Mesh {
 		/** The number of dimensions of the component. */
 		dimensions: number;
 
+		/** If true, the component is instanced and will be used on a per instance basis. */
+		instanced: boolean;
+
 		/** The number of bytes for the component. */
 		numBytes: number;
 
-		constructor(location: number, type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort', dimensions: number) {
+		constructor(location: number, type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort', dimensions: number, instanced: boolean) {
 			// Assign the members.
 			this.location = location;
 			this.type = type;
 			this.dimensions = dimensions;
+			this.instanced = instanced;
 
 			// Calculate the number of bytes for the component.
 			let bytesPerDimension = 1;
