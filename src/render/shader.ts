@@ -1,4 +1,5 @@
 // import Enum from '../util/enum';
+import { FastMap } from '../utils/fast_map';
 
 export class Shader {
 	/**  The WebGL context. */
@@ -17,7 +18,7 @@ export class Shader {
 	private _program: WebGLProgram;
 
 	/** The constructor. */
-	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string) {
+	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: FastMap<string, number>) {
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -32,11 +33,15 @@ export class Shader {
 		try {
 			vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
 			fragmentObject = this._compile(fragmentCode, this._gl.FRAGMENT_SHADER);
-			this._program = this._link(vertexObject, fragmentObject);
+			this._program = this._link(vertexObject, fragmentObject, attributeLocations);
 		}
 		finally {
-			this._gl.deleteShader(vertexObject);
-			this._gl.deleteShader(fragmentObject);
+			if (vertexObject !== null) {
+				this._gl.deleteShader(vertexObject);
+			}
+			if (fragmentObject !== null) {
+				this._gl.deleteShader(fragmentObject);
+			}
 		}
 		this._initializeUniforms();
 		this._initializeAttributes();
@@ -162,42 +167,67 @@ export class Shader {
 
 	/** Compiles some shader code to create a shader object. */
 	private _compile(shaderCode: string, shaderType: number): WebGLShader {
+		// Create the shader object.
 		const shaderObject = this._gl.createShader(shaderType);
 		if (shaderObject === null) {
 			throw new Error('Could not create a new shader object.');
 		}
+
+		// Supply the source.
 		this._gl.shaderSource(shaderObject, shaderCode);
+
+		// Compile the shader object.
 		this._gl.compileShader(shaderObject);
+
+		// Check for success.
 		const success = this._gl.getShaderParameter(shaderObject, this._gl.COMPILE_STATUS) as GLboolean;
 		if (!success) {
-			throw new Error('The shader object did not compile correctly: ' + this._gl.getShaderInfoLog(shaderObject));
+			const error = this._gl.getShaderInfoLog(shaderObject);
+			this._gl.deleteShader(shaderObject);
+			throw new Error('The shader object did not compile correctly: ' + error);
 		}
 		return shaderObject;
 	}
 
 	/** Links shader objects to create a shader program. */
-	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader): WebGLProgram {
+	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: FastMap<string, number>): WebGLProgram {
+		// Create the program.
 		const program = this._gl.createProgram();
 		if (program === null) {
 			throw new Error('Could not create a new shader program.');
 		}
+
+		// Attach the shader objects.
 		this._gl.attachShader(program, vertexObject);
 		this._gl.attachShader(program, fragmentObject);
+
+		// Bind the given attrbute locations.
+		for (let i = 0; i < attributeLocations.size; i++) {
+			const entry = attributeLocations.getAt(i);
+			this._gl.bindAttribLocation(program, entry.value, entry.key);
+		}
+
+		// Link the shaders to the program.
 		this._gl.linkProgram(program);
+
+		// Detach the shader objects.
 		this._gl.detachShader(program, vertexObject);
 		this._gl.detachShader(program, fragmentObject);
+
+		// Check for success.
 		const success = this._gl.getProgramParameter(program, this._gl.LINK_STATUS) as GLboolean;
 		if (!success) {
+			const error = this._gl.getProgramInfoLog(program);
 			this._gl.deleteProgram(program);
-			throw new Error('The shader program did not link correctly: ' + this._gl.getProgramInfoLog(program));
+			throw new Error('The shader program did not link correctly: ' + error);
 		}
+
+		// Return the program.
 		return program;
 	}
 
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
-		this._uniformNamesToLocations.clear();
-		this._uniformLocationsToValues.clear();
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
 		for (let i = 0; i < numUniforms; i++) {
 			const uniformInfo = this._gl.getActiveUniform(this._program, i);
@@ -219,7 +249,6 @@ export class Shader {
 
 	/** Gets the mapping from attribute names to locations. */
 	private _initializeAttributes(): void {
-		this._attributeNamesToLocations.clear();
 		const numAttributes = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_ATTRIBUTES);
 		for (let i = 0; i < numAttributes; i++) {
 			const activeAttrib = this._gl.getActiveAttrib(this._program, i);

@@ -11,8 +11,13 @@ function render(renderer: Birch.Renderer, mesh: Birch.Mesh): void {
 window.addEventListener('load', () => {
 	const renderer = new Birch.Renderer(document.querySelector('canvas') as HTMLCanvasElement, true);
 
-	const shader = new Birch.Shader(renderer.gl, vertexShader, fragmentShader);
+	const shader = new Birch.Shader(renderer.gl, vertexShader, fragmentShader, new Birch.FastMap([
+		['a_position', 0],
+		['a_color', 1],
+		['a_offset', 2]
+	]));
 	shader.activate();
+	(window as any).shader = shader;
 	const mesh = new Birch.Mesh(renderer.gl, 2, [
 		[
 			new Birch.Mesh.Component(0, 'float', 2, false)],
