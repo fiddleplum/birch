@@ -18,6 +18,9 @@ export class Mesh {
 	/** The number of indices to render, calculated in `setIndices`. */
 	private _numIndices: number;
 
+	/** If true, the indices are 32-bits, which means they can refer to more than 2^16 vertices. */
+	private _glIndicesType: GLenum;
+
 	/** The number of instanes to render. */
 	private _numInstances: number;
 
@@ -49,6 +52,9 @@ export class Mesh {
 
 		// Since there are no indices, set the number of indices to zero.
 		this._numIndices = 0;
+
+		// Set the initial indices type to 16-bit.
+		this._glIndicesType = this._gl.UNSIGNED_SHORT;
 
 		// Set the initial number of instances to 1.
 		this._numInstances = 1;
@@ -83,8 +89,7 @@ export class Mesh {
 	/** Sets the *vertices* for a particular buffer.
 	 * @param index - The buffer index to use.
 	 * @param vertices - The actual vertex data. It must be in the same format as specified in the constructor.
-	 * @param dynamic - Specifies if the data will be changed often or not. If you are unsure, set it to false.
-	 * @param instanced - Specifies if the data is instanced or not. */
+	 * @param dynamic - Specifies if the data will be changed often or not. If you are unsure, set it to false. */
 	setVertices(index: number, vertices: number[], dynamic: boolean): void {
 		if (index < 0 || this._vertexBuffers.length <= index) {
 			throw new Error('Index out of bounds');
@@ -97,11 +102,16 @@ export class Mesh {
 		this._gl.bufferData(this._gl.ARRAY_BUFFER, new Float32Array(vertices), glUsage);
 	}
 
-	/** Sets the *indices*. */
-	setIndices(indices: number[]): void {
-		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-		this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this._gl.STATIC_DRAW);
+	/** Sets the *indices*. If *use32BitIndices* is true, each index will be 32 bits so that they
+	 * can refer to more than 2^16 vertices. */
+	setIndices(indices: number[], use32BitIndices: boolean): void {
+		this._glIndicesType = use32BitIndices ? this._gl.UNSIGNED_INT : this._gl.UNSIGNED_SHORT;
 		this._numIndices = indices.length;
+		const array = use32BitIndices ? new Uint32Array(indices) : new Uint16Array(indices);
+
+		// Bind the buffer and send the data.
+		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+		this._gl.bufferData(this._gl.ELEMENT_ARRAY_BUFFER, array, this._gl.STATIC_DRAW);
 	}
 
 	/** Sets the number of instances. */
@@ -118,7 +128,7 @@ export class Mesh {
 		this._gl.bindBuffer(this._gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
 		// Draw the mesh.
-		this._gl.drawElementsInstanced(this._mode, this._numIndices, this._gl.UNSIGNED_SHORT, 0, this._numInstances);
+		this._gl.drawElementsInstanced(this._mode, this._numIndices, this._glIndicesType, 0, this._numInstances);
 	}
 
 	/** Sets the vertex format. Each element refers to a separate array of vertices,

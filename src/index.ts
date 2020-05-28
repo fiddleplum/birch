@@ -33,7 +33,7 @@ window.addEventListener('load', () => {
 		1, 0, 0, 1, 0, 0,
 		0, 1, 0, 1, 0.5, 0,
 		0, 0, 1, 1, -0.5, 0], false);
-	mesh.setIndices([0, 1, 0, 2, 1, 2]);
+	mesh.setIndices([0, 1, 0, 2, 1, 2], true);
 	mesh.setNumInstances(3);
 
 	render(renderer, mesh);
