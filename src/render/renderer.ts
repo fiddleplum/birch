@@ -1,12 +1,6 @@
 import { ColorReadonly } from '../utils/color_readonly';
 
 export class Renderer {
-	private _canvas: HTMLCanvasElement;
-
-	private _gl: WebGL2RenderingContext;
-
-	private _canvasResizeInterval: number;
-
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
 		// Save the canvas.
 		this._canvas = canvas;
@@ -51,4 +45,10 @@ export class Renderer {
 		this._gl.clearColor(color.r, color.g, color.b, color.a);
 		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
 	}
+
+	private _canvas: HTMLCanvasElement;
+
+	private _gl: WebGL2RenderingContext;
+
+	private _canvasResizeInterval: number;
 }

@@ -1,29 +1,5 @@
 /** A mesh. */
 export class Mesh {
-	/**  The WebGL context. */
-	private _gl: WebGL2RenderingContext;
-
-	/** The vertex array object. */
-	private _vertexArrayObject: WebGLVertexArrayObject;
-
-	/** The vertex buffers. */
-	private _vertexBuffers: WebGLBuffer[];
-
-	/** The WebGL index buffer that will be rendered. */
-	private _indexBuffer: WebGLBuffer;
-
-	/** The type of primitive to render. It can be points, lines, or triangles. */
-	private _mode: GLenum;
-
-	/** The number of indices to render, calculated in `setIndices`. */
-	private _numIndices: number;
-
-	/** If true, the indices are 32-bits, which means they can refer to more than 2^16 vertices. */
-	private _glIndicesType: GLenum;
-
-	/** The number of instanes to render. */
-	private _numInstances: number;
-
 	/** The constructor.
 	 * @param numVerticesPerPrimitive - The number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles.
 	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
@@ -187,6 +163,30 @@ export class Mesh {
 			}
 		}
 	}
+
+	/**  The WebGL context. */
+	private _gl: WebGL2RenderingContext;
+
+	/** The vertex array object. */
+	private _vertexArrayObject: WebGLVertexArrayObject;
+
+	/** The vertex buffers. */
+	private _vertexBuffers: WebGLBuffer[];
+
+	/** The WebGL index buffer that will be rendered. */
+	private _indexBuffer: WebGLBuffer;
+
+	/** The type of primitive to render. It can be points, lines, or triangles. */
+	private _mode: GLenum;
+
+	/** The number of indices to render, calculated in `setIndices`. */
+	private _numIndices: number;
+
+	/** If true, the indices are 32-bits, which means they can refer to more than 2^16 vertices. */
+	private _glIndicesType: GLenum;
+
+	/** The number of instanes to render. */
+	private _numInstances: number;
 }
 
 export namespace Mesh {

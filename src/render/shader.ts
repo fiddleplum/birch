@@ -1,22 +1,6 @@
-// import Enum from '../util/enum';
 import { FastMap } from '../utils/fast_map';
 
 export class Shader {
-	/**  The WebGL context. */
-	private _gl: WebGL2RenderingContext;
-
-	/** A mapping from uniform names to locations. */
-	private _uniformNamesToLocations: Map<string, WebGLUniformLocation>;
-
-	/** A mapping from uniform locations to values. */
-	private _uniformLocationsToValues: Map<WebGLUniformLocation, number|number[]>;
-
-	/** A mapping from attribute names to locations. */
-	private _attributeNamesToLocations: Map<string, number>;
-
-	/** The Gl shader program. */
-	private _program: WebGLProgram;
-
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: FastMap<string, number>) {
 		// Save the WebGL context.
@@ -275,16 +259,19 @@ export class Shader {
 			a[i] = b[i];
 		}
 	}
-}
 
-// Shader.INT = new Enum('INT');
-// Shader.INT2 = new Enum('INT2');
-// Shader.INT3 = new Enum('INT3');
-// Shader.INT4 = new Enum('INT4');
-// Shader.FLOAT = new Enum('FLOAT');
-// Shader.FLOAT2 = new Enum('FLOAT2');
-// Shader.FLOAT3 = new Enum('FLOAT3');
-// Shader.FLOAT4 = new Enum('FLOAT4');
-// Shader.MATRIX22 = new Enum('MATRIX22');
-// Shader.MATRIX33 = new Enum('MATRIX33');
-// Shader.MATRIX44 = new Enum('MATRIX44');
+	/**  The WebGL context. */
+	private _gl: WebGL2RenderingContext;
+
+	/** A mapping from uniform names to locations. */
+	private _uniformNamesToLocations: Map<string, WebGLUniformLocation>;
+
+	/** A mapping from uniform locations to values. */
+	private _uniformLocationsToValues: Map<WebGLUniformLocation, number|number[]>;
+
+	/** A mapping from attribute names to locations. */
+	private _attributeNamesToLocations: Map<string, number>;
+
+	/** The Gl shader program. */
+	private _program: WebGLProgram;
+}
