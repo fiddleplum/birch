@@ -1,13 +1,12 @@
 import { Vector2 } from '../utils/vector2';
 import { UniqueId } from '../utils/unique_id';
 
-export class Texture {
+export class Texture extends UniqueId.Object {
 	constructor(gl: WebGL2RenderingContext, source: string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number ) {
+		super();
+
 		// Save the WebGL context.
 		this._gl = gl;
-
-		// Get a unique id for the shader.
-		this._id = UniqueId.get();
 
 		// Create the texture.
 		this._handle = this._gl.createTexture();
@@ -67,7 +66,7 @@ export class Texture {
 	/** Destructs the texture. */
 	destroy(): void {
 		this._gl.deleteTexture(this._handle);
-		UniqueId.release(this._id);
+		super.destroy();
 	}
 
 	/** Gets the format. */
@@ -97,11 +96,6 @@ export class Texture {
 		this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, attachment, this._gl.TEXTURE_2D, this._handle, 0);
 	}
 
-	/** Gets the shader id. */
-	get id(): number {
-		return this._id;
-	}
-
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 
@@ -110,9 +104,6 @@ export class Texture {
 	private _format: Texture.Format = Texture.Format.RGB;
 
 	private _size: Vector2 = new Vector2();
-
-	/** A unique id for the shader. */
-	private _id: number;
 }
 
 export namespace Texture {

@@ -23,3 +23,26 @@ export class UniqueId {
 	/** The total number of used ids. */
 	private static _numUsedIds: number = 0;
 }
+
+export namespace UniqueId {
+	export class Object {
+		/** Construct the object. */
+		constructor() {
+			// Get a unique id for the shader.
+			this._id = UniqueId.get();
+		}
+
+		/** Destroy the object. */
+		destroy(): void {
+			UniqueId.release(this._id);
+		}
+
+		/** Gets the unique id. */
+		get id(): number {
+			return this._id;
+		}
+
+		// The unique id.
+		private _id: number;
+	}
+}

@@ -8,10 +8,10 @@ export class Scene {
 	}
 
 	private static _compareModels(a: Model, b: Model): number {
-		if (!a.shader && b.shader) {
+		if (a.shader === null || a.mesh === null) {
 			return -1;
 		}
-		if (!a.shader || !b.shader) {
+		if (b.shader === null || b.mesh === null) {
 			return +1;
 		}
 		if (a.blending === Model.Blending.None && b.blending !== Model.Blending.None) {
@@ -24,27 +24,27 @@ export class Scene {
 			if (a.shader !== b.shader) {
 				return a.shader.id < b.shader.id ? -1 : +1;
 			}
-			for (let slot = 0; slot < a.textures.size() && slot < b.images.size(); slot++) {
-				if (slot == images.size() && slot < b.images.size()) {
+			for (let slot = 0, maxSlot = Math.min(Math.max(a.textures.length, b.textures.length) - 1, 32); slot <= maxSlot; slot++) {
+				if (slot == a.textures.length && slot < b.textures.length) {
 					return -1;
 				}
-				if (slot == b.images.size()) {
+				if (slot == b.textures.length) {
 					return +1;
 				}
-				if (a.getTextureAtSlot(slot) !== b.getTextureAtSlot(slot)) {
-					return images[slot] < b.images[slot];
+				if (a.textures[slot] !== b.textures[slot]) {
+					return a.textures[slot].id < b.textures[slot].id ? -1 : +1;
 				}
 			}
-			return mesh < b.mesh;
+			return a.mesh.id < b.mesh.id ? -1 : +1;
 		}
-		else if (getDepth() < b.getDepth()) { // Since there is some blending, sort by depth.
+		else if (a.depth < b.depth) { // Since there is some blending, sort by depth.
 			return -1;
 		}
-		else if (getDepth() > b.getDepth()) {
+		else if (a.depth > b.depth) {
 			return +1;
 		}
 		else { // just do the pointer to guarantee an explicit ordering.
-			return this < &model;
+			return a.id < b.id ? -1 : +1;
 		}
 	}
 

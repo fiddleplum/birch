@@ -1,11 +1,15 @@
+import { UniqueId } from '../utils/unique_id';
+
 /** A mesh. */
-export class Mesh {
+export class Mesh extends UniqueId.Object {
 	/** The constructor.
 	 * @param numVerticesPerPrimitive - The number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles.
 	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
 	 * and each sub-array refers to the list of components (in order) of each vertex.
 	*/
 	constructor(gl: WebGL2RenderingContext, numVerticesPerPrimitive: number, vertexFormat: Mesh.Component[][]) {
+		super();
+
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -60,6 +64,7 @@ export class Mesh {
 		}
 		this._gl.deleteBuffer(this._indexBuffer);
 		this._gl.deleteVertexArray(this._vertexArrayObject);
+		super.destroy();
 	}
 
 	/** Sets the *vertices* for a particular buffer.

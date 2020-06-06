@@ -1,14 +1,13 @@
 import { FastMap } from '../utils/fast_map';
 import { UniqueId } from '../utils/unique_id';
 
-export class Shader {
+export class Shader extends UniqueId.Object {
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: FastMap<string, number>) {
+		super();
+
 		// Save the WebGL context.
 		this._gl = gl;
-
-		// Get a unique id for the shader.
-		this._id = UniqueId.get();
 
 		// Initialize the location maps.
 		this._uniformNamesToLocations = new Map();
@@ -38,7 +37,7 @@ export class Shader {
 	/** Destructs the shader. */
 	destroy(): void {
 		this._gl.deleteProgram(this._program);
-		UniqueId.release(this._id);
+		super.destroy();
 	}
 
 	/** Activates the shader for use in rendering. */
@@ -152,11 +151,6 @@ export class Shader {
 			this._uniformLocationsToValues.set(location, textureSlot);
 			this._gl.uniform1i(location, textureSlot);
 		}
-	}
-
-	/** Gets the shader id. */
-	get id(): number {
-		return this._id;
 	}
 
 	/** Compiles some shader code to create a shader object. */
@@ -284,7 +278,4 @@ export class Shader {
 
 	/** The Gl shader program. */
 	private _program: WebGLProgram;
-
-	/** A unique id for the shader. */
-	private _id: number;
 }
