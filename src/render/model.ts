@@ -2,7 +2,6 @@ import { Shader } from './shader';
 import { Mesh } from './mesh';
 import { Texture } from './texture';
 import { State } from './state';
-import { FastMap } from '../utils/fast_map';
 
 export class Model {
 	/** Gets the mesh. */
@@ -35,9 +34,29 @@ export class Model {
 		this._depth = depth;
 	}
 
+	/** Gets the blendng mode. */
+	get blending(): Model.Blending {
+		return this._blending;
+	}
+
+	/** Sets the blending mode. */
+	set blending(blending: Model.Blending) {
+		this._blending = blending;
+	}
+
+	/** Gets the depth test. */
+	get depthTest(): Model.DepthTest {
+		return this._depthTest;
+	}
+
+	/** Sets the depth test. */
+	set depthTest(depthTest: Model.DepthTest) {
+		this._depthTest = depthTest;
+	}
+
 	/** Gets the texture at the slot. */
 	getTextureAtSlot(slot: number): Texture | null {
-		const texture = this._textures.get(slot);
+		const texture = this._textures[slot];
 		if (texture !== undefined) {
 			return texture;
 		}
@@ -46,7 +65,7 @@ export class Model {
 
 	/** Sets the texture at the slot. */
 	setTextureAtSlot(slot: number, texture: Texture): void {
-		this._textures.set(slot, texture);
+		this._textures[slot] = texture;
 	}
 
 	/** Renders the model. */
@@ -68,27 +87,18 @@ export class Model {
 		if (this._uniformsFunction !== null) {
 			this._uniformsFunction(this._shader);
 		}
-		// Turn off unused texture slots.
-		for (let i = 0; i < state.activeTextures.size; i++) {
-			const activeTextureEntry = state.activeTextures.getAt(i);
-			const slot = activeTextureEntry.key;
-			const texture = activeTextureEntry.value;
-			if (!this._textures.has(slot)) {
-				texture.deactivate(slot);
-				state.activeTextures.delete(slot);
-				i--;
-			}
-		}
 		// Activate any new textures.
-		for (let i = 0; i < this._textures.size; i++) {
-			const textureEntry = this._textures.getAt(i);
-			const slot = textureEntry.key;
-			const texture = textureEntry.value;
-			if (!state.activeTextures.has(slot) || state.activeTextures.get(slot) !== texture) {
-				texture.activate(slot);
-				state.activeTextures.set(slot, texture);
+		for (let slot = 0; slot < this._textures.length; slot++) {
+			if (state.activeTextures[slot] !== this._textures[slot]) {
+				this._textures[slot].activate(slot);
+				state.activeTextures[slot] = this._textures[slot];
 			}
 		}
+		// Turn off unused texture slots.
+		for (let slot = this._textures.length; slot < state.activeTextures.length; slot++) {
+			state.activeTextures[slot].deactivate(slot);
+		}
+		state.activeTextures.splice(this._textures.length, state.activeTextures.length - this._textures.length);
 		// Render the mesh.
 		this._mesh.render();
 	}
@@ -100,7 +110,7 @@ export class Model {
 	private _shader: Shader | null = null;
 
 	/** The list of textures. */
-	private _textures: FastMap<number, Texture> = new FastMap();
+	private _textures: Texture[] = [];
 
 	/** The depth used for sorting. */
 	private _depth: number = 0;

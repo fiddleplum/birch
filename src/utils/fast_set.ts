@@ -1,8 +1,9 @@
 import { FastIterable } from './fast_iterable';
+import { Sort } from './sort';
 
 export class FastSet<Value> implements FastIterable<Value> {
 	private _values: Value[] = [];
-	private _indexMap: Map<Value, number> = new Map();
+	private _set: Set<Value> = new Set();
 
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
@@ -25,30 +26,28 @@ export class FastSet<Value> implements FastIterable<Value> {
 
 	/** Returns true if the *value* is in the set. */
 	has(value: Value): boolean {
-		return this._indexMap.has(value);
+		return this._set.has(value);
 	}
 
 	/** Adds the *value* if it is not already in the set. */
 	add(value: Value): FastSet<Value> {
-		const index = this._indexMap.get(value);
-		if (index === undefined) {
+		if (!this._set.has(value)) {
 			this._values.push(value);
-			this._indexMap.set(value, this._values.length - 1);
+			this._set.add(value);
 		}
 		return this;
 	}
 
 	/** Deletes the *value*. Returns true if the *value* was in the set. */
 	delete(value: Value): boolean {
-		const index = this._indexMap.get(value);
-		if (index === undefined) {
+		if (!this._set.has(value)) {
 			return false;
 		}
-		this._values.splice(index, 1);
-		this._indexMap.delete(value);
-		for (const entry of this._indexMap.entries()) {
-			if (entry[1] > index) {
-				this._indexMap.set(entry[0], entry[1] - 1);
+		this._set.delete(value);
+		for (let i = 0; i < this._values.length; i++) {
+			if (this._values[i] === value) {
+				this._values.splice(i, 1);
+				break;
 			}
 		}
 		return true;
@@ -57,6 +56,11 @@ export class FastSet<Value> implements FastIterable<Value> {
 	/** Deletes all values. */
 	clear(): void {
 		this._values = [];
-		this._indexMap.clear();
+		this._set.clear();
+	}
+
+	/** Sorts the values for iteration. */
+	sort(sort: Sort.sortFunction<Value>, compare: Sort.compareFunction<Value>): void {
+		sort(this._values, compare);
 	}
 }

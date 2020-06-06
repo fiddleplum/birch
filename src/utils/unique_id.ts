@@ -1,8 +1,25 @@
 export class UniqueId {
-	/** Get a unique id for the account. Source from https://stackoverflow.com/a/2117523/510380. */
-	static get(): string {
+	static get(): number {
+		const id = this._freeIds.length > 0 ? this._freeIds.pop() : this._numUsedIds;
+		this._numUsedIds += 1;
+		return id as number;
+	}
+
+	static release(id: number): void {
+		this._freeIds.push(id);
+		this._numUsedIds -= 1;
+	}
+
+	/** Get a unique id string. Source from https://stackoverflow.com/a/2117523/510380. */
+	static getIdString(): string {
 		return '10000000-1000-4000-80000000-100000000000'.replace(/[018]/g, (c: any) => {
 			return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
 		});
 	}
+
+	/** The list of free ids that are gaps in the list. */
+	private static _freeIds: number[] = [];
+
+	/** The total number of used ids. */
+	private static _numUsedIds: number = 0;
 }
