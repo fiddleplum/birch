@@ -1,6 +1,11 @@
+export * from './game';
+
 export * from './render/renderer';
 export * from './render/mesh';
+export * from './render/model';
+export * from './render/scene';
 export * from './render/shader';
+export * from './render/texture';
 
 export * from './utils/cache';
 export * from './utils/color_readonly';
@@ -15,6 +20,7 @@ export * from './utils/quaternion_readonly';
 export * from './utils/quaternion';
 export * from './utils/rectangle_readonly';
 export * from './utils/rectangle';
+export * from './utils/sort';
 export * from './utils/unique_id';
 export * from './utils/vector2_readonly';
 export * from './utils/vector2';
