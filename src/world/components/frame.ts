@@ -1,24 +1,30 @@
 import { Vector3, Vector3Readonly, Quaternion, QuaternionReadonly, Matrix44, Matrix44Readonly } from '../../internal';
 
+/** The frame component. */
 export class Frame {
+	/** Gets the position. */
 	get position(): Vector3Readonly {
 		return this._position;
 	}
 
+	/** Sets the position. */
 	set position(position: Vector3Readonly) {
 		this._position.copy(position);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
 	}
 
+	/** Gets the orientation. */
 	get orientation(): QuaternionReadonly {
 		return this._orientation;
 	}
 
+	/** Sets the orientation. */
 	set orientation(orientation: QuaternionReadonly) {
 		this._orientation.copy(orientation);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
 	}
 
+	/** Gets the local to world transform. */
 	get localToWorld(): Matrix44Readonly {
 		if (this._localToWorldDirty) {
 			this._localToWorld.setFromQuat(this._orientation);
@@ -30,6 +36,7 @@ export class Frame {
 		return this._localToWorld;
 	}
 
+	/** Gets the world to local transform. */
 	get worldToLocal(): Matrix44Readonly {
 		if (this._worldToLocalDirty) {
 			const w2l = this._worldToLocal; // Shorter variable name for brevity.
@@ -52,10 +59,21 @@ export class Frame {
 		return this._worldToLocal;
 	}
 
+	/** The position. */
 	private _position: Vector3 = new Vector3();
+
+	/** The orientation. */
 	private _orientation: Quaternion = new Quaternion();
+
+	/** The local to world transform. */
 	private _localToWorld: Matrix44 = new Matrix44();
+
+	/** Whether or not the local to world transform is dirty. */
 	private _localToWorldDirty: boolean = false;
+
+	/** The world to local transform. */
 	private _worldToLocal: Matrix44 = new Matrix44();
+
+	/** Whether or not the world to local transform is dirty. */
 	private _worldToLocalDirty: boolean = false;
 }
