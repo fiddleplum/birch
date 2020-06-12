@@ -1,5 +1,6 @@
 import { RectangleReadonly } from './utils/rectangle_readonly';
 import { Rectangle } from './utils/rectangle';
+import { Camera } from './world/components/camera';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
@@ -17,6 +18,9 @@ export class Viewport {
 
 	// }
 
+	/** The bounds of the viewport. */
 	private _bounds: Rectangle = new Rectangle(0, 0, 0, 0, true);
-	// private _camera: Camera | null;
+
+	/** The camera to be rendered. */
+	private _camera: Camera | null = null;
 }

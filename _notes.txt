@@ -2,3 +2,11 @@ Implement Uniform Buffer Objects as the main way to implement uniforms.
 
 Use 16-bit or 32-bit indices for meshes automatically.
 
+
+
+Game
+	Viewport*
+		Stage (may render other stages)
+	World*
+		Entity*
+		Component*
