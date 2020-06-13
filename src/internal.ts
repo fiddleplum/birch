@@ -1,4 +1,5 @@
 export * from './game';
+export * from './viewport';
 
 export * from './render/renderer';
 export * from './render/mesh';
@@ -26,3 +27,8 @@ export * from './utils/vector2_readonly';
 export * from './utils/vector2';
 export * from './utils/vector3_readonly';
 export * from './utils/vector3';
+
+export * from './world/components/camera';
+export * from './world/components/frame';
+export * from './world/entity';
+export * from './world/world';
