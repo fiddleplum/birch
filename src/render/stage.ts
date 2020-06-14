@@ -1,28 +1,34 @@
 import { Scene } from './scene';
+import { Model } from './model';
 
 /** A render stage. It either renders a scene or does post processing. */
 export class Stage {
 	render(): void {
 	}
 
-	get outputs: Texture {
+	setColorTexture(index: number, texture: Texture) {
 	}
 
-	
+	setDepthTexture(texture: Texture) {
+	}
+
+	setStencilTexture(texture: Texture) {
+	}
 }
 
 export class SceneStage extends Stage {
-	/** Gets the scene. */
-	get scene(): Scene | null {
-		return this._scene;
-	}
-
-	/** Sets the scene. */
-	set scene(scene: Scene | null) {
-		this._scene = scene;
-	}
-
 	/** The scene. */
-	private _scene: Scene | null = null;
+	scene: Scene | null = null;
+
+	/** The uniforms function for this stage. */
+	uniformsFunction: Model.UniformsFunction | null = null;
+
+	/** Render the scene stage. */
+	render(): void {
+		if (this.scene === null) {
+			return;
+		}
+		this.scene.render(this.uniformsFunction);
+	}
 }
 

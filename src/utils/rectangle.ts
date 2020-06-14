@@ -1,5 +1,8 @@
 import { RectangleReadonly } from './rectangle_readonly';
-import { Vector2Readonly} from './vector2_readonly';
+import { Vector2Readonly } from './vector2_readonly';
+
+// When TypeScript fixes issue https://github.com/microsoft/TypeScript/issues/2521,
+// I can properly implement "get min(): Vector2" and "get size(): Vector2".
 
 /** A rectangle. */
 export class Rectangle extends RectangleReadonly {
@@ -17,6 +20,12 @@ export class Rectangle extends RectangleReadonly {
 	copy(a: RectangleReadonly): void {
 		this._min.copy(a.min);
 		this._size.copy(a.size);
+	}
+
+	/** Sets the *min* and *max*. */
+	set(minX = 0, minY = 0, sizeX = 0, sizeY = 0) {
+		this._min.set(minX, minY);
+		this._size.set(sizeX, sizeY);
 	}
 
 	/** Extends *this* to include *point*. Modifies whichever sides are closest to the *point*. If integral is true, it treats *this* and the *point* as integral numbers. */

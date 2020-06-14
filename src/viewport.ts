@@ -56,7 +56,10 @@ export class Viewport {
 	/** Renders the viewport. */
 	render(): void {
 		// Update the bounds.
-		this._bounds.min.
+		this._bounds.set(this._divElement.offsetLeft, this._divElement.offsetTop,
+			this._divElement.offsetWidth, this._divElement.offsetHeight);
+
+		// RENDER THE STAGES HERE
 	}
 
 	/** The game. */

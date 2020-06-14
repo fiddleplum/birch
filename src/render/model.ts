@@ -5,8 +5,29 @@ import { State } from './state';
 import { UniqueId } from '../utils/unique_id';
 
 export class Model extends UniqueId.Object {
+	/** The mesh. */
+	mesh: Mesh | null = null;
+
+	/** The model. */
+	shader: Shader | null = null;
+
+	/** The list of textures. */
+	textures: Texture[] = [];
+
+	/** The depth used for sorting. */
+	depth: number = 0;
+
+	/** The blending mode. */
+	blending: Model.Blending = Model.Blending.None;
+
+	/** The depth test. */
+	depthTest: Model.DepthTest = Model.DepthTest.LessOrEqual;
+
+	/** The uniforms function for this model. */
+	uniformsFunction: Model.UniformsFunction | null = null;
+
 	/** Renders the model. */
-	render(state: State, stageUniformsFunction: Model.UniformsFunction, sceneUniformsFunction: Model.UniformsFunction): void {
+	render(state: State, stageUniformsFunction: Model.UniformsFunction | null, sceneUniformsFunction: Model.UniformsFunction | null): void {
 		if (this.shader === null || this.mesh === null) {
 			return;
 		}
@@ -39,27 +60,6 @@ export class Model extends UniqueId.Object {
 		// Render the mesh.
 		this.mesh.render();
 	}
-
-	/** The mesh. */
-	mesh: Mesh | null = null;
-
-	/** The model. */
-	shader: Shader | null = null;
-
-	/** The list of textures. */
-	textures: Texture[] = [];
-
-	/** The depth used for sorting. */
-	depth: number = 0;
-
-	/** The blending mode. */
-	blending: Model.Blending = Model.Blending.None;
-
-	/** The depth test. */
-	depthTest: Model.DepthTest = Model.DepthTest.LessOrEqual;
-
-	/** The uniforms function for this model. */
-	uniformsFunction: Model.UniformsFunction | null = null;
 }
 
 export namespace Model {

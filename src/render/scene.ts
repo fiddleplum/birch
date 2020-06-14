@@ -1,10 +1,24 @@
 import { Sort } from '../utils/sort';
 import { FastSet } from '../utils/fast_set';
 import { Model } from './model';
+import { State } from './state';
 
 export class Scene {
-	render(): void {
-		this._models.sort(Sort.insertionSort, Scene._compareModels);
+	/** The set of models. */
+	models: FastSet<Model> = new FastSet();
+
+	/** The uniforms function for this scene. */
+	uniformsFunction: Model.UniformsFunction | null = null;
+
+	/** Renders the scene. */
+	render(stageUniformsFunction: Model.UniformsFunction | null): void {
+		// Sort the models to be optimal in terms of state changes and blending.
+		this.models.sort(Sort.insertionSort, Scene._compareModels);
+
+		// Render each model.
+		for (let i = 0, l = this.models.size; i < l; i++) {
+			this.models.getAt(i).render(this._state, stageUniformsFunction, this.uniformsFunction);
+		}
 	}
 
 	private static _compareModels(a: Model, b: Model): number {
@@ -48,5 +62,5 @@ export class Scene {
 		}
 	}
 
-	private _models: FastSet<Model> = new FastSet();
+	private _state: State = new State();
 }
