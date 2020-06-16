@@ -6,6 +6,7 @@ export * from './render/mesh';
 export * from './render/model';
 export * from './render/scene';
 export * from './render/shader';
+export * from './render/stage';
 export * from './render/texture';
 
 export * from './utils/cache';

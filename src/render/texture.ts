@@ -19,22 +19,36 @@ export class Texture extends UniqueId.Object {
 			this._setGLTexture(new Uint8Array([255, 105, 180]));
 			// Load the image and then set the texture.
 			const image = new Image();
-			image.onload = (): void => {
-				const isJpeg: boolean = source.search(/\.jpe?g($|\?)/i) > 0;
-				this._format = Texture.Format.RGBA;
-				if (isJpeg) {
-					this._format = Texture.Format.RGB;
-				}
-				this._size.set(image.width, image.height);
-				this._setGLTexture(image);
-			};
-			image.src = source;
+			this._loadedPromise = new Promise<void>((resolve, reject) => {
+				image.onload = (): void => {
+					const isJpeg: boolean = source.search(/\.jpe?g($|\?)/i) > 0;
+					this._format = Texture.Format.RGBA;
+					if (isJpeg) {
+						this._format = Texture.Format.RGB;
+					}
+					this._size.set(image.width, image.height);
+					this._setGLTexture(image);
+					resolve();
+				};
+				image.onerror = (): void => {
+					reject('The image "' + source + '" failed to load.');
+				};
+				image.src = source;
+			});
 		}
 		else if (source instanceof Uint8Array) {
 			if (width === undefined || height === undefined) {
 				throw new Error('A width and height must be specified when creating a texture with a Uint8Array.');
 			}
-			this._format = Texture.Format.UINT8;
+			if (format === Texture.Format.RGB || format === Texture.Format.RGBA) {
+				this._format = format;
+			}
+			else if (format === undefined) {
+				this._format = Texture.Format.UINT8;
+			}
+			else {
+				throw new Error('An invalid format was specified.');
+			}
 			this._size.set(width, height);
 			this._setGLTexture(source);
 		}
@@ -97,9 +111,9 @@ export class Texture extends UniqueId.Object {
 		this._gl.bindTexture(this._gl.TEXTURE_2D, null);
 	}
 
-	/** Attaches the texture as the destination for the frame buffer. */
-	attachToFrameBuffer(attachment: number): void {
-		this._gl.framebufferTexture2D(this._gl.FRAMEBUFFER, attachment, this._gl.TEXTURE_2D, this._handle, 0);
+	/** Gets the promise that resolves when the texture is loaded. */
+	getLoadedPromise(): Promise<void> {
+		return this._loadedPromise;
 	}
 
 	private _setGLTexture(source: TexImageSource | Uint8Array | Uint16Array | Uint32Array | null): void {
@@ -122,6 +136,7 @@ export class Texture extends UniqueId.Object {
 			case Texture.Format.UINT8: return this._gl.R8UI;
 			case Texture.Format.UINT16: return this._gl.R16UI;
 			case Texture.Format.UINT32: return this._gl.R32UI;
+			case Texture.Format.DEPTH_STENCIL: return this._gl.DEPTH24_STENCIL8;
 		}
 	}
 
@@ -135,6 +150,8 @@ export class Texture extends UniqueId.Object {
 			case Texture.Format.UINT16:
 			case Texture.Format.UINT32:
 				return this._gl.RED;
+			case Texture.Format.DEPTH_STENCIL:
+				return this._gl.DEPTH_STENCIL;
 		}
 	}
 
@@ -147,6 +164,7 @@ export class Texture extends UniqueId.Object {
 			case Texture.Format.UINT16:
 				return this._gl.UNSIGNED_SHORT;
 			case Texture.Format.UINT32:
+			case Texture.Format.DEPTH_STENCIL:
 				return this._gl.UNSIGNED_INT;
 		}
 	}
@@ -154,13 +172,19 @@ export class Texture extends UniqueId.Object {
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 
+	/** The WebGL handle. */
 	private _handle: WebGLTexture | null;
 
+	/** The format. */
 	private _format: Texture.Format = Texture.Format.RGB;
 
+	/** The size in pixels. */
 	private _size: Vector2 = new Vector2();
+
+	/** The promise that resolves when the texture is loaded. */
+	private _loadedPromise: Promise<void> = Promise.resolve();
 }
 
 export namespace Texture {
-	export enum Format { RGB, RGBA, UINT8, UINT16, UINT32 }
+	export enum Format { RGB, RGBA, UINT8, UINT16, UINT32, DEPTH_STENCIL }
 }
