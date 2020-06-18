@@ -9,11 +9,6 @@ export class Shader extends UniqueId.Object {
 		// Save the WebGL context.
 		this._gl = gl;
 
-		// Initialize the location maps.
-		this._uniformNamesToLocations = new Map();
-		this._uniformLocationsToValues = new Map();
-		this._attributeNamesToLocations = new Map();
-
 		// Create the shader program.
 		let vertexObject = null;
 		let fragmentObject = null;
@@ -268,13 +263,13 @@ export class Shader extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** A mapping from uniform names to locations. */
-	private _uniformNamesToLocations: Map<string, WebGLUniformLocation>;
+	private _uniformNamesToLocations: Map<string, WebGLUniformLocation> = new Map();
 
 	/** A mapping from uniform locations to values. */
-	private _uniformLocationsToValues: Map<WebGLUniformLocation, number|number[]>;
+	private _uniformLocationsToValues: Map<WebGLUniformLocation, number|number[]> = new Map();
 
 	/** A mapping from attribute names to locations. */
-	private _attributeNamesToLocations: Map<string, number>;
+	private _attributeNamesToLocations: Map<string, number> = new Map();
 
 	/** The Gl shader program. */
 	private _program: WebGLProgram;

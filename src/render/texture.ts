@@ -16,6 +16,7 @@ export class Texture extends UniqueId.Object {
 			// Set the texture to hot pink until the image loads.
 			this._size.set(1, 1);
 			this._format = Texture.Format.RGB;
+			this._source = source;
 			this._setGLTexture(new Uint8Array([255, 105, 180]));
 			// Load the image and then set the texture.
 			const image = new Image();
@@ -180,6 +181,9 @@ export class Texture extends UniqueId.Object {
 
 	/** The size in pixels. */
 	private _size: Vector2 = new Vector2();
+
+	/** The string source if there was one. */
+	private _source: string = '';
 
 	/** The promise that resolves when the texture is loaded. */
 	private _loadedPromise: Promise<void> = Promise.resolve();
