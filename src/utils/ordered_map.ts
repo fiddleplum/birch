@@ -11,7 +11,7 @@ export class OrderedMap<Key, Value> implements FastIterable<OrderedMap.Entry<Key
 		}
 	}
 
-	/** Gets the entry at the *index*. O(1). */
+	/** Gets the entry at the *index*. It may return undefined if there is no entry at that index. O(1). */
 	getAt(index: number): OrderedMap.Entry<Key, Value> | undefined {
 		return this._entries[index];
 	}

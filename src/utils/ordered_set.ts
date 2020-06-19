@@ -11,7 +11,7 @@ export class OrderedSet<Value> implements FastIterable<Value | undefined> {
 		}
 	}
 
-	/** Gets the value at the *index*. O(1). */
+	/** Gets the value at the *index*. It may return undefined if there is no value at that index. O(1). */
 	getAt(index: number): Value | undefined {
 		return this._values[index];
 	}
