@@ -1,21 +1,27 @@
+/** Sorting functions. */
 export class Sort {
-	static insertionSort<T>(array: T[], compare: Sort.compareFunction<T>): void {
+	/** Insertion sort. */
+	static insertionSort<T>(array: T[], compare: Sort.compareFunction<T>, swap: Sort.swapFunction): void {
 		let i = 1;
 		while (i < array.length) {
 			const x = array[i];
 			let j = i - 1;
 			while (j >= 0 && compare(array[j], x) > 0) {
-				array[j + 1] = array[j];
+				swap(j + 1, j);
 				j -= 1;
 			}
-			array[j + 1] = x;
 			i += 1;
 		}
 	}
 }
 
 export namespace Sort {
+	/** A generic compare function called by the sort functions. */
 	export type compareFunction<T> = (a: T, b: T) => number;
 
-	export type sortFunction<T> = (array: T[], compare: compareFunction<T>) => void;
+	/** A generic swap function called by the sort functions. */
+	export type swapFunction = (i: number, j: number) => void;
+
+	/** All sort functions have this signature. */
+	export type sortFunction<T> = (array: T[], compare: compareFunction<T>, swap: Sort.swapFunction) => void;
 }

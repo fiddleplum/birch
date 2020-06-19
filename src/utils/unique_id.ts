@@ -1,10 +1,13 @@
+/** A class for getting unique IDs. */
 export class UniqueId {
+	/** Gets an ID from the list of free IDs. */
 	static get(): number {
 		const id = this._freeIds.length > 0 ? this._freeIds.pop() : this._numUsedIds;
 		this._numUsedIds += 1;
 		return id as number;
 	}
 
+	/** Releases the ID to the list of free IDs. */
 	static release(id: number): void {
 		this._freeIds.push(id);
 		this._numUsedIds -= 1;
@@ -25,6 +28,7 @@ export class UniqueId {
 }
 
 export namespace UniqueId {
+	/** An object meant to be extended to provide a unique ID for the lifetime of the object. */
 	export class Object {
 		/** Construct the object. */
 		constructor() {

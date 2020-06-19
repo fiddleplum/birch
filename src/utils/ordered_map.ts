@@ -1,7 +1,7 @@
-import { FastIterable } from './fast_iterable';
+import { Ordered } from './ordered';
 import { Sort } from './sort';
 
-export class OrderedMap<Key, Value> implements FastIterable<OrderedMap.Entry<Key, Value> | undefined> {
+export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Value> | undefined> {
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<[Key, Value]>) {
 		if (iterable !== undefined) {

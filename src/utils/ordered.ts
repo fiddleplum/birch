@@ -1,4 +1,4 @@
-export interface FastIterable<Value> {
+export interface Ordered<Value> {
 	/** Gets the value at the *index*. */
 	getAt(index: number): Value;
 

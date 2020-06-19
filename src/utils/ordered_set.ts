@@ -1,7 +1,7 @@
-import { FastIterable } from './fast_iterable';
+import { Ordered } from './ordered';
 import { Sort } from './sort';
 
-export class OrderedSet<Value> implements FastIterable<Value | undefined> {
+export class OrderedSet<Value> implements Ordered<Value | undefined> {
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
 		if (iterable !== undefined) {
