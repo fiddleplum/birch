@@ -1,44 +1,76 @@
-import { FastMap, Renderer, Viewport } from './internal';
+import { Renderer, Viewport } from './internal';
 
 export class Game {
 	constructor(rootElement: HTMLDivElement) {
 		// Set and prepare the root element.
 		this._rootElement = rootElement;
 		this._prepareRootElement();
-
 		// Create the renderer.
 		this._renderer = new Renderer(this._rootElement.querySelector('canvas') as HTMLCanvasElement, true);
-
 		// Run the game.
 		this._running = true;
 		this._runBound = this._run.bind(this);
 		this._run();
 	}
 
+	/** Gets the root element. */
 	get rootElement(): HTMLDivElement {
 		return this._rootElement;
 	}
 
+	/** Stops the game. */
 	stop(): void {
 		this._running = false;
 	}
 
-	addViewport(name: string, ) : Viewport {
-		const viewport = new Viewport(this);
+	/** Adds a viewport. */
+	addViewport(index?: number) : Viewport {
+		const viewportsElement = this._rootElement.querySelector('viewports') as HTMLDivElement;
+		const viewport = new Viewport(viewportsElement, this._renderer);
+		if (index !== undefined) {
+			this._viewports.splice(index, 0, viewport);
+		}
+		else {
+			this._viewports.push(viewport);
+		}
+		return viewport;
 	}
 
+	/** Removes a viewport. */
+	removeViewport(viewport: Viewport): void {
+		for (let i = 0, l = this._viewports.length; i < l; i++) {
+			if (this._viewports[i] === viewport) {
+				this._viewports[i].destroy();
+				this._viewports.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+	/** Destroys the game. */
 	private _destroy(): void {
+		// Destroys the viewports.
+		for (let i = 0, l = this._viewports.length; i < l; i++) {
+			this._viewports[i].destroy();
+		}
+		// Destroy the render system.
 		this._renderer.destroy();
 	}
 
+	/** Runs the main game loop. */
 	private _run(): void {
+		// Check if not running, and if not, destroy the game and wrap it all up.
 		if (!this._running) {
 			this._destroy();
 			return;
 		}
+		// Render everything.
+		this._renderer.render();
+		// Ask the browser for another frame.
 		requestAnimationFrame(this._runBound);
 	}
 
+	/** Prepares the root element, adding styles and child elements. */
 	private _prepareRootElement(): void {
 		// Remove all children.
 		while (this._rootElement.lastChild) {
@@ -72,16 +104,18 @@ export class Game {
 		this._rootElement.appendChild(viewportsDiv);
 	}
 
-	// The root element.
+	/** The root element. */
 	private _rootElement: HTMLDivElement;
 
-	// Running
+	/** A flag that says whether or not the game is running. */
 	private _running: boolean = false;
+
+	/** A this-bound function of the run method, used by requestAnimationFrame. */
 	private _runBound: () => void;
 
-	// Systems
+	/** The render system. */
 	private _renderer: Renderer;
 
-	// Viewports
-	private _viewports: FastMap<string, Viewport> = new FastMap();
+	/** The viewports. */
+	private _viewports: Viewport[] = [];
 }
