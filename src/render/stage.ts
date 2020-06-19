@@ -9,7 +9,6 @@ import { Vector3Readonly } from '../utils/vector3_readonly';
 
 /** A render stage. It either renders to the canvas or to textures. */
 export class Stage {
-
 	/** The bounds in pixel-space. It determines where in the canvas or textures the stage will be rendered. */
 	bounds: Rectangle = new Rectangle(0, 0, 0, 0);
 

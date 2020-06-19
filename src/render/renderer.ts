@@ -1,6 +1,6 @@
 import { ColorReadonly } from '../utils/color_readonly';
-import { FastMap } from '../utils/fast_map';
 import { Stage } from './stage';
+import { OrderedSet } from '../utils/ordered_set';
 
 export class Renderer {
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
@@ -10,39 +10,20 @@ export class Renderer {
 		canvas.height = canvas.clientHeight * devicePixelRatio;
 		canvas.style.imageRendering = 'crisp-edges';
 		canvas.style.imageRendering = 'pixelated';
-
 		// Get the WebGL context.
 		const gl = this._canvas.getContext('webgl2', { antialias: antialias });
 		if (gl === null) {
 			throw new Error('Could not get a WebGL 2.0 context. Your browser may not support WebGL 2.0.');
 		}
 		this._gl = gl;
-
-		// Check the canvas size once a second and resize if needed.
-		this._canvasResizeInterval = setInterval(function (): void {
-			if (canvas.width !== canvas.clientWidth * devicePixelRatio) {
-				canvas.width = canvas.clientWidth * devicePixelRatio;
-			}
-			if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
-				canvas.height = canvas.clientHeight * devicePixelRatio;
-			}
-		}, 1000, this._gl);
 	}
 
 	/** Destroys the renderer. */
 	destroy(): void {
-		// Clear the resize interval.
-		clearInterval(this._canvasResizeInterval);
-
 		// Lose the WebGL context.
 		const loseContextExtension = this._gl.getExtension('WEBGL_lose_context');
 		if (loseContextExtension !== null) {
 			loseContextExtension.loseContext();
-		}
-
-		// Destroy the stages.
-		for (let i = 0; i < this._stages.size; i++) {
-			this._stages.getAt(i).value.destroy();
 		}
 	}
 
@@ -51,16 +32,9 @@ export class Renderer {
 		return this._gl;
 	}
 
-	/** Adds a stage. */
-	addStage(name: string): Stage {
-		const stage = new Stage(this._gl);
-		this._stages.set(name, stage);
-		return stage;
-	}
-
-	/** Removes a stage. */
-	removeStage(name: string): void {
-		this._stages.delete(name);
+	/** Gets the set of stages. */
+	get stages(): OrderedSet<Stage> {
+		return this._stages;
 	}
 
 	clear(color: ColorReadonly): void {
@@ -68,17 +42,28 @@ export class Renderer {
 		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
 	}
 
+	/** Render the stages. */
 	render(): void {
+		// Check the canvas size and resize if needed.
+		const canvas = this._canvas;
+		if (canvas.width !== canvas.clientWidth * devicePixelRatio) {
+			canvas.width = canvas.clientWidth * devicePixelRatio;
+		}
+		if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
+			canvas.height = canvas.clientHeight * devicePixelRatio;
+		}
+		// Render the stages in order.
 		for (let i = 0, l = this._stages.size; i < l; i++) {
-			this._stages.getAt(i).value.render();
+			this._stages.getAt(i)?.render();
 		}
 	}
 
+	/** The canvas element. */
 	private _canvas: HTMLCanvasElement;
 
+	/** The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 
-	private _canvasResizeInterval: number;
-
-	private _stages: FastMap<string, Stage> = new FastMap();
+	/** The stages. */
+	private _stages: OrderedSet<Stage> = new OrderedSet();
 }

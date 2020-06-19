@@ -1,26 +1,29 @@
 import { Sort } from '../utils/sort';
-import { FastSet } from '../utils/fast_set';
+import { OrderedSet } from '../utils/ordered_set';
 import { Model } from './model';
 import { State } from './state';
 
 export class Scene {
-	/** The set of models. */
-	models: FastSet<Model> = new FastSet();
-
 	/** The uniforms function for this scene. */
 	uniformsFunction: Model.UniformsFunction | null = null;
+
+	/** Gets the set of models. */
+	get models(): OrderedSet<Model> {
+		return this._models;
+	}
 
 	/** Renders the scene. */
 	render(stageUniformsFunction: Model.UniformsFunction | null): void {
 		// Sort the models to be optimal in terms of state changes and blending.
-		this.models.sort(Sort.insertionSort, Scene._compareModels);
+		this._models.sort(Sort.insertionSort, Scene._compareModels);
 
 		// Render each model.
-		for (let i = 0, l = this.models.size; i < l; i++) {
-			this.models.getAt(i).render(this._state, stageUniformsFunction, this.uniformsFunction);
+		for (let i = 0, l = this._models.size; i < l; i++) {
+			this._models.getAt(i)?.render(this._state, stageUniformsFunction, this.uniformsFunction);
 		}
 	}
 
+	/** Compares two models for sorting into the optimal order to reduce WebGL calls. */
 	private static _compareModels(a: Model, b: Model): number {
 		if (a.shader === null || a.mesh === null) {
 			return -1;
@@ -62,5 +65,9 @@ export class Scene {
 		}
 	}
 
+	/** The persistent WebGL state. */
 	private _state: State = new State();
+
+	/** The set of models. */
+	private _models: OrderedSet<Model> = new OrderedSet();
 }
