@@ -6,9 +6,10 @@ import { Vector2 } from '../utils/vector2';
 import { Vector2Readonly } from '../utils/vector2_readonly';
 import { Vector3 } from '../utils/vector3';
 import { Vector3Readonly } from '../utils/vector3_readonly';
+import { UniqueId } from '../utils/unique_id';
 
 /** A render stage. It either renders to the canvas or to textures. */
-export class Stage {
+export class Stage extends UniqueId.Object {
 	/** The bounds in pixel-space. It determines where in the canvas or textures the stage will be rendered. */
 	bounds: Rectangle = new Rectangle(0, 0, 0, 0);
 
@@ -20,8 +21,16 @@ export class Stage {
 
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext) {
+		super();
+
 		// Save the WebGL context.
 		this._gl = gl;
+
+		// Add it to the set of all created stages.
+		if (Stage._all.get(gl) === undefined) {
+			Stage._all.set(gl, new Set());
+		}
+		Stage._all.get(gl)?.add(this);
 	}
 
 	/** Destroys the stage. */
@@ -29,6 +38,8 @@ export class Stage {
 		if (this._frameBuffer !== null) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
+		Stage._all.get(this._gl)?.delete(this);
+		super.destroy();
 	}
 
 	/** Set whether it will render to textures or to the canvas. */
@@ -108,4 +119,7 @@ export class Stage {
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | null = null;
+
+	/** A set of all created stages, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<Stage>> = new Map();
 }

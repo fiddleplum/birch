@@ -8,85 +8,107 @@ export class Texture extends UniqueId.Object {
 		// Save the WebGL context.
 		this._gl = gl;
 
-		// Create the texture.
-		this._handle = this._gl.createTexture();
+		// These may throw an exception, so we'll clean up.
+		try {
+			// Create the texture.
+			this._handle = this._gl.createTexture();
+			if (this._handle === null) {
+				throw new Error('Could not create texture handle.');
+			}
 
-		// Depending on the type of source, set the formats, size, and apply the source.
-		if (typeof source === 'string') {
-			// Set the texture to hot pink until the image loads.
-			this._size.set(1, 1);
-			this._format = Texture.Format.RGB;
-			this._source = source;
-			this._setGLTexture(new Uint8Array([255, 105, 180]));
-			// Load the image and then set the texture.
-			const image = new Image();
-			this._loadedPromise = new Promise<void>((resolve, reject) => {
-				image.onload = (): void => {
-					const isJpeg: boolean = source.search(/\.jpe?g($|\?)/i) > 0;
-					this._format = Texture.Format.RGBA;
-					if (isJpeg) {
-						this._format = Texture.Format.RGB;
-					}
-					this._size.set(image.width, image.height);
-					this._setGLTexture(image);
-					resolve();
-				};
-				image.onerror = (): void => {
-					reject('The image "' + source + '" failed to load.');
-				};
-				image.src = source;
-			});
-		}
-		else if (source instanceof Uint8Array) {
-			if (width === undefined || height === undefined) {
-				throw new Error('A width and height must be specified when creating a texture with a Uint8Array.');
+			// Depending on the type of source, set the formats, size, and apply the source.
+			if (typeof source === 'string') {
+				// Set the texture to hot pink until the image loads.
+				this._size.set(1, 1);
+				this._format = Texture.Format.RGB;
+				this._source = source;
+				this._setGLTexture(new Uint8Array([255, 105, 180]));
+				// Load the image and then set the texture.
+				const image = new Image();
+				this._loadedPromise = new Promise<void>((resolve, reject) => {
+					image.onload = (): void => {
+						const isJpeg: boolean = source.search(/\.jpe?g($|\?)/i) > 0;
+						this._format = Texture.Format.RGBA;
+						if (isJpeg) {
+							this._format = Texture.Format.RGB;
+						}
+						this._size.set(image.width, image.height);
+						this._setGLTexture(image);
+						resolve();
+					};
+					image.onerror = (): void => {
+						reject('The image "' + source + '" failed to load.');
+					};
+					image.src = source;
+				});
 			}
-			if (format === Texture.Format.RGB || format === Texture.Format.RGBA) {
+			else if (source instanceof Uint8Array) {
+				if (width === undefined || height === undefined) {
+					throw new Error('A width and height must be specified when creating a texture with a Uint8Array.');
+				}
+				this._size.set(width, height);
+				if (format === Texture.Format.RGB || format === Texture.Format.RGBA) {
+					this._format = format;
+				}
+				else if (format === undefined) {
+					this._format = Texture.Format.UINT8;
+				}
+				else {
+					throw new Error('An invalid format was specified.');
+				}
+				this._source = 'Uint8Array';
+				this._setGLTexture(source);
+			}
+			else if (source instanceof Uint16Array) {
+				if (width === undefined || height === undefined) {
+					throw new Error('A width and height must be specified when creating a texture with a Uint16Array.');
+				}
+				this._size.set(width, height);
+				this._format = Texture.Format.UINT16;
+				this._source = 'Uint16Array';
+				this._setGLTexture(source);
+			}
+			else if (source instanceof Uint32Array) {
+				if (width === undefined || height === undefined) {
+					throw new Error('A width and height must be specified when creating a texture with a Uint32Array.');
+				}
+				this._size.set(width, height);
+				this._format = Texture.Format.UINT32;
+				this._source = 'Uint32Array';
+				this._setGLTexture(source);
+			}
+			else if (source === null) { // no source
+				if (width === undefined || height === undefined || format === undefined) {
+					throw new Error('A width, height, and format must be specified when creating a blank texture.');
+				}
+				this._size.set(width, height);
 				this._format = format;
+				this._source = '';
+				this._setGLTexture(source);
 			}
-			else if (format === undefined) {
-				this._format = Texture.Format.UINT8;
+			else { // canvas or image or video
+				this._size.set(source.width, source.height);
+				this._format = Texture.Format.RGBA;
+				this._source = source.toString();
+				this._setGLTexture(source);
 			}
-			else {
-				throw new Error('An invalid format was specified.');
-			}
-			this._size.set(width, height);
-			this._setGLTexture(source);
 		}
-		else if (source instanceof Uint16Array) {
-			if (width === undefined || height === undefined) {
-				throw new Error('A width and height must be specified when creating a texture with a Uint16Array.');
-			}
-			this._format = Texture.Format.UINT16;
-			this._size.set(width, height);
-			this._setGLTexture(source);
+		catch (e) {
+			this.destroy();
+			throw e;
 		}
-		else if (source instanceof Uint32Array) {
-			if (width === undefined || height === undefined) {
-				throw new Error('A width and height must be specified when creating a texture with a Uint32Array.');
-			}
-			this._format = Texture.Format.UINT32;
-			this._size.set(width, height);
-			this._setGLTexture(source);
+
+		// Add it to the set of all created textures.
+		if (Texture._all.get(gl) === undefined) {
+			Texture._all.set(gl, new Set());
 		}
-		else if (source === null) { // no source
-			if (width === undefined || height === undefined || format === undefined) {
-				throw new Error('A width, height, and format must be specified when creating a blank texture.');
-			}
-			this._format = format;
-			this._size.set(width, height);
-			this._setGLTexture(source);
-		}
-		else { // canvas or image or video
-			this._format = Texture.Format.RGBA;
-			this._size.set(source.width, source.height);
-			this._setGLTexture(source);
-		}
+		Texture._all.get(gl)?.add(this);
 	}
 
 	/** Destructs the texture. */
 	destroy(): void {
 		this._gl.deleteTexture(this._handle);
+		Texture._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -98,6 +120,11 @@ export class Texture extends UniqueId.Object {
 	/** Gets the size in pixels. */
 	get size(): Vector2 {
 		return this._size;
+	}
+
+	/** Gets the source. */
+	get source(): string {
+		return this._source;
 	}
 
 	/** Activates the texture at the given slot. */
@@ -174,7 +201,7 @@ export class Texture extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The WebGL handle. */
-	private _handle: WebGLTexture | null;
+	private _handle: WebGLTexture | null = null;
 
 	/** The format. */
 	private _format: Texture.Format = Texture.Format.RGB;
@@ -187,6 +214,9 @@ export class Texture extends UniqueId.Object {
 
 	/** The promise that resolves when the texture is loaded. */
 	private _loadedPromise: Promise<void> = Promise.resolve();
+
+	/** A set of all created textures, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<Texture>> = new Map();
 }
 
 export namespace Texture {

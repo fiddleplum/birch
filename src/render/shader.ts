@@ -9,29 +9,42 @@ export class Shader extends UniqueId.Object {
 		// Save the WebGL context.
 		this._gl = gl;
 
-		// Create the shader program.
-		let vertexObject = null;
-		let fragmentObject = null;
 		try {
-			vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
-			fragmentObject = this._compile(fragmentCode, this._gl.FRAGMENT_SHADER);
-			this._program = this._link(vertexObject, fragmentObject, attributeLocations);
-		}
-		finally {
-			if (vertexObject !== null) {
-				this._gl.deleteShader(vertexObject);
+			// Create the shader program.
+			let vertexObject = null;
+			let fragmentObject = null;
+			try {
+				vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
+				fragmentObject = this._compile(fragmentCode, this._gl.FRAGMENT_SHADER);
+				this._program = this._link(vertexObject, fragmentObject, attributeLocations);
 			}
-			if (fragmentObject !== null) {
-				this._gl.deleteShader(fragmentObject);
+			finally {
+				if (vertexObject !== null) {
+					this._gl.deleteShader(vertexObject);
+				}
+				if (fragmentObject !== null) {
+					this._gl.deleteShader(fragmentObject);
+				}
 			}
+			this._initializeUniforms();
+			this._initializeAttributes();
 		}
-		this._initializeUniforms();
-		this._initializeAttributes();
+		catch (e) {
+			this.destroy();
+			throw e;
+		}
+
+		// Add it to the set of all created shaders.
+		if (Shader._all.get(gl) === undefined) {
+			Shader._all.set(gl, new Set());
+		}
+		Shader._all.get(gl)?.add(this);
 	}
 
 	/** Destructs the shader. */
 	destroy(): void {
 		this._gl.deleteProgram(this._program);
+		Shader._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -213,6 +226,9 @@ export class Shader extends UniqueId.Object {
 
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
+		if (this._program === null) {
+			return;
+		}
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
 		for (let i = 0; i < numUniforms; i++) {
 			const uniformInfo = this._gl.getActiveUniform(this._program, i);
@@ -234,6 +250,9 @@ export class Shader extends UniqueId.Object {
 
 	/** Gets the mapping from attribute names to locations. */
 	private _initializeAttributes(): void {
+		if (this._program === null) {
+			return;
+		}
 		const numAttributes = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_ATTRIBUTES);
 		for (let i = 0; i < numAttributes; i++) {
 			const activeAttrib = this._gl.getActiveAttrib(this._program, i);
@@ -274,5 +293,8 @@ export class Shader extends UniqueId.Object {
 	private _attributeNamesToLocations: Map<string, number> = new Map();
 
 	/** The Gl shader program. */
-	private _program: WebGLProgram;
+	private _program: WebGLProgram | null = null;
+
+	/** A set of all created shaders, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<Shader>> = new Map();
 }
