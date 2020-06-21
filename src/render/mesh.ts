@@ -63,7 +63,7 @@ export class Mesh extends UniqueId.Object {
 		}
 
 		// Add it to the set of all created meshes.
-		if (Mesh._all.get(gl) === undefined) {
+		if (!Mesh._all.has(gl)) {
 			Mesh._all.set(gl, new Set());
 		}
 		Mesh._all.get(gl)?.add(this);

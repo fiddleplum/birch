@@ -35,7 +35,7 @@ export class Shader extends UniqueId.Object {
 		}
 
 		// Add it to the set of all created shaders.
-		if (Shader._all.get(gl) === undefined) {
+		if (!Shader._all.has(gl)) {
 			Shader._all.set(gl, new Set());
 		}
 		Shader._all.get(gl)?.add(this);

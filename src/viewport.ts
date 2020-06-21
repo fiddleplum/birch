@@ -16,6 +16,7 @@ export class Viewport {
 		viewportsElement.appendChild(this._divElement);
 	}
 
+	/* Destroys the viewport. */
 	destroy(): void {
 		// Destroy the div element.
 		this._viewportsElement.removeChild(this._divElement);

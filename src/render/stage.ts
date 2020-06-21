@@ -27,7 +27,7 @@ export class Stage extends UniqueId.Object {
 		this._gl = gl;
 
 		// Add it to the set of all created stages.
-		if (Stage._all.get(gl) === undefined) {
+		if (!Stage._all.has(gl)) {
 			Stage._all.set(gl, new Set());
 		}
 		Stage._all.get(gl)?.add(this);
@@ -42,7 +42,7 @@ export class Stage extends UniqueId.Object {
 		super.destroy();
 	}
 
-	/** Set whether it will render to textures or to the canvas. */
+	/** Set whether it will render to textures or to the canvas. Defaults to false. */
 	set renderToTexture(renderToTexture: boolean) {
 		// If it's changing to be render to texture.
 		if (this._frameBuffer === null && renderToTexture) {
@@ -91,7 +91,7 @@ export class Stage extends UniqueId.Object {
 		}
 	}
 
-	/** Renders the stage. If it is the last, it renders to the screen and not to the frame buffer. */
+	/** Renders the stage. */
 	render(): void {
 		if (this.scene === null) {
 			return;

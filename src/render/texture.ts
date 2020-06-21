@@ -99,7 +99,7 @@ export class Texture extends UniqueId.Object {
 		}
 
 		// Add it to the set of all created textures.
-		if (Texture._all.get(gl) === undefined) {
+		if (!Texture._all.has(gl)) {
 			Texture._all.set(gl, new Set());
 		}
 		Texture._all.get(gl)?.add(this);
