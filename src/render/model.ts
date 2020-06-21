@@ -31,7 +31,7 @@ export class Model extends UniqueId.Object {
 
 		// If the WebGL state object hasn't been created, create it.
 		if (!Model._state.has(gl)) {
-			Model._state.set(gl, new Set());
+			Model._state.set(gl, new WebGLState());
 		}
 		this._state = Model._state.get(gl) as WebGLState;
 	}
@@ -63,10 +63,10 @@ export class Model extends UniqueId.Object {
 			}
 		}
 		// Turn off unused texture slots.
-		for (let slot = this.textures.length; slot < state.activeTextures.length; slot++) {
+		for (let slot = this.textures.length; slot < this._state.activeTextures.length; slot++) {
 			this._state.activeTextures[slot].deactivate(slot);
 		}
-		this._state.activeTextures.splice(this.textures.length, state.activeTextures.length - this.textures.length);
+		this._state.activeTextures.splice(this.textures.length, this._state.activeTextures.length - this.textures.length);
 		// Render the mesh.
 		this.mesh.render();
 	}

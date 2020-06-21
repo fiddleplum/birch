@@ -1,8 +1,8 @@
-import { FastIterable } from './fast_iterable';
+import { Ordered } from './ordered';
 import { OrderedMap } from './ordered_map';
 import { Sort } from './sort';
 
-export class Cache<Key, Value> implements FastIterable<Value | undefined> {
+export class Cache<Key, Value> implements Ordered<Value | undefined> {
 	/** The constructor. */
 	constructor(valueConstructor: (key: Key) => Value, valueDestructor: (value: Value) => void) {
 		// Set the value constructor and destructor.

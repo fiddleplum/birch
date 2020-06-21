@@ -16,12 +16,5 @@ module.exports = {
 			test: /\.(css|svg|html)$/,
 			use: 'raw-loader'
 		}]
-	},
-	plugins: [
-		new CopyWebpackPlugin({
-			patterns: [{
-				from: 'src/index.html'
-			}]
-		})
-	]
+	}
 };
