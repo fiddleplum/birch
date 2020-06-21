@@ -1,7 +1,6 @@
 import { Sort } from '../utils/sort';
 import { OrderedSet } from '../utils/ordered_set';
 import { Model } from './model';
-import { State } from './state';
 
 export class Scene {
 	/** The uniforms function for this scene. */
@@ -19,7 +18,7 @@ export class Scene {
 
 		// Render each model.
 		for (let i = 0, l = this._models.size; i < l; i++) {
-			this._models.getAt(i)?.render(this._state, stageUniformsFunction, this.uniformsFunction);
+			this._models.getAt(i)?.render(stageUniformsFunction, this.uniformsFunction);
 		}
 	}
 
@@ -64,9 +63,6 @@ export class Scene {
 			return a.id < b.id ? -1 : +1;
 		}
 	}
-
-	/** The persistent WebGL state. */
-	private _state: State = new State();
 
 	/** The set of models. */
 	private _models: OrderedSet<Model> = new OrderedSet();
