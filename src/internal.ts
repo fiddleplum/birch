@@ -1,13 +1,7 @@
 export * from './game';
 export * from './viewport';
 
-export * from './render/mesh';
-export * from './render/model';
-export * from './render/renderer';
-export * from './render/scene';
-export * from './render/shader';
-export * from './render/stage';
-export * from './render/texture';
+export * from './render/index';
 
 export * from './utils/cache';
 export * from './utils/color_readonly';

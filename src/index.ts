@@ -1,1 +1,1 @@
-export * from './internal';
+export * as Birch from './internal';

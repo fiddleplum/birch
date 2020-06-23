@@ -2,6 +2,7 @@ import { Entity } from '../../internal';
 
 export class Component {
 	constructor(entity: Entity) {
+		// Set the entity that contains this.
 		this._entity = entity;
 	}
 

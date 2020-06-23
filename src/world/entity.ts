@@ -3,6 +3,7 @@ import { Component, OrderedSet, World } from '../internal';
 export class Entity {
 	/** Constructor. */
 	constructor(world: World) {
+		// Set the world that contains this.
 		this._world = world;
 	}
 

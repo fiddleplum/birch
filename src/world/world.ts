@@ -1,12 +1,16 @@
-import { OrderedSet } from '../utils/ordered_set';
-import { Scene } from '../render/scene';
-import { Entity } from './entity';
-import { Game } from '../internal';
+import { OrderedSet } from '../internal';
+import { Render } from '../render/index';
+import { Game, Entity } from '../internal';
 
 export class World {
 	/** Constructor. */
 	constructor(game: Game) {
+		// Set the game that contains this.
 		this._game = game;
+
+		// Create the render scene and set the uniforms function.
+		this._scene = new Render.Scene();
+		this._scene.uniformsFunction = this._sceneUniforms.bind(this);
 	}
 
 	/** Gets the game that contains this. */
@@ -26,10 +30,13 @@ export class World {
 		return this._entities.remove(entity);
 	}
 
+	private _sceneUniforms(shader: Render.Shader): void {
+	}
+
 	/** The list of entities this contains. */
 	private _entities: OrderedSet<Entity> = new OrderedSet();
 
-	private _scene: Scene = new Scene();
+	private _scene: Render.Scene = new Render.Scene();
 
 	/** The game that contains this. */
 	private _game: Game;
