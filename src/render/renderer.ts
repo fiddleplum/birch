@@ -1,6 +1,6 @@
 import { ColorReadonly } from '../utils/color_readonly';
-import { Stage } from './stage';
 import { OrderedSet } from '../utils/ordered_set';
+import { Stage } from './stage';
 
 export class Renderer {
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {

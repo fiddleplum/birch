@@ -50,8 +50,8 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 		}
 	}
 
-	/** Deletes the *key*. Returns true if the *key* was in the map. O(1), except rarely O(n). */
-	delete(key: Key): boolean {
+	/** Removes the *key*. Returns true if the *key* was in the map. O(1), except rarely O(n). */
+	remove(key: Key): boolean {
 		if (!this._keyMap.has(key)) {
 			return false;
 		}

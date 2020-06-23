@@ -1,7 +1,8 @@
 import { Vector3, Vector3Readonly, Quaternion, QuaternionReadonly, Matrix44, Matrix44Readonly } from '../../internal';
+import { Component } from './component';
 
 /** The frame component. */
-export class Frame {
+export class Frame extends Component {
 	/** Gets the position. */
 	get position(): Vector3Readonly {
 		return this._position;

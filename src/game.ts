@@ -18,6 +18,11 @@ export class Game {
 		return this._rootElement;
 	}
 
+	/** Gets the renderer. */
+	get renderer(): Renderer {
+		return this._renderer;
+	}
+
 	/** Stops the game. */
 	stop(): void {
 		this._running = false;

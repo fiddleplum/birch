@@ -1,9 +1,9 @@
 export * from './game';
 export * from './viewport';
 
-export * from './render/renderer';
 export * from './render/mesh';
 export * from './render/model';
+export * from './render/renderer';
 export * from './render/scene';
 export * from './render/shader';
 export * from './render/stage';
@@ -30,6 +30,7 @@ export * from './utils/vector3_readonly';
 export * from './utils/vector3';
 
 export * from './world/components/camera';
+export * from './world/components/component';
 export * from './world/components/frame';
 export * from './world/entity';
 export * from './world/world';

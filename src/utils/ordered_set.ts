@@ -41,8 +41,8 @@ export class OrderedSet<Value> implements Ordered<Value | undefined> {
 		}
 	}
 
-	/** Deletes the *value*. Returns true if the *value* was in the set. O(1), except rarely O(n). */
-	delete(value: Value): boolean {
+	/** Removes the *value*. Returns true if the *value* was in the set. O(1), except rarely O(n). */
+	remove(value: Value): boolean {
 		if (!this._valueMap.has(value)) {
 			return false;
 		}

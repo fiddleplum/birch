@@ -1,7 +1,8 @@
 import { Matrix44, Matrix44Readonly } from '../../internal';
+import { Component } from './component';
 
 /** The camera component. */
-export class Camera {
+export class Camera extends Component {
 	/** Gets the aspect ratio. */
 	get aspectRatio(): number {
 		return this._aspectRatio;
