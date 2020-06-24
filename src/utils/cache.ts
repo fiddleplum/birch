@@ -33,7 +33,7 @@ export class Cache<Key, Value> implements Ordered<Value | undefined> {
 			countedValue.count -= 1;
 			if (countedValue.count === 0) {
 				this._valueDestructor(countedValue.value);
-				this._keysToCountedValues.delete(key);
+				this._keysToCountedValues.remove(key);
 				this._valuesToKeys.delete(value);
 			}
 		}

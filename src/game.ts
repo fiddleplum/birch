@@ -1,4 +1,4 @@
-import { Renderer, Viewport } from './internal';
+import { Render, Viewport } from './internal';
 
 export class Game {
 	constructor(rootElement: HTMLDivElement) {
@@ -6,7 +6,7 @@ export class Game {
 		this._rootElement = rootElement;
 		this._prepareRootElement();
 		// Create the renderer.
-		this._renderer = new Renderer(this._rootElement.querySelector('canvas') as HTMLCanvasElement, true);
+		this._renderer = new Render.Renderer(this._rootElement.querySelector('canvas') as HTMLCanvasElement, true);
 		// Run the game.
 		this._running = true;
 		this._runBound = this._run.bind(this);
@@ -19,7 +19,7 @@ export class Game {
 	}
 
 	/** Gets the renderer. */
-	get renderer(): Renderer {
+	get renderer(): Render.Renderer {
 		return this._renderer;
 	}
 
@@ -119,7 +119,7 @@ export class Game {
 	private _runBound: () => void;
 
 	/** The render system. */
-	private _renderer: Renderer;
+	private _renderer: Render.Renderer;
 
 	/** The viewports. */
 	private _viewports: Viewport[] = [];

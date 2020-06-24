@@ -1,13 +1,13 @@
-import { Camera, Renderer, Rectangle, Stage, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { Camera, Render, Rectangle, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
-	constructor(viewportsElement: HTMLDivElement, renderer: Renderer) {
+	constructor(viewportsElement: HTMLDivElement, renderer: Render.Renderer) {
 		// Set the viewports element and renderer.
 		this._viewportsElement = viewportsElement;
 		this._renderer = renderer;
 		// Create the render stage.
-		this._stage = new Stage(renderer.gl);
+		this._stage = new Render.Stage(renderer.gl);
 		renderer.stages.add(this._stage);
 		// Create the div element.
 		this._divElement = document.createElement('div');
@@ -21,7 +21,7 @@ export class Viewport {
 		// Destroy the div element.
 		this._viewportsElement.removeChild(this._divElement);
 		// Remove the render stage.
-		this._renderer.stages.delete(this._stage);
+		this._renderer.stages.remove(this._stage);
 		this._stage.destroy();
 	}
 
@@ -55,7 +55,7 @@ export class Viewport {
 	private _viewportsElement: HTMLDivElement;
 
 	/** The renderer. */
-	private _renderer: Renderer;
+	private _renderer: Render.Renderer;
 
 	/** The div element for the viewport. */
 	private _divElement: HTMLDivElement;
@@ -64,7 +64,7 @@ export class Viewport {
 	private _enabled: boolean = true;
 
 	/** The render stage. */
-	private _stage: Stage;
+	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
 	private _camera: Camera | null = null;
