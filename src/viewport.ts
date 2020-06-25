@@ -1,4 +1,4 @@
-import { Camera, Render, Rectangle, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { Camera, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */

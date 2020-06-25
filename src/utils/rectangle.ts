@@ -23,7 +23,7 @@ export class Rectangle extends RectangleReadonly {
 	}
 
 	/** Sets the *min* and *max*. */
-	set(minX = 0, minY = 0, sizeX = 0, sizeY = 0) {
+	set(minX = 0, minY = 0, sizeX = 0, sizeY = 0): void {
 		this._min.set(minX, minY);
 		this._size.set(sizeX, sizeY);
 	}

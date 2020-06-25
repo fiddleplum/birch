@@ -38,7 +38,7 @@ export class RectangleReadonly {
 	intersects(a: RectangleReadonly): boolean {
 		return this._min.x < a._min.x + a._size.x && a._min.x < this._min.x + this._size.x
 			&& this._min.y < a._min.y + a._size.y && a._min.y < this._min.y + this._size.y;
-}
+	}
 
 	/** Sets *out* to the closest point within *this* to *point*. */
 	closest(out: Vector2, point: Vector2Readonly): void {
