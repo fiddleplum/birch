@@ -1,4 +1,15 @@
-import { Render, Viewport } from './internal';
+import { Render, Viewport, World } from './internal';
+import { OrderedList } from './utils/ordered_list';
+
+var a = new OrderedList<number>();
+for (let i = 0; i < 1000; i++) {
+	a.add(i);
+}
+
+var b = new Set<number>();
+for (let i = 0; i < 1000; i++) {
+	b.add(i);
+}
 
 export class Game {
 	constructor(rootElement: HTMLDivElement) {
@@ -29,7 +40,7 @@ export class Game {
 	}
 
 	/** Adds a viewport. */
-	addViewport(index?: number) : Viewport {
+	addViewport(index?: number): Viewport {
 		const viewportsElement = this._rootElement.querySelector('viewports') as HTMLDivElement;
 		const viewport = new Viewport(viewportsElement, this._renderer);
 		if (index !== undefined) {
@@ -69,6 +80,7 @@ export class Game {
 			this._destroy();
 			return;
 		}
+
 		// Render everything.
 		this._renderer.render();
 		// Ask the browser for another frame.
@@ -78,7 +90,7 @@ export class Game {
 	/** Prepares the root element, adding styles and child elements. */
 	private _prepareRootElement(): void {
 		// Remove all children.
-		while (this._rootElement.lastChild) {
+		while (this._rootElement.lastChild !== null) {
 			this._rootElement.removeChild(this._rootElement.lastChild);
 		}
 		// Make sure it is a positioned element so that absolutely positioned children will work.
@@ -123,4 +135,7 @@ export class Game {
 
 	/** The viewports. */
 	private _viewports: Viewport[] = [];
+
+	/** The worlds. */
+	private _worlds: World[] = [];
 }

@@ -1,8 +1,8 @@
-import { Ordered } from './ordered';
+import { Ordered2 } from './ordered';
 import { OrderedMap } from './ordered_map';
 import { Sort } from './sort';
 
-export class Cache<Key, Value> implements Ordered<Value | undefined> {
+export class Cache<Key, Value> implements Ordered2<Value | undefined> {
 	/** The constructor. */
 	constructor(valueConstructor: (key: Key) => Value, valueDestructor: (value: Value) => void) {
 		// Set the value constructor and destructor.

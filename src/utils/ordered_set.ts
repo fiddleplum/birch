@@ -1,7 +1,7 @@
-import { Ordered } from './ordered';
+import { Ordered2 } from './ordered';
 import { Sort } from './sort';
 
-export class OrderedSet<Value> implements Ordered<Value | undefined> {
+export class OrderedSet<Value> implements Ordered2<Value | undefined> {
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
 		if (iterable !== undefined) {
