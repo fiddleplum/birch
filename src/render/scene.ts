@@ -1,4 +1,3 @@
-import { Sort } from '../utils/sort';
 import { OrderedSet } from '../utils/ordered_set';
 import { Model } from './model';
 
@@ -14,53 +13,53 @@ export class Scene {
 	/** Renders the scene. */
 	render(stageUniformsFunction: Model.UniformsFunction | null): void {
 		// Sort the models to be optimal in terms of state changes and blending.
-		this._models.sort(Sort.insertionSort, Scene._compareModels);
+		this._models.sort(Scene._isModelLess);
 
 		// Render each model.
-		for (let i = 0, l = this._models.size; i < l; i++) {
-			this._models.getAt(i)?.render(stageUniformsFunction, this.uniformsFunction);
+		for (const model of this._models) {
+			model.render(stageUniformsFunction, this.uniformsFunction);
 		}
 	}
 
 	/** Compares two models for sorting into the optimal order to reduce WebGL calls. */
-	private static _compareModels(a: Model, b: Model): number {
+	private static _isModelLess(a: Model, b: Model): boolean {
 		if (a.shader === null || a.mesh === null) {
-			return -1;
+			return true;
 		}
 		if (b.shader === null || b.mesh === null) {
-			return +1;
+			return false;
 		}
 		if (a.blending === Model.Blending.None && b.blending !== Model.Blending.None) {
-			return -1;
+			return true;
 		}
 		if (a.blending !== Model.Blending.None && b.blending === Model.Blending.None) {
-			return +1;
+			return false;
 		}
 		if (a.blending === Model.Blending.None) { // Sort by shader and textures.
 			if (a.shader !== b.shader) {
-				return a.shader.id < b.shader.id ? -1 : +1;
+				return a.shader.id < b.shader.id;
 			}
 			for (let slot = 0, maxSlot = Math.min(Math.max(a.textures.length, b.textures.length) - 1, 32); slot <= maxSlot; slot++) {
 				if (slot == a.textures.length && slot < b.textures.length) {
-					return -1;
+					return true;
 				}
 				if (slot == b.textures.length) {
-					return +1;
+					return false;
 				}
 				if (a.textures[slot] !== b.textures[slot]) {
-					return a.textures[slot].id < b.textures[slot].id ? -1 : +1;
+					return a.textures[slot].id < b.textures[slot].id;
 				}
 			}
-			return a.mesh.id < b.mesh.id ? -1 : +1;
+			return a.mesh.id < b.mesh.id;
 		}
 		else if (a.depth < b.depth) { // Since there is some blending, sort by depth.
-			return -1;
+			return true;
 		}
 		else if (a.depth > b.depth) {
-			return +1;
+			return false;
 		}
 		else { // just do the pointer to guarantee an explicit ordering.
-			return a.id < b.id ? -1 : +1;
+			return a.id < b.id;
 		}
 	}
 

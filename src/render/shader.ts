@@ -1,9 +1,8 @@
-import { OrderedMap } from '../utils/ordered_map';
 import { UniqueId } from '../utils/unique_id';
 
 export class Shader extends UniqueId.Object {
 	/** The constructor. */
-	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: OrderedMap<string, number>) {
+	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>) {
 		super();
 
 		// Save the WebGL context.
@@ -186,7 +185,7 @@ export class Shader extends UniqueId.Object {
 	}
 
 	/** Links shader objects to create a shader program. */
-	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: OrderedMap<string, number>): WebGLProgram {
+	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: Map<string, number>): WebGLProgram {
 		// Create the program.
 		const program = this._gl.createProgram();
 		if (program === null) {
@@ -198,11 +197,8 @@ export class Shader extends UniqueId.Object {
 		this._gl.attachShader(program, fragmentObject);
 
 		// Bind the given attrbute locations.
-		for (let i = 0; i < attributeLocations.size; i++) {
-			const entry = attributeLocations.getAt(i);
-			if (entry !== undefined) {
-				this._gl.bindAttribLocation(program, entry.value, entry.key);
-			}
+		for (const [key, value] of attributeLocations) {
+			this._gl.bindAttribLocation(program, value, key);
 		}
 
 		// Link the shaders to the program.

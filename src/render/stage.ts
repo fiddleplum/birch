@@ -62,7 +62,7 @@ export class Stage extends UniqueId.Object {
 	}
 
 	/** Sets the color output texture for the *index*. */
-	setOutputColorTexture(index: number, texture: Texture) {
+	setOutputColorTexture(index: number, texture: Texture): void {
 		if (this._frameBuffer === null) {
 			throw new Error('You must first set the renderToTexture to true.');
 		}
@@ -77,7 +77,7 @@ export class Stage extends UniqueId.Object {
 	}
 
 	/** Sets the depth & stencil texture. The depth part is 24 bits and the stencil part is 8 bits. */
-	setOutputDepthStencilTexture(texture: Texture) {
+	setOutputDepthStencilTexture(texture: Texture): void {
 		if (this._frameBuffer === null) {
 			throw new Error('You must first set the renderToTexture to true.');
 		}

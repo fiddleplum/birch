@@ -1,12 +1,12 @@
-export interface Ordered2<Value> {
-	/** Gets the value at the *index*. */
-	getAt(index: number): Value;
-
-	/** The number of values. */
-	size: number;
+/** An interface for creating ordered containers. */
+export interface Ordered<Value> {
+	/** Returns an iterator. */
+	[Symbol.iterator](): Ordered.Iterator<Value>;
 }
 
-export abstract class Ordered<Value> {
+/** A base class ordered containers that have iterators that get reused. */
+export abstract class OrderedBase<Value> implements Ordered<Value> {
+	/** Returns an iterator. */
 	[Symbol.iterator](): Ordered.Iterator<Value> {
 		let iterator: Ordered.Iterator<Value> | undefined = undefined;
 		// Find an existing iterator that isn't iterating and return it.
@@ -34,7 +34,7 @@ export abstract class Ordered<Value> {
 }
 
 export namespace Ordered {
-	/** The Ordered iterator. */
+	/** The ordered iterator. */
 	export abstract class Iterator<Value> {
 		/** If true, the iterator is currently going through a loop. */
 		iterating: boolean = false;
@@ -42,8 +42,8 @@ export namespace Ordered {
 		/** If true, the iterator has reached the end of the loop. */
 		done: boolean = true;
 
-		/** The value of the iterator. */
-		value: Value | undefined = undefined;
+		/** The value of the iterator. Force it to have Value type, since it will always have a value during iterations. */
+		value: Value = undefined as unknown as Value;
 
 		/** Increments the iterator. */
 		next(): Iterator<Value> {
@@ -56,7 +56,7 @@ export namespace Ordered {
 				this.done = !this.increment();
 				if (this.done) {
 					this.iterating = false;
-					this.value = undefined;
+					this.value = undefined as unknown as Value;
 					this.finish();
 				}
 			}
@@ -66,6 +66,8 @@ export namespace Ordered {
 		/** Close up what's necessary for the iterator. */
 		return(): Iterator<Value> {
 			this.iterating = false;
+			this.done = true;
+			this.value = undefined as unknown as Value;
 			this.finish();
 			return this;
 		}

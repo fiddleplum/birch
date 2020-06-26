@@ -53,8 +53,8 @@ export class Renderer {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
 		// Render the stages in order.
-		for (let i = 0, l = this._stages.size; i < l; i++) {
-			this._stages.getAt(i)?.render();
+		for (const stage of this._stages) {
+			stage.render();
 		}
 	}
 

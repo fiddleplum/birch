@@ -157,7 +157,7 @@ export class Texture extends UniqueId.Object {
 		}
 	}
 
-	private _formatToGLInternalFormat(format: Texture.Format) {
+	private _formatToGLInternalFormat(format: Texture.Format): number {
 		switch(format) {
 			case Texture.Format.RGB: return this._gl.RGB;
 			case Texture.Format.RGBA: return this._gl.RGBA;
@@ -168,7 +168,7 @@ export class Texture extends UniqueId.Object {
 		}
 	}
 
-	private _formatToGLFormat(format: Texture.Format) {
+	private _formatToGLFormat(format: Texture.Format): number {
 		switch(format) {
 			case Texture.Format.RGB:
 				return this._gl.RGB;
@@ -183,7 +183,7 @@ export class Texture extends UniqueId.Object {
 		}
 	}
 
-	private _formatToGLType(format: Texture.Format) {
+	private _formatToGLType(format: Texture.Format): number {
 		switch(format) {
 			case Texture.Format.RGB:
 			case Texture.Format.RGBA:
