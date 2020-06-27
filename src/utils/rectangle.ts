@@ -6,9 +6,19 @@ import { Vector2Readonly } from './vector2_readonly';
 
 /** A rectangle. */
 export class Rectangle extends RectangleReadonly {
+	/** Gets the *min*. */
+	get min(): Vector2Readonly {
+		return super.min;
+	}
+
 	/** Sets the *min*. */
 	set min(min: Vector2Readonly) {
 		this._min.copy(min);
+	}
+
+	/** Gets the *size*. */
+	get size(): Vector2Readonly {
+		return super.size;
 	}
 
 	/** Sets the *size*. */

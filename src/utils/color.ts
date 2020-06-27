@@ -3,9 +3,19 @@ import { Num } from './num';
 
 /** An RGBA color. */
 export class Color extends ColorReadonly {
+	/** Gets the *r* component. */
+	get r(): number {
+		return super.r;
+	}
+
 	/** Sets the *r* component. */
 	set r(r: number) {
 		this._m[0] = r;
+	}
+
+	/** Gets the *g* component. */
+	get g(): number {
+		return super.g;
 	}
 
 	/** Sets the *g* component. */
@@ -13,9 +23,19 @@ export class Color extends ColorReadonly {
 		this._m[1] = g;
 	}
 
+	/** Gets the *b* component. */
+	get b(): number {
+		return super.b;
+	}
+
 	/** Sets the *b* component. */
 	set b(b: number) {
 		this._m[2] = b;
+	}
+
+	/** Gets the *a* component. */
+	get a(): number {
+		return super.a;
 	}
 
 	/** Sets the *a* component. */

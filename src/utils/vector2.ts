@@ -3,9 +3,19 @@ import { Num } from './num';
 
 /** A two-dimensional vector. */
 export class Vector2 extends Vector2Readonly {
+	/** Gets the *x* component. */
+	get x(): number {
+		return super.x;
+	}
+
 	/** Sets the *x* component. */
 	set x(x: number) {
 		this._m[0] = x;
+	}
+
+	/** Gets the *y* component. */
+	get y(): number {
+		return super.y;
 	}
 
 	/** Sets the *y* component. */

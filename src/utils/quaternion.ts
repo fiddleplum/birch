@@ -4,18 +4,42 @@ import { Vector3 } from './vector3';
 
 /** A quaternion. */
 export class Quaternion extends QuaternionReadonly {
+	/** Gets the *w* component. */
+	get w(): number {
+		return super.w;
+	}
+
+	/** Sets the *w* component. */
 	set w(w: number) {
 		this._m[0] = w;
 	}
 
+	/** Gets the *x* component. */
+	get x(): number {
+		return super.x;
+	}
+
+	/** Sets the *x* component. */
 	set x(x: number) {
 		this._m[1] = x;
 	}
 
+	/** Gets the *y* component. */
+	get y(): number {
+		return super.y;
+	}
+
+	/** Sets the *y* component. */
 	set y(y: number) {
 		this._m[2] = y;
 	}
 
+	/** Gets the *z* component. */
+	get z(): number {
+		return super.z;
+	}
+
+	/** Sets the *z* component. */
 	set z(z: number) {
 		this._m[3] = z;
 	}
