@@ -1,15 +1,4 @@
 import { Render, Viewport, World } from './internal';
-import { OrderedList } from './utils/ordered_list';
-
-var a = new OrderedList<number>();
-for (let i = 0; i < 1000; i++) {
-	a.add(i);
-}
-
-var b = new Set<number>();
-for (let i = 0; i < 1000; i++) {
-	b.add(i);
-}
 
 export class Game {
 	constructor(rootElement: HTMLDivElement) {
@@ -83,6 +72,7 @@ export class Game {
 
 		// Render everything.
 		this._renderer.render();
+
 		// Ask the browser for another frame.
 		requestAnimationFrame(this._runBound);
 	}

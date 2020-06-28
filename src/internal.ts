@@ -3,7 +3,7 @@ export * from './viewport';
 
 export * from './render/index';
 
-export * from './utils/cache';
+// export * from './utils/cache';
 export * from './utils/color_readonly';
 export * from './utils/color';
 export * from './utils/matrix44_readonly';
@@ -12,7 +12,6 @@ export * from './utils/num';
 export * from './utils/ordered';
 export * from './utils/ordered_map';
 export * from './utils/ordered_set';
-export * from './utils/ordered_list';
 export * from './utils/quaternion_readonly';
 export * from './utils/quaternion';
 export * from './utils/rectangle_readonly';

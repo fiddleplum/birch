@@ -141,14 +141,20 @@ export namespace OrderedSet {
 		/** Resets the iterator to the beginning. */
 		reset(): void {
 			this.node = this._getHead();
-			this.value = this.node?.value;
+			if (this.node !== undefined) {
+				this.value = this.node.value;
+			}
+			else {
+				this.iterating = false;
+				this.done = true;
+			}
 		}
 
 		/** Increments the iterator. Returns false if it could not increment. */
 		increment(): boolean {
 			if (this.node !== undefined && this.node.next !== undefined) {
 				this.node = this.node.next;
-				this.value = this.node?.value;
+				this.value = this.node.value;
 				return true;
 			}
 			return false;

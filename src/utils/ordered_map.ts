@@ -112,9 +112,9 @@ export namespace OrderedMap {
 	// }
 
 	export class Entry<Key, Value> {
-		key: Key | undefined;
-		value: Value | undefined;
-		constructor(key: Key | undefined, value: Value | undefined) {
+		key: Key;
+		value: Value;
+		constructor(key: Key, value: Value) {
 			this.key = key;
 			this.value = value;
 		}
