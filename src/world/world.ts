@@ -1,6 +1,7 @@
 import { OrderedSet } from '../internal';
 import { Render } from '../render/index';
 import { Game, Entity } from '../internal';
+import { EventQueue } from './event_queue';
 
 export class World {
 	/** Constructor. */
@@ -10,12 +11,17 @@ export class World {
 
 		// Create the render scene and set the uniforms function.
 		this._scene = new Render.Scene();
-		this._scene.uniformsFunction = this._sceneUniforms.bind(this);
+		// this._scene.uniformsFunction = this._sceneUniforms.bind(this);
 	}
 
 	/** Gets the game that contains this. */
 	get game(): Game {
 		return this._game;
+	}
+
+	/** Gets the event queue. */
+	get eventQueue(): EventQueue {
+		return this._eventQueue;
 	}
 
 	/** Adds a new entity. */
@@ -30,13 +36,15 @@ export class World {
 		return this._entities.remove(entity);
 	}
 
-	private _sceneUniforms(shader: Render.Shader): void {
-	}
+	// private _sceneUniforms(shader: Render.Shader): void {
+	// }
 
 	/** The list of entities this contains. */
 	private _entities: OrderedSet<Entity> = new OrderedSet();
 
 	private _scene: Render.Scene = new Render.Scene();
+
+	private _eventQueue: EventQueue = new EventQueue();
 
 	/** The game that contains this. */
 	private _game: Game;

@@ -8,7 +8,6 @@ export class Model extends Component {
 		super(entity);
 
 		this._model = new Render.Model(entity.world.game.renderer.gl);
-		this._model.uniformsFunction
 	}
 
 	/** Gets the model. */
@@ -16,8 +15,10 @@ export class Model extends Component {
 		return this._model;
 	}
 
-	_setUniforms(shader: Render.Shader): void {
-	}
-
 	private _model: Render.Model;
+}
+
+export namespace Model {
+	export enum Events {
+	}
 }

@@ -16,11 +16,13 @@ export class Entity {
 	addNewComponent<Type extends Component>(type: { new (entity: Entity): Type }): Type {
 		const component = new type(this);
 		this._components.add(component);
+		this._world.eventQueue.addEvent(component, Entity.Events.ComponentAdded);
 		return component;
 	}
 
 	/** Removes a component. */
 	removeComponent(component: Component): boolean {
+		this._world.eventQueue.addEvent(component, Entity.Events.ComponentWillBeRemoved);
 		return this._components.remove(component);
 	}
 
@@ -29,4 +31,11 @@ export class Entity {
 
 	/** The list of components this contains. */
 	private _components = new OrderedSet<Component>();
+}
+
+export namespace Entity {
+	export class Events {
+		static ComponentAdded = Symbol('ComponentAdded');
+		static ComponentWillBeRemoved = Symbol('ComponentWillBeRemoved');
+	}
 }

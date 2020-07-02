@@ -18,6 +18,11 @@ export class OrderedSet<Value> extends OrderedBase<Value> {
 		}
 	}
 
+	/** Returns true if there are no values in the set. */
+	isEmpty(): boolean {
+		return this._head === undefined;
+	}
+
 	/** Returns true if the *value* is in the set. O(1). */
 	has(value: Value): boolean {
 		return this._valuesToNodes.has(value);

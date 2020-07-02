@@ -12,6 +12,7 @@ export class Frame extends Component {
 	set position(position: Vector3Readonly) {
 		this._position.copy(position);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
+		this.eventQueue.addEvent(this, Frame.Events.PositionChanged);
 	}
 
 	/** Gets the orientation. */
@@ -23,6 +24,7 @@ export class Frame extends Component {
 	set orientation(orientation: QuaternionReadonly) {
 		this._orientation.copy(orientation);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
+		this.eventQueue.addEvent(this, Frame.Events.OrientationChanged);
 	}
 
 	/** Gets the local to world transform. */
@@ -77,4 +79,11 @@ export class Frame extends Component {
 
 	/** Whether or not the world to local transform is dirty. */
 	private _worldToLocalDirty: boolean = false;
+}
+
+export namespace Frame {
+	export class Events {
+		static PositionChanged = Symbol('PositionChanged');
+		static OrientationChanged = Symbol('OrientationChanged');
+	}
 }
