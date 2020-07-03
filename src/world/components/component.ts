@@ -2,12 +2,17 @@ import { Entity } from '../../internal';
 import { EventQueue } from '../event_queue';
 
 export abstract class Component {
+	/** Constructs this. */
 	constructor(entity: Entity) {
 		// Set the entity that contains this.
 		this._entity = entity;
 
 		// Set the event queue.
 		this._eventQueue = entity.world.eventQueue;
+	}
+
+	/** Destroys this. */
+	destroy(): void {
 	}
 
 	/** Gets the entity that contains this. */

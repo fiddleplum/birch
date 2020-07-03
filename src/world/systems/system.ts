@@ -1,5 +1,5 @@
 import { Component } from '../components/component';
-import { Game } from '../../internal';
+import { World } from '../../internal';
 import { EventQueue } from '../event_queue';
 
 /*
@@ -22,17 +22,19 @@ If an entity has a frame component but not a model component, and the position c
 
 */
 
+/** The base class for all systems. */
 export abstract class System {
+	/** Called when a system receives an event it was listening for. */
 	abstract processEvent(component: Component, eventType: symbol): void;
 
 	/** The constructor. */
-	constructor(game: Game) {
-		this._game = game;
+	constructor(world: World) {
+		this._world = world;
 	}
 
-	/** Gets the game that contains this. */
-	get game(): Game {
-		return this._game;
+	/** Gets the world that contains this. */
+	get world(): World {
+		return this._world;
 	}
 
 	/** Called once per frame to update the system. */
@@ -59,8 +61,8 @@ export abstract class System {
 		this._numEvents += 1;
 	}
 
-	/** The game that contains this. */
-	private _game: Game;
+	/** The world that contains this. */
+	private _world: World;
 
 	/** The events in the event queue. The length of the array is the capacity, not the number of events. */
 	private _events: EventQueue.Event[] = [];

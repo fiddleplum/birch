@@ -3,7 +3,7 @@ import { Entity } from '../../internal';
 // import { Model as RenderModel, Shader } from '../../internal';
 import { Render } from '../../render/index';
 
-export class Model extends Component {
+export class ModelComponent extends Component {
 	constructor(entity: Entity) {
 		super(entity);
 
@@ -18,7 +18,7 @@ export class Model extends Component {
 	private _model: Render.Model;
 }
 
-export namespace Model {
+export namespace ModelComponent {
 	export enum Events {
 	}
 }

@@ -1,9 +1,5 @@
 import { Ordered, OrderedBase } from './ordered';
 
-// I've completed this class.
-// I need to replace OrderedSet with this, and rename this to OrderedSet (or OrderedSet).
-// I need to figure out what to do with OrderedMap, to see if I can make it either use this
-// 	or Ordered itself.
 // I need to implement ResourceList to use this but with given constructors/destructors.
 // I need to possibly remove or repurpose Cache.
 

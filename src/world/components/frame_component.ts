@@ -2,7 +2,7 @@ import { Vector3, Vector3Readonly, Quaternion, QuaternionReadonly, Matrix44, Mat
 import { Component } from './component';
 
 /** The frame component. */
-export class Frame extends Component {
+export class FrameComponent extends Component {
 	/** Gets the position. */
 	get position(): Vector3Readonly {
 		return this._position;
@@ -81,7 +81,7 @@ export class Frame extends Component {
 	private _worldToLocalDirty: boolean = false;
 }
 
-export namespace Frame {
+export namespace FrameComponent {
 	export class Events {
 		static PositionChanged = Symbol('PositionChanged');
 		static OrientationChanged = Symbol('OrientationChanged');

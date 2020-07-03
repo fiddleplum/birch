@@ -6,40 +6,40 @@ import { Component } from './components/component';
 export class EventQueue {
 	/** Adds an event. */
 	addEvent(component: Component, type: symbol): void {
-		const systems = this._eventListeners.get(type);
-		if (systems === undefined) {
+		const listeningSystems = this._eventSubscribers.get(type);
+		if (listeningSystems === undefined) {
 			return;
 		}
-		for (const system of systems) {
+		for (const system of listeningSystems) {
 			system.addEvent(component, type);
 		}
 	}
 
 	/** Adds an event listener. */
-	addEventListener(system: System, eventType: symbol): void {
-		let systems = this._eventListeners.get(eventType);
+	subscribeToEvent(system: System, eventType: symbol): void {
+		let systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
 			systems = new OrderedSet();
-			this._eventListeners.set(eventType, systems);
+			this._eventSubscribers.set(eventType, systems);
 		}
 		systems.add(system);
 	}
 
 	/** Removes an event listener. Returns true if it existed. */
-	removeEventListener(system: System, eventType: symbol): boolean {
-		const systems = this._eventListeners.get(eventType);
+	unsubscribeFromEvent(system: System, eventType: symbol): boolean {
+		const systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
 			return false;
 		}
 		const existed = systems.remove(system);
 		if (existed && systems.isEmpty()) {
-			this._eventListeners.delete(eventType);
+			this._eventSubscribers.delete(eventType);
 		}
 		return existed;
 	}
 
-	/** The event listeners. */
-	private _eventListeners: Map<symbol, OrderedSet<System>> = new Map();
+	/** The event subscribers. */
+	private _eventSubscribers: Map<symbol, OrderedSet<System>> = new Map();
 }
 
 export namespace EventQueue {
