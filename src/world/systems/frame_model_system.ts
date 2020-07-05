@@ -1,6 +1,6 @@
 import { Component, FrameComponent, ModelComponent, System, World } from '../../internal';
 
-export class ModelSystem extends System {
+export class FrameModelSystem extends System {
 	/** Constructs this. */
 	constructor(world: World) {
 		super(world);

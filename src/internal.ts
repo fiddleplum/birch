@@ -31,4 +31,4 @@ export * from './world/components/frame_component';
 export * from './world/components/model_component';
 
 export * from './world/systems/system';
-export * from './world/systems/model_system';
+export * from './world/systems/frame_model_system';
