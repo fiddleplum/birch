@@ -2,7 +2,7 @@ import { Vector2 } from '../utils/vector2';
 import { UniqueId } from '../utils/unique_id';
 
 export class Texture extends UniqueId.Object {
-	constructor(gl: WebGL2RenderingContext, source: null | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format ) {
+	constructor(gl: WebGL2RenderingContext, source: null | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format) {
 		super();
 
 		// Save the WebGL context.

@@ -42,9 +42,17 @@ Make all objects in render system not directly creatable/destroyable.
     so that if they are removed, as in Renderer.meshes.remove(mesh), there will
 	be an error thrown if the count is > 0.
 
-# Other Notes
+# Uniform Buffer Objects
 
-Implement Uniform Buffer Objects as the main way to implement uniforms.
+Since the UBO can be shared between shaders, it needs to be outside of the shader class. It is similar to textures in how it does binding, so make it similar to that class.
+
+UBO categories:
+* Stage - camera info, viewport, ...
+* Scene - lighting, ...
+* Model - transforms, ...
+* Material - shading, ...
+
+# Other Notes
 
 Use 16-bit or 32-bit indices for meshes automatically.
 

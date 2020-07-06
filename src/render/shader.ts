@@ -70,6 +70,11 @@ export class Shader extends UniqueId.Object {
 		return location;
 	}
 
+	/** Sets a uniform block. */
+	setUniformBlock(): void {
+
+	}
+
 	/** Sets the uniform location to an integer value. */
 	setUniformInt(location: WebGLUniformLocation, value: number): void {
 		const existingValue = this._uniformLocationsToValues.get(location);
