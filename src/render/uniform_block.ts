@@ -48,7 +48,7 @@ export class UniformBlock extends UniqueId.Object {
 			this._uniformInfos.set(uniform.name, {
 				type: uniform.type,
 				offset: 0,
-				size: 0
+				numComponents: UniformBlock.numComponents.get(uniform.type) as number
 			});
 		}
 
@@ -80,8 +80,8 @@ export class UniformBlock extends UniqueId.Object {
 		}
 		else {
 			// Make sure the type and the data match.
-			if (!Array.isArray(value) || value.length !== uniformInfo.size) {
-				throw new Error(`The uniform ${name} has type ${UniformBlock.Type[type]}, but the value is not a array of length ${uniformInfo.size}.`);
+			if (!Array.isArray(value) || value.length !== uniformInfo.numComponents) {
+				throw new Error(`The uniform ${name} has type ${UniformBlock.Type[type]}, but the value is not a array of length ${uniformInfo.numComponents}.`);
 			}
 			// Set the data. Assuming hardware is little-endian.
 			if (type === UniformBlock.Type.vec2 || type === UniformBlock.Type.vec3 || type === UniformBlock.Type.vec4 || type === UniformBlock.Type.mat4x4) {
@@ -113,14 +113,14 @@ export class UniformBlock extends UniqueId.Object {
 		for (let i = 0; i < this._uniformNames.length; i++) {
 			const name = this._uniformNames[i];
 			const uniformInfo = this._uniformInfos.get(name) as UniformInfo;
-			glsl += `\t${uniformInfo.type} ${name};\n`;
+			glsl += `\t${UniformBlock.Type[uniformInfo.type]} ${name};\n`;
 		}
-		glsl += `}\n`;
+		glsl += `};\n`;
 		return glsl;
 	}
 
 	/** Calculates the uniform block offsets by creating a temporary shader and then querying the uniform offsets of that shader. */
-	_calcShaderOffsets(): void {
+	private _calcShaderOffsets(): void {
 		// Create the shader objects.
 		const vertexObject = this._gl.createShader(this._gl.VERTEX_SHADER);
 		if (vertexObject === null) {
@@ -133,6 +133,12 @@ export class UniformBlock extends UniqueId.Object {
 		// Compile the shader objects.
 		this._gl.shaderSource(vertexObject, `#version 300 es\n${this.getGLSL()}void main() {}`);
 		this._gl.compileShader(vertexObject);
+		const success = this._gl.getShaderParameter(vertexObject, this._gl.COMPILE_STATUS) as GLboolean;
+		if (!success) {
+			const error = this._gl.getShaderInfoLog(vertexObject);
+			this._gl.deleteShader(vertexObject);
+			throw new Error('The uniform block\'s shader object did not compile correctly: ' + error);
+		}
 		this._gl.shaderSource(fragmentObject, `#version 300 es\nvoid main() {}`);
 		this._gl.compileShader(fragmentObject);
 		// Create the program, attach the shader objects, and link.
@@ -146,14 +152,19 @@ export class UniformBlock extends UniqueId.Object {
 
 		// Get the index of the uniform block.
 		const uniformBlockIndex = this._gl.getUniformBlockIndex(program, 'Example');
+		console.log(uniformBlockIndex);
 		// Get the size in bytes of the uniform block, and create the data array.
 		const dataSizeInBytes = this._gl.getActiveUniformBlockParameter(program, uniformBlockIndex, this._gl.UNIFORM_BLOCK_DATA_SIZE);
+		console.log(dataSizeInBytes);
 		this._data = new ArrayBuffer(dataSizeInBytes);
 		this._dataView = new DataView(this._data);
 		// Get the indices for each of the uniforms in the uniform block.
+		console.log(this._uniformNames);
 		const indicesOfUniformBlock = this._gl.getUniformIndices(program, this._uniformNames) as number[];
+		console.log(indicesOfUniformBlock);
 		// const indicesOfUniformBlock = this._gl.getActiveUniformBlockParameter(program, uniformBlockIndex, this._gl.UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES) as Uint32Array;
 		const offsetsOfUniformBlock = this._gl.getActiveUniforms(program, indicesOfUniformBlock, this._gl.UNIFORM_OFFSET) as number[];
+		console.log(offsetsOfUniformBlock);
 		for (let i = 0, l = offsetsOfUniformBlock.length; i < l; i++) {
 			const uniformInfo = this._uniformInfos.get(this._uniformNames[i]) as UniformInfo;
 			uniformInfo.offset = offsetsOfUniformBlock[i];
@@ -191,7 +202,7 @@ export class UniformBlock extends UniqueId.Object {
 class UniformInfo {
 	type: UniformBlock.Type = 0;
 	offset: number = 0;
-	size: number = 0;
+	numComponents: number = 0;
 }
 
 export namespace UniformBlock {
@@ -208,7 +219,7 @@ export namespace UniformBlock {
 		mat4x4
 	}
 
-	export const sizes: Map<UniformBlock.Type, number> = new Map([
+	export const numComponents: Map<UniformBlock.Type, number> = new Map([
 		[UniformBlock.Type.int, 1],
 		[UniformBlock.Type.float, 1],
 		[UniformBlock.Type.ivec2, 2],

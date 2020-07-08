@@ -5,3 +5,4 @@ export * from './scene';
 export * from './shader';
 export * from './stage';
 export * from './texture';
+export * from './uniform_block';

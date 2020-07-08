@@ -1,4 +1,4 @@
-import { Camera, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { CameraComponent, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
@@ -67,5 +67,5 @@ export class Viewport {
 	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
-	private _camera: Camera | null = null;
+	private _camera: CameraComponent | null = null;
 }
