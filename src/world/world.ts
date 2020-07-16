@@ -2,6 +2,7 @@ import { OrderedSet } from '../internal';
 import { Render } from '../render/index';
 import { Game, Entity } from '../internal';
 import { EventQueue } from './event_queue';
+import { Component } from './components/component';
 
 export class World {
 	/** Constructor. */
@@ -25,14 +26,14 @@ export class World {
 	}
 
 	/** Adds a new entity. */
-	addNewEntity(): Entity {
+	createEntity(): Entity {
 		const entity = new Entity(this);
 		this._entities.add(entity);
 		return entity;
 	}
 
 	/** Removes an entity. */
-	removeEntity(entity: Entity): boolean {
+	destroyEntity(entity: Entity): boolean {
 		return this._entities.remove(entity);
 	}
 

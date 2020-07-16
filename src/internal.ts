@@ -16,6 +16,7 @@ export * from './utils/quaternion_readonly';
 export * from './utils/rectangle';
 export * from './utils/rectangle_readonly';
 export * from './utils/sort';
+export * from './utils/sorted_list';
 export * from './utils/unique_id';
 export * from './utils/vector2';
 export * from './utils/vector2_readonly';

@@ -4,7 +4,7 @@
 	"description": "A visualization engine for the web.",
 	"private": false,
 	"scripts": {
-		"setup": "yarn install; mkdir -p dist; cp src/config.example.js dist/config.js",
+		"setup": "yarn install; mkdir -p dist",
 		"update": "yarn install --no-default-rc",
 		"build": "webpack --config webpack.dev.js",
 		"build-production": "webpack --config webpack.prod.js",

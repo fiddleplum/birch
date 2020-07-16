@@ -1,5 +1,15 @@
 # Issues I'm running into
 
+## Viewport and World
+
+For the viewport, instead of using an index to put one before another, just use a zIndex variable, which works like the z-index css variable. A higher number goes on top of a lower number, and there is arbitrary ordering for two viewports with the same zIndex.
+
+This means I need a sorted list of viewports. It would have these properties:
+* Index in O(1) without GC.
+* add() automatically sorts the list. is O(log(n))
+* remove() is O(log(n))
+* it takes a sort function.
+
 ## How to handle Model uniforms?
 
 Right now I have Frame and Model components and a Model system. Whenever a Frame component changes its position or orientation, it sends an event to the Model system, which updates the uniforms on the Model component.

@@ -50,7 +50,11 @@ export namespace Ordered {
 			if (this.done) {
 				this.iterating = true;
 				this.done = false;
-				this.reset();
+				const hasFirstElement = this.reset();
+				if (!hasFirstElement) {
+					this.iterating = false;
+					this.done = true;
+				}
 			}
 			else {
 				this.done = !this.increment();
@@ -72,8 +76,8 @@ export namespace Ordered {
 			return this;
 		}
 
-		/** Resets the iterator to the beginning, setting the new value. */
-		abstract reset(): void;
+		/** Resets the iterator to the beginning, setting the new value. Returns true if there was a beginning element. */
+		abstract reset(): boolean;
 
 		/** Increments the iterator, setting the new value. Returns false if it could not increment. */
 		abstract increment(): boolean;

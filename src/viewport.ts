@@ -41,6 +41,16 @@ export class Viewport {
 		this._divElement.style.display = this._enabled ? '' : 'none';
 	}
 
+	/** Gets the z-index. */
+	get zIndex(): number {
+		return this._zIndex;
+	}
+
+	/** Sets the z-index. */
+	set zIndex(zIndex: number) {
+		this._zIndex = zIndex;
+	}
+
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
 	convertNormalSpaceToPixelSpacePosition(pixelPosition: Vector2, normalPosition: Vector3Readonly): void {
 		this._stage.convertNormalSpaceToPixelSpacePosition(pixelPosition, normalPosition);
@@ -65,6 +75,9 @@ export class Viewport {
 
 	/** The render stage. */
 	private _stage: Render.Stage;
+
+	/** The z-index of the viewport. */
+	private _zIndex: number = 0;
 
 	/** The camera to be rendered. */
 	private _camera: CameraComponent | null = null;

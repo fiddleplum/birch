@@ -1,4 +1,4 @@
-import { Render, Viewport, World } from './internal';
+import { Component, OrderedSet, Render, SortedList, Viewport, World } from './internal';
 
 export class Game {
 	constructor(rootElement: HTMLDivElement) {
@@ -28,35 +28,43 @@ export class Game {
 		this._running = false;
 	}
 
-	/** Adds a viewport. */
-	addViewport(index?: number): Viewport {
+	/** Creates a viewport. */
+	createViewport(zIndex?: number): Viewport {
 		const viewportsElement = this._rootElement.querySelector('viewports') as HTMLDivElement;
 		const viewport = new Viewport(viewportsElement, this._renderer);
-		if (index !== undefined) {
-			this._viewports.splice(index, 0, viewport);
+		if (zIndex !== undefined) {
+			viewport.zIndex = zIndex;
 		}
-		else {
-			this._viewports.push(viewport);
-		}
+		this._viewports.add(viewport);
 		return viewport;
 	}
 
-	/** Removes a viewport. */
-	removeViewport(viewport: Viewport): void {
-		for (let i = 0, l = this._viewports.length; i < l; i++) {
-			if (this._viewports[i] === viewport) {
-				this._viewports[i].destroy();
-				this._viewports.splice(i, 1);
-				break;
-			}
+	/** Destroys a viewport. */
+	destroyViewport(viewport: Viewport): void {
+		if (this._viewports.remove(viewport)) {
+			viewport.destroy();
+		}
+	}
+
+	/** Creates a world. */
+	createWorld(): World {
+		const world = new World(this);
+		this._worlds.add(world);
+		return world;
+	}
+
+	/** Destroys a world. */
+	destroyWorld(world: World): void {
+		if (this._worlds.remove(world)) {
+			// world.destroy();
 		}
 	}
 
 	/** Destroys the game. */
 	private _destroy(): void {
 		// Destroys the viewports.
-		for (let i = 0, l = this._viewports.length; i < l; i++) {
-			this._viewports[i].destroy();
+		for (const viewport of this._viewports) {
+			viewport.destroy();
 		}
 		// Destroy the render system.
 		this._renderer.destroy();
@@ -124,8 +132,10 @@ export class Game {
 	private _renderer: Render.Renderer;
 
 	/** The viewports. */
-	private _viewports: Viewport[] = [];
+	private _viewports: SortedList<Viewport> = new SortedList((a: Viewport, b: Viewport) => {
+		return a.zIndex < b.zIndex;
+	});
 
 	/** The worlds. */
-	private _worlds: World[] = [];
+	private _worlds: OrderedSet<World> = new OrderedSet();
 }

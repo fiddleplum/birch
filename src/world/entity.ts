@@ -42,8 +42,8 @@ export class Entity {
 		return componentsOfType.length;
 	}
 
-	/** Adds a new component of the given *type*. */
-	addNewComponent<Type extends Component>(type: { new (entity: Entity): Type }): Type {
+	/** Creates a component of the given *type*. */
+	createComponent<Type extends Component>(type: { new (entity: Entity): Type }): Type {
 		// Create the component.
 		const component = new type(this);
 		// Get the list of components of the same type, creating it if needed.
@@ -60,8 +60,8 @@ export class Entity {
 		return component;
 	}
 
-	/** Removes a component. Returns true if it existed. Takes O(# components of same type). */
-	removeComponent(component: Component): boolean {
+	/** Destroys a component. Returns true if it existed. Takes O(# components of same type). */
+	destroyComponent(component: Component): boolean {
 		// Send an event that a component will be removed.
 		this._world.eventQueue.addEvent(component, Entity.Events.ComponentWillBeRemoved);
 		// Get the list of components of the same type.
