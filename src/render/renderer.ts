@@ -1,6 +1,9 @@
 import { ColorReadonly } from '../utils/color_readonly';
 import { OrderedSet } from '../utils/ordered_set';
 import { Stage } from './stage';
+import { Mesh } from './mesh';
+import { Shader } from './shader';
+import { Texture } from './texture';
 
 export class Renderer {
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
@@ -32,9 +35,60 @@ export class Renderer {
 		return this._gl;
 	}
 
-	/** Gets the set of stages. */
-	get stages(): OrderedSet<Stage> {
-		return this._stages;
+	/** Creates a mesh. */
+	createMesh(numVerticesPerPrimitive: number, vertexFormat: Mesh.Component[][]): Mesh {
+		const mesh = new Mesh(this._gl, numVerticesPerPrimitive, vertexFormat);
+		this._meshes.add(mesh);
+		return mesh;
+	}
+
+	/** Destroys a mesh. */
+	destroyMesh(mesh: Mesh): void {
+		if (this._meshes.delete(mesh)) {
+			mesh.destroy();
+		}
+	}
+
+	/** Creates a shader. */
+	createShader(vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>): Shader {
+		const shader = new Shader(this._gl, vertexCode, fragmentCode, attributeLocations);
+		this._shaders.add(shader);
+		return shader;
+	}
+
+	/** Destroys a shader. */
+	destroyShader(shader: Shader): void {
+		if (this._shaders.delete(shader)) {
+			shader.destroy();
+		}
+	}
+
+	/** Creates a texture. */
+	createTexture(source: null | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): Texture {
+		const texture = new Texture(this._gl, source, width, height, format);
+		this._textures.add(texture);
+		return texture;
+	}
+
+	/** Destroys a texture. */
+	destroyTexture(texture: Texture): void {
+		if (this._textures.delete(texture)) {
+			texture.destroy();
+		}
+	}
+
+	/** Creates a stage. If *beforeStage* is given, it inserts it before that stage, otherwise it adds it at the end. */
+	createStage(beforeStage?: Stage): Stage {
+		const stage = new Stage(this._gl);
+		this._stages.add(stage, beforeStage);
+		return stage;
+	}
+
+	/** Destroys a stage. */
+	destroyStage(stage: Stage): void {
+		if (this._stages.remove(stage)) {
+			stage.destroy();
+		}
 	}
 
 	clear(color: ColorReadonly): void {
@@ -63,6 +117,15 @@ export class Renderer {
 
 	/** The WebGL context. */
 	private _gl: WebGL2RenderingContext;
+
+	/** The meshes. */
+	private _meshes: Set<Mesh> = new Set();
+
+	/** The shaders. */
+	private _shaders: Set<Shader> = new Set();
+
+	/** The textures. */
+	private _textures: Set<Texture> = new Set();
 
 	/** The stages. */
 	private _stages: OrderedSet<Stage> = new OrderedSet();

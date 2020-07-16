@@ -25,12 +25,6 @@ export class Stage extends UniqueId.Object {
 
 		// Save the WebGL context.
 		this._gl = gl;
-
-		// Add it to the set of all created stages.
-		if (!Stage._all.has(gl)) {
-			Stage._all.set(gl, new Set());
-		}
-		Stage._all.get(gl)?.add(this);
 	}
 
 	/** Destroys the stage. */
@@ -38,7 +32,6 @@ export class Stage extends UniqueId.Object {
 		if (this._frameBuffer !== null) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
-		Stage._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -119,7 +112,4 @@ export class Stage extends UniqueId.Object {
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | null = null;
-
-	/** A set of all created stages, one for each WebGL context. */
-	private static _all: Map<WebGL2RenderingContext, Set<Stage>> = new Map();
 }

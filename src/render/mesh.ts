@@ -61,12 +61,6 @@ export class Mesh extends UniqueId.Object {
 			this.destroy();
 			throw e;
 		}
-
-		// Add it to the set of all created meshes.
-		if (!Mesh._all.has(gl)) {
-			Mesh._all.set(gl, new Set());
-		}
-		Mesh._all.get(gl)?.add(this);
 	}
 
 	/** Destroys the mesh. */
@@ -76,7 +70,6 @@ export class Mesh extends UniqueId.Object {
 		}
 		this._gl.deleteBuffer(this._indexBuffer);
 		this._gl.deleteVertexArray(this._vertexArrayObject);
-		Mesh._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -205,9 +198,6 @@ export class Mesh extends UniqueId.Object {
 
 	/** The number of instanes to render. */
 	private _numInstances: number;
-
-	/** A set of all created meshes, one for each WebGL context. */
-	private static _all: Map<WebGL2RenderingContext, Set<Mesh>> = new Map();
 }
 
 export namespace Mesh {
