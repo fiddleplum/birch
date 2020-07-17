@@ -1,4 +1,4 @@
-export * from './game';
+export * from './engine';
 export * from './viewport';
 
 export * from './render/index';

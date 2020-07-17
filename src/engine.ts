@@ -1,6 +1,6 @@
-import { Component, OrderedSet, Render, SortedList, Viewport, World } from './internal';
+import { OrderedSet, Render, SortedList, Viewport, World } from './internal';
 
-export class Game {
+export class Engine {
 	constructor(rootElement: HTMLDivElement) {
 		// Set and prepare the root element.
 		this._rootElement = rootElement;
