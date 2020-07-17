@@ -1,9 +1,10 @@
 import { ColorReadonly } from '../utils/color_readonly';
-import { OrderedSet } from '../utils/ordered_set';
-import { Stage } from './stage';
 import { Mesh } from './mesh';
 import { Shader } from './shader';
 import { Texture } from './texture';
+import { Stage } from './stage';
+import { UniformBlock } from './uniform_block';
+import { Scene } from './scene';
 
 export class Renderer {
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
@@ -28,11 +29,23 @@ export class Renderer {
 		if (loseContextExtension !== null) {
 			loseContextExtension.loseContext();
 		}
-	}
-
-	/** Gets the WebGL context. */
-	get gl(): WebGL2RenderingContext {
-		return this._gl;
+		for (const mesh of this._meshes) {
+			mesh.destroy();
+		}
+		for (const shader of this._shaders) {
+			shader.destroy();
+		}
+		for (const texture of this._textures) {
+			texture.destroy();
+		}
+		for (const stage of this._stages) {
+			stage.destroy();
+		}
+		for (const uniformBlock of this._uniformBlocks) {
+			uniformBlock.destroy();
+		}
+		// for (const scene of this._scenes) {
+		// }
 	}
 
 	/** Creates a mesh. */
@@ -77,17 +90,45 @@ export class Renderer {
 		}
 	}
 
-	/** Creates a stage. If *beforeStage* is given, it inserts it before that stage, otherwise it adds it at the end. */
-	createStage(beforeStage?: Stage): Stage {
+	/** Creates a stage. */
+	createStage(): Stage {
 		const stage = new Stage(this._gl);
-		this._stages.add(stage, beforeStage);
+		this._stages.add(stage);
 		return stage;
 	}
 
 	/** Destroys a stage. */
 	destroyStage(stage: Stage): void {
-		if (this._stages.remove(stage)) {
+		if (this._stages.delete(stage)) {
 			stage.destroy();
+		}
+	}
+
+	/** Creates a uniform block. */
+	createUniformBlock(uniforms: UniformBlock.Uniform[]): UniformBlock {
+		const uniformBlock = new UniformBlock(this._gl, uniforms);
+		this._uniformBlocks.add(uniformBlock);
+		return uniformBlock;
+	}
+
+	/** Destroys a uniform block. */
+	destroyUniformBlock(uniformBlock: UniformBlock): void {
+		if (this._uniformBlocks.delete(uniformBlock)) {
+			uniformBlock.destroy();
+		}
+	}
+
+	/** Creates a scene. */
+	createScene(): Scene {
+		const scene = new Scene();
+		this._scenes.add(scene);
+		return scene;
+	}
+
+	/** Destroys a scene. */
+	destroyScene(scene: Scene): void {
+		if (this._scenes.delete(scene)) {
+			// Do nothing.
 		}
 	}
 
@@ -128,5 +169,11 @@ export class Renderer {
 	private _textures: Set<Texture> = new Set();
 
 	/** The stages. */
-	private _stages: OrderedSet<Stage> = new OrderedSet();
+	private _stages: Set<Stage> = new Set();
+
+	/** The uniform blocks. */
+	private _uniformBlocks: Set<UniformBlock> = new Set();
+
+	/** The scenes. */
+	private _scenes: Set<Scene> = new Set();
 }

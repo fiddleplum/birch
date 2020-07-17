@@ -52,6 +52,8 @@ Make all objects in render system not directly creatable/destroyable.
     so that if they are removed, as in Renderer.meshes.remove(mesh), there will
 	be an error thrown if the count is > 0.
 
+The problem with a dedicated ResourceSet object is that the constructor for everything that uses it must be a default constructor, which doesn't work well with RAII constructors.
+
 # Uniform Buffer Objects
 
 Since the UBO can be shared between shaders, it needs to be outside of the shader class. It is similar to textures in how it does binding, so make it similar to that class.
