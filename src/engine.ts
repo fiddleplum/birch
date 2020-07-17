@@ -1,12 +1,16 @@
-import { OrderedSet, Render, SortedList, Viewport, World } from './internal';
+import { OrderedSet, SortedList, Viewport, World } from './internal';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
 		// Set and prepare the root element.
 		this._rootElement = rootElement;
 		this._prepareRootElement();
-		// Create the renderer.
-		this._renderer = new Render.Renderer(this._rootElement.querySelector('canvas') as HTMLCanvasElement, true);
+		// Get the WebGL context.
+		const gl = this._canvas.getContext('webgl2', { antialias: true });
+		if (gl === null) {
+			throw new Error('Could not get a WebGL 2.0 context. Your browser may not support WebGL 2.0.');
+		}
+		this._gl = gl;
 		// Run the game.
 		this._running = true;
 		this._runBound = this._run.bind(this);
@@ -18,11 +22,6 @@ export class Engine {
 		return this._rootElement;
 	}
 
-	/** Gets the renderer. */
-	get renderer(): Render.Renderer {
-		return this._renderer;
-	}
-
 	/** Stops the game. */
 	stop(): void {
 		this._running = false;
@@ -31,7 +30,7 @@ export class Engine {
 	/** Creates a viewport. */
 	createViewport(zIndex?: number): Viewport {
 		const viewportsElement = this._rootElement.querySelector('viewports') as HTMLDivElement;
-		const viewport = new Viewport(viewportsElement, this._renderer);
+		const viewport = new Viewport(viewportsElement);
 		if (zIndex !== undefined) {
 			viewport.zIndex = zIndex;
 		}
@@ -66,8 +65,11 @@ export class Engine {
 		for (const viewport of this._viewports) {
 			viewport.destroy();
 		}
-		// Destroy the render system.
-		this._renderer.destroy();
+		// Lose the WebGL context.
+		const loseContextExtension = this._gl.getExtension('WEBGL_lose_context');
+		if (loseContextExtension !== null) {
+			loseContextExtension.loseContext();
+		}
 	}
 
 	/** Runs the main game loop. */
@@ -78,8 +80,16 @@ export class Engine {
 			return;
 		}
 
-		// Render everything.
-		this._renderer.render();
+		// Check the canvas size and resize if needed.
+		const canvas = this._canvas;
+		if (canvas.width !== canvas.clientWidth * devicePixelRatio) {
+			canvas.width = canvas.clientWidth * devicePixelRatio;
+		}
+		if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
+			canvas.height = canvas.clientHeight * devicePixelRatio;
+		}
+
+		// Render the viewports.
 
 		// Ask the browser for another frame.
 		requestAnimationFrame(this._runBound);
@@ -100,13 +110,17 @@ export class Engine {
 		this._rootElement.style.webkitUserSelect = 'none';
 		this._rootElement.style.touchAction = 'none';
 		// Add a canvas.
-		const canvas = document.createElement('canvas');
-		canvas.style.position = 'absolute';
-		canvas.style.left = '0';
-		canvas.style.top = '0';
-		canvas.style.width = '100%';
-		canvas.style.height = '100%';
-		this._rootElement.appendChild(canvas);
+		this._canvas = document.createElement('canvas');
+		this._canvas.style.position = 'absolute';
+		this._canvas.style.left = '0';
+		this._canvas.style.top = '0';
+		this._canvas.style.width = '100%';
+		this._canvas.style.height = '100%';
+		this._canvas.style.imageRendering = 'crisp-edges';
+		this._canvas.style.imageRendering = 'pixelated';
+		this._canvas.width = this._canvas.clientWidth * devicePixelRatio;
+		this._canvas.height = this._canvas.clientHeight * devicePixelRatio;
+		this._rootElement.appendChild(this._canvas);
 		// Add a viewports div.
 		const viewportsDiv = document.createElement('div');
 		viewportsDiv.classList.add('viewports');
@@ -122,14 +136,17 @@ export class Engine {
 	/** The root element. */
 	private _rootElement: HTMLDivElement;
 
+	/** The canvas element. */
+	private _canvas!: HTMLCanvasElement;
+
 	/** A flag that says whether or not the game is running. */
 	private _running: boolean = false;
 
+	/** The WebGL context. */
+	private _gl: WebGL2RenderingContext;
+
 	/** A this-bound function of the run method, used by requestAnimationFrame. */
 	private _runBound: () => void;
-
-	/** The render system. */
-	private _renderer: Render.Renderer;
 
 	/** The viewports. */
 	private _viewports: SortedList<Viewport> = new SortedList((a: Viewport, b: Viewport) => {

@@ -97,11 +97,18 @@ export class Texture extends UniqueId.Object {
 			this.destroy();
 			throw e;
 		}
+
+		// Add it to the set of all created textures.
+		if (!Texture._all.has(gl)) {
+			Texture._all.set(gl, new Set());
+		}
+		Texture._all.get(gl)?.add(this);
 	}
 
 	/** Destructs the texture. */
 	destroy(): void {
 		this._gl.deleteTexture(this._handle);
+		Texture._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -207,6 +214,9 @@ export class Texture extends UniqueId.Object {
 
 	/** The promise that resolves when the texture is loaded. */
 	private _loadedPromise: Promise<void> = Promise.resolve();
+
+	/** A set of all created textures, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<Texture>> = new Map();
 }
 
 export namespace Texture {

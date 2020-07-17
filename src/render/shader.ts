@@ -32,11 +32,18 @@ export class Shader extends UniqueId.Object {
 			this.destroy();
 			throw e;
 		}
+
+		// Add it to the set of all created shaders.
+		if (!Shader._all.has(gl)) {
+			Shader._all.set(gl, new Set());
+		}
+		Shader._all.get(gl)?.add(this);
 	}
 
 	/** Destructs the shader. */
 	destroy(): void {
 		this._gl.deleteProgram(this._program);
+		Shader._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
@@ -288,4 +295,7 @@ export class Shader extends UniqueId.Object {
 
 	/** The Gl shader program. */
 	private _program: WebGLProgram | null = null;
+
+	/** A set of all created shaders, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<Shader>> = new Map();
 }

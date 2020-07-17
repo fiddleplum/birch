@@ -54,6 +54,19 @@ export class UniformBlock extends UniqueId.Object {
 
 		// Setup the offsets.
 		this._calcShaderOffsets();
+
+		// Add it to the set of all created meshes.
+		if (!UniformBlock._all.has(gl)) {
+			UniformBlock._all.set(gl, new Set());
+		}
+		UniformBlock._all.get(gl)?.add(this);
+	}
+
+	/** Destroys this. */
+	destroy(): void {
+		this._gl.deleteBuffer(this._buffer);
+		UniformBlock._all.get(this._gl)?.delete(this);
+		super.destroy();
 	}
 
 	/** Sets the uniform to a value. */
@@ -197,6 +210,8 @@ export class UniformBlock extends UniqueId.Object {
 	/** If true, the data needs to be sent to the buffer. */
 	private _dataNeedsSend: boolean = true;
 
+	/** A set of all created meshes, one for each WebGL context. */
+	private static _all: Map<WebGL2RenderingContext, Set<UniformBlock>> = new Map();
 }
 
 class UniformInfo {

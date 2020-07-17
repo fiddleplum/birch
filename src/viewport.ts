@@ -1,14 +1,13 @@
 import { CameraComponent, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { RectangleReadonly } from './utils/rectangle_readonly';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
-	constructor(viewportsElement: HTMLDivElement, renderer: Render.Renderer) {
+	constructor(viewportsElement: HTMLDivElement) {
 		// Set the viewports element and renderer.
 		this._viewportsElement = viewportsElement;
-		this._renderer = renderer;
 		// Create the render stage.
-		this._stage = new Render.Stage(renderer.gl);
-		renderer.stages.add(this._stage);
+		this._stage = renderer.createStage();
 		// Create the div element.
 		this._divElement = document.createElement('div');
 		this._divElement.style.position = 'absolute';
@@ -21,8 +20,7 @@ export class Viewport {
 		// Destroy the div element.
 		this._viewportsElement.removeChild(this._divElement);
 		// Remove the render stage.
-		this._renderer.stages.remove(this._stage);
-		this._stage.destroy();
+		this._renderer.destroyStage(this._stage);
 	}
 
 	/** Gets the aspect ratio as the *width* / *height*. */
@@ -51,6 +49,21 @@ export class Viewport {
 		this._zIndex = zIndex;
 	}
 
+	/** Gets the bounds. */
+	get bounds(): RectangleReadonly {
+		return this._stage.bounds;
+	}
+
+	/** Sets the bounds. */
+	set bounds(bounds: RectangleReadonly) {
+		this._stage.bounds.copy(bounds);
+	}
+
+	clear(color: ColorReadonly): void {
+		this._gl.clearColor(color.r, color.g, color.b, color.a);
+		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+	}
+
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
 	convertNormalSpaceToPixelSpacePosition(pixelPosition: Vector2, normalPosition: Vector3Readonly): void {
 		this._stage.convertNormalSpaceToPixelSpacePosition(pixelPosition, normalPosition);
@@ -63,9 +76,6 @@ export class Viewport {
 
 	/** The viewports element, which contains all of the viewport divs. */
 	private _viewportsElement: HTMLDivElement;
-
-	/** The renderer. */
-	private _renderer: Render.Renderer;
 
 	/** The div element for the viewport. */
 	private _divElement: HTMLDivElement;
