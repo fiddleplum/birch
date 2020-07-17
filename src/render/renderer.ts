@@ -5,6 +5,7 @@ import { Texture } from './texture';
 import { Stage } from './stage';
 import { UniformBlock } from './uniform_block';
 import { Scene } from './scene';
+import { Model } from './model';
 
 export class Renderer {
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
@@ -38,14 +39,18 @@ export class Renderer {
 		for (const texture of this._textures) {
 			texture.destroy();
 		}
+		for (const model of this._models) {
+			model.destroy();
+		}
 		for (const stage of this._stages) {
 			stage.destroy();
 		}
 		for (const uniformBlock of this._uniformBlocks) {
 			uniformBlock.destroy();
 		}
-		// for (const scene of this._scenes) {
-		// }
+		for (const scene of this._scenes) {
+			scene.destroy();
+		}
 	}
 
 	/** Creates a mesh. */
@@ -90,6 +95,20 @@ export class Renderer {
 		}
 	}
 
+	/** Creates a model. */
+	createModel(): Model {
+		const model = new Model(this._gl);
+		this._models.add(model);
+		return model;
+	}
+
+	/** Destroys a model. */
+	destroyModel(model: Model): void {
+		if (this._models.delete(model)) {
+			model.destroy();
+		}
+	}
+
 	/** Creates a stage. */
 	createStage(): Stage {
 		const stage = new Stage(this._gl);
@@ -128,7 +147,7 @@ export class Renderer {
 	/** Destroys a scene. */
 	destroyScene(scene: Scene): void {
 		if (this._scenes.delete(scene)) {
-			// Do nothing.
+			scene.destroy();
 		}
 	}
 
@@ -167,6 +186,9 @@ export class Renderer {
 
 	/** The textures. */
 	private _textures: Set<Texture> = new Set();
+
+	/** The models. */
+	private _models: Set<Model> = new Set();
 
 	/** The stages. */
 	private _stages: Set<Stage> = new Set();

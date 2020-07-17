@@ -1,7 +1,8 @@
 import { OrderedSet } from '../utils/ordered_set';
 import { Model } from './model';
+import { UniqueId } from '../utils/unique_id';
 
-export class Scene {
+export class Scene extends UniqueId.Object {
 	/** The uniforms function for this scene. */
 	uniformsFunction: Model.UniformsFunction | null = null;
 
