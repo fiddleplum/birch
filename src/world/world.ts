@@ -1,23 +1,22 @@
 import { OrderedSet } from '../internal';
 import { Render } from '../render/index';
-import { Game, Entity } from '../internal';
+import { Engine, Entity } from '../internal';
 import { EventQueue } from './event_queue';
-import { Component } from './components/component';
 
 export class World {
 	/** Constructor. */
-	constructor(game: Game) {
-		// Set the game that contains this.
-		this._game = game;
+	constructor(engine: Engine) {
+		// Set the engine that contains this.
+		this._engine = engine;
 
 		// Create the render scene and set the uniforms function.
 		this._scene = new Render.Scene();
 		// this._scene.uniformsFunction = this._sceneUniforms.bind(this);
 	}
 
-	/** Gets the game that contains this. */
-	get game(): Game {
-		return this._game;
+	/** Gets the engine that contains this. */
+	get engine(): Engine {
+		return this._engine;
 	}
 
 	/** Gets the event queue. */
@@ -47,6 +46,6 @@ export class World {
 
 	private _eventQueue: EventQueue = new EventQueue();
 
-	/** The game that contains this. */
-	private _game: Game;
+	/** The engine that contains this. */
+	private _engine: Engine;
 }

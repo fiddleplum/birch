@@ -1,23 +1,50 @@
-import { OrderedList } from './ordered_list';
-
 export class ResourceList<Item> {
+	/** Constructs this. */
 	constructor(createItem: () => Item, destroyItem: (item: Item) => void) {
 		this._createItem = createItem;
 		this._destroyItem = destroyItem;
 	}
 
-	/** Adds a new item. */
-	addNew(before?: Item): Item {
+	/** Destroys this. */
+	destroy(): void {
+		for (let i = 0; i < this._items.length; i++) {
+			this._destroyItem(this._items[i]);
+		}
+		this._items = [];
+	}
+
+	/** Creates an item at the *index* or at the end. */
+	add(index?: number): Item {
+		if (index !== undefined && (index < 0 || this._items.length < index)) {
+			throw new RangeError();
+		}
 		const item = this._createItem();
-		this._list.add(item);
+		if (index !== undefined) {
+			this._items.splice(index, 0, item);
+		}
+		else {
+			this._items.push(item);
+		}
 		return item;
 	}
 
-	/** Removes an item. */
-	remove(item: Item): boolean {
-		const removed = this._list.remove(item);
-		this._destroyItem(item);
-		return removed;
+	/** Destroys the item at the *index*. */
+	remove(index: number): void {
+		this._destroyItem(this.get(index));
+		this._items.splice(index, 1);
+	}
+
+	/** Get the item at the *index*. */
+	get(index: number): Item {
+		if (index < 0 || this._items.length <= index) {
+			throw new RangeError();
+		}
+		return this._items[index];
+	}
+
+	/** Get the number of items. */
+	get length(): number {
+		return this._items.length;
 	}
 
 	/** The create item function. */
@@ -27,24 +54,6 @@ export class ResourceList<Item> {
 	private _destroyItem: (item: Item) => void;
 
 	/** The list of items. */
-	private _list = new OrderedList<Item>();
+	private _items: Item[] = [];
 }
 
-
-/*
-
-If array,
-	addNew(before) is O(n) because it must move every index up.
-	addNew() is O(1)
-	remove() is O(n) because the index must be found from the item,
-		unless the item has the index within
-	iteration is simple getAt and size
-
-If doubly linked list,
-	addNew(before) is O(1)
-	addNew() is O(1), just keep the tail recorded
-	remove() is O(1), just join prev and next
-	iteration has to use an iterator with reset, and next
-		the iterator can be inside the resource list, but must be indexed,
-		like: for (const iter = r.begin(iterIndex); iter !== undefined; iter.next())
-*/

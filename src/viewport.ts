@@ -1,11 +1,13 @@
 import { CameraComponent, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 import { RectangleReadonly } from './utils/rectangle_readonly';
+import { Renderer } from './render/renderer';
+import { ColorReadonly } from './utils/color_readonly';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
-	constructor(viewportsElement: HTMLDivElement) {
+	constructor(renderer: Render.Renderer, viewportsElement: HTMLDivElement) {
 		// Set the viewports element and renderer.
-		this._viewportsElement = viewportsElement;
+		this._renderer = renderer;
 		// Create the render stage.
 		this._stage = renderer.createStage();
 		// Create the div element.
@@ -15,17 +17,27 @@ export class Viewport {
 		viewportsElement.appendChild(this._divElement);
 	}
 
-	/* Destroys the viewport. */
+	/** Destroys the viewport. */
 	destroy(): void {
 		// Destroy the div element.
-		this._viewportsElement.removeChild(this._divElement);
+		this._divElement.remove();
 		// Remove the render stage.
 		this._renderer.destroyStage(this._stage);
 	}
 
+	/** Gets the div element. */
+	getDiv(): HTMLDivElement {
+		return this._divElement;
+	}
+
 	/** Gets the aspect ratio as the *width* / *height*. */
-	get aspectRatio(): number {
-		return this._stage.bounds.size.x / this._stage.bounds.size.y;
+	getAspectRatio(): number {
+		return this._divElement.clientWidth / this._divElement.clientHeight;
+	}
+
+	/** Sets the clear color. It does not clear if it is undefined. */
+	setClearColor(color: ColorReadonly | undefined) {
+		this._stage.setClearColor(color);
 	}
 
 	/** Gets whether or not the viewport is enabled. */
@@ -39,29 +51,13 @@ export class Viewport {
 		this._divElement.style.display = this._enabled ? '' : 'none';
 	}
 
-	/** Gets the z-index. */
-	get zIndex(): number {
-		return this._zIndex;
-	}
-
-	/** Sets the z-index. */
-	set zIndex(zIndex: number) {
-		this._zIndex = zIndex;
-	}
-
 	/** Gets the bounds. */
 	get bounds(): RectangleReadonly {
 		return this._stage.bounds;
 	}
 
-	/** Sets the bounds. */
-	set bounds(bounds: RectangleReadonly) {
-		this._stage.bounds.copy(bounds);
-	}
-
-	clear(color: ColorReadonly): void {
-		this._gl.clearColor(color.r, color.g, color.b, color.a);
-		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+	update(): void {
+		this._stage.bounds.min.
 	}
 
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
@@ -74,8 +70,8 @@ export class Viewport {
 		this._stage.convertPixelSpaceToNormalSpacePosition(normalPosition, pixelPosition);
 	}
 
-	/** The viewports element, which contains all of the viewport divs. */
-	private _viewportsElement: HTMLDivElement;
+	/** The renderer. */
+	private _renderer: Renderer;
 
 	/** The div element for the viewport. */
 	private _divElement: HTMLDivElement;
@@ -85,9 +81,6 @@ export class Viewport {
 
 	/** The render stage. */
 	private _stage: Render.Stage;
-
-	/** The z-index of the viewport. */
-	private _zIndex: number = 0;
 
 	/** The camera to be rendered. */
 	private _camera: CameraComponent | null = null;

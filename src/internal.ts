@@ -3,6 +3,7 @@ export * from './viewport';
 
 export * from './render/index';
 
+export * from './utils/array_sort';
 export * from './utils/color';
 export * from './utils/color_readonly';
 export * from './utils/matrix44';
@@ -15,7 +16,6 @@ export * from './utils/quaternion';
 export * from './utils/quaternion_readonly';
 export * from './utils/rectangle';
 export * from './utils/rectangle_readonly';
-export * from './utils/sort';
 export * from './utils/sorted_list';
 export * from './utils/unique_id';
 export * from './utils/vector2';

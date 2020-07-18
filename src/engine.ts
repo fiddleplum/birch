@@ -1,17 +1,15 @@
-import { OrderedSet, SortedList, Viewport, World } from './internal';
+import { OrderedSet, Viewport, World } from './internal';
+import { Renderer } from './render/renderer';
+import { ResourceList } from './utils/resource_list';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
 		// Set and prepare the root element.
 		this._rootElement = rootElement;
 		this._prepareRootElement();
-		// Get the WebGL context.
-		const gl = this._canvas.getContext('webgl2', { antialias: true });
-		if (gl === null) {
-			throw new Error('Could not get a WebGL 2.0 context. Your browser may not support WebGL 2.0.');
-		}
-		this._gl = gl;
-		// Run the game.
+		// Create the renderer.
+		this._renderer = new Renderer(this._canvas, true);
+		// Run the engine.
 		this._running = true;
 		this._runBound = this._run.bind(this);
 		this._run();
@@ -22,27 +20,14 @@ export class Engine {
 		return this._rootElement;
 	}
 
-	/** Stops the game. */
-	stop(): void {
-		this._running = false;
+	/** Gets the renderer. */
+	get renderer(): Renderer {
+		return this._renderer;
 	}
 
-	/** Creates a viewport. */
-	createViewport(zIndex?: number): Viewport {
-		const viewportsElement = this._rootElement.querySelector('viewports') as HTMLDivElement;
-		const viewport = new Viewport(viewportsElement);
-		if (zIndex !== undefined) {
-			viewport.zIndex = zIndex;
-		}
-		this._viewports.add(viewport);
-		return viewport;
-	}
-
-	/** Destroys a viewport. */
-	destroyViewport(viewport: Viewport): void {
-		if (this._viewports.remove(viewport)) {
-			viewport.destroy();
-		}
+	/** Gets the viewports. */
+	get viewports(): ResourceList<Viewport> {
+		return this._viewports;
 	}
 
 	/** Creates a world. */
@@ -59,22 +44,19 @@ export class Engine {
 		}
 	}
 
-	/** Destroys the game. */
-	private _destroy(): void {
-		// Destroys the viewports.
-		for (const viewport of this._viewports) {
-			viewport.destroy();
-		}
-		// Lose the WebGL context.
-		const loseContextExtension = this._gl.getExtension('WEBGL_lose_context');
-		if (loseContextExtension !== null) {
-			loseContextExtension.loseContext();
-		}
+	/** Stops the engine. */
+	stop(): void {
+		this._running = false;
 	}
 
-	/** Runs the main game loop. */
+	/** Destroys the engine. */
+	private _destroy(): void {
+		this._viewports.destroy();
+	}
+
+	/** Runs the main engine loop. */
 	private _run(): void {
-		// Check if not running, and if not, destroy the game and wrap it all up.
+		// Check if not running, and if not, destroy the engine and wrap it all up.
 		if (!this._running) {
 			this._destroy();
 			return;
@@ -89,7 +71,8 @@ export class Engine {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
 
-		// Render the viewports.
+		// Render all of the stages.
+		this._renderer.render();
 
 		// Ask the browser for another frame.
 		requestAnimationFrame(this._runBound);
@@ -122,35 +105,40 @@ export class Engine {
 		this._canvas.height = this._canvas.clientHeight * devicePixelRatio;
 		this._rootElement.appendChild(this._canvas);
 		// Add a viewports div.
-		const viewportsDiv = document.createElement('div');
-		viewportsDiv.classList.add('viewports');
-		viewportsDiv.style.position = 'absolute';
-		viewportsDiv.style.left = '0';
-		viewportsDiv.style.top = '0';
-		viewportsDiv.style.width = '100%';
-		viewportsDiv.style.height = '100%';
-		viewportsDiv.style.overflow = 'hidden';
-		this._rootElement.appendChild(viewportsDiv);
+		this._viewportsElement = document.createElement('div');
+		this._viewportsElement.classList.add('viewports');
+		this._viewportsElement.style.position = 'absolute';
+		this._viewportsElement.style.left = '0';
+		this._viewportsElement.style.top = '0';
+		this._viewportsElement.style.width = '100%';
+		this._viewportsElement.style.height = '100%';
+		this._viewportsElement.style.overflow = 'hidden';
+		this._rootElement.appendChild(this._viewportsElement);
 	}
 
 	/** The root element. */
 	private _rootElement: HTMLDivElement;
 
-	/** The canvas element. */
+	/** The canvas. */
 	private _canvas!: HTMLCanvasElement;
 
-	/** A flag that says whether or not the game is running. */
-	private _running: boolean = false;
+	/** The viewports element. */
+	private _viewportsElement!: HTMLDivElement;
 
-	/** The WebGL context. */
-	private _gl: WebGL2RenderingContext;
+	/** A flag that says whether or not the engine is running. */
+	private _running: boolean = false;
 
 	/** A this-bound function of the run method, used by requestAnimationFrame. */
 	private _runBound: () => void;
 
+	/** The renderer. */
+	private _renderer: Renderer;
+
 	/** The viewports. */
-	private _viewports: SortedList<Viewport> = new SortedList((a: Viewport, b: Viewport) => {
-		return a.zIndex < b.zIndex;
+	private _viewports: ResourceList<Viewport> = new ResourceList(() => {
+		return new Viewport(this._renderer, this._viewportsElement);
+	}, (viewport: Viewport) => {
+		viewport.destroy();
 	});
 
 	/** The worlds. */

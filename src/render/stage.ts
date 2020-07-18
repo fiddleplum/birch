@@ -7,6 +7,8 @@ import { Vector2Readonly } from '../utils/vector2_readonly';
 import { Vector3 } from '../utils/vector3';
 import { Vector3Readonly } from '../utils/vector3_readonly';
 import { UniqueId } from '../utils/unique_id';
+import { Color } from '../utils/color';
+import { ColorReadonly } from '../utils/color_readonly';
 
 /** A render stage. It either renders to the canvas or to textures. */
 export class Stage extends UniqueId.Object {
@@ -43,7 +45,7 @@ export class Stage extends UniqueId.Object {
 	}
 
 	/** Set whether it will render to textures or to the canvas. Defaults to false. */
-	set renderToTexture(renderToTexture: boolean) {
+	setRenderToTexture(renderToTexture: boolean) {
 		// If it's changing to be render to texture.
 		if (this._frameBuffer === null && renderToTexture) {
 			// Create the frame buffer.
@@ -91,13 +93,58 @@ export class Stage extends UniqueId.Object {
 		}
 	}
 
+	/** Sets the clear color. It does not clear if it is undefined. */
+	setClearColor(color: ColorReadonly | undefined) {
+		if (color !== undefined) {
+			if (this._clearColor === undefined) {
+				this._clearColor = new Color();
+			}
+			this._clearColor.copy(color);
+		}
+		else {
+			this._clearColor = undefined;
+		}
+	}
+
+	/** Sets the clear depth. It does not clear if it is undefined. */
+	setClearDepth(depth: number | undefined) {
+		this._clearDepth = depth;
+	}
+
+	/** Sets the clear stencil. It does not clear if it is undefined. */
+	setClearStencil(stencil: number | undefined) {
+		this._clearStencil = stencil;
+	}
+
 	/** Renders the stage. */
 	render(): void {
 		if (this.scene === null) {
 			return;
 		}
+
+		// Setup the frame buffer and viewport.
 		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
 		this._gl.viewport(this.bounds.min.x, this.bounds.size.y - this.bounds.min.y, this.bounds.size.x, this.bounds.size.y);
+
+		// Clear the buffer, if needed.
+		let clearBitMask = 0;
+		if (this._clearColor !== undefined) {
+			this._gl.clearColor(this._clearColor.r, this._clearColor.g, this._clearColor.b, this._clearColor.a);
+			clearBitMask |= this._gl.COLOR_BUFFER_BIT;
+		}
+		if (this._clearDepth !== undefined) {
+			this._gl.clearDepth(this._clearDepth);
+			clearBitMask |= this._gl.DEPTH_BUFFER_BIT;
+		}
+		if (this._clearStencil !== undefined) {
+			this._gl.clearStencil(this._clearStencil);
+			clearBitMask |= this._gl.STENCIL_BUFFER_BIT;
+		}
+		if (clearBitMask !== 0) {
+			this._gl.clear(clearBitMask);
+		}
+
+		// Render the scene.
 		this.scene.render(this.uniformsFunction);
 	}
 
@@ -119,6 +166,15 @@ export class Stage extends UniqueId.Object {
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | null = null;
+
+	/** The clear color. */
+	private _clearColor: Color | undefined;
+
+	/** The clear depth. */
+	private _clearDepth: number | undefined;
+
+	/** The clear stencil. */
+	private _clearStencil: number | undefined;
 
 	/** A set of all created stages, one for each WebGL context. */
 	private static _all: Map<WebGL2RenderingContext, Set<Stage>> = new Map();
