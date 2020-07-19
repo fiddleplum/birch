@@ -1,4 +1,24 @@
-import { Num } from './num';
+import { Num } from '../utils/num';
+
+/** An XY vector. */
+export type Vector2 = [number, number];
+
+/** An XYZ vector. */
+export type Vector3 = [number, number, number];
+
+/** An WXYZ vector. */
+export type Vector4 = [number, number, number, number];
+
+/** An RGBA color. */
+export type Color = [number, number, number, number];
+
+/** An WXYZ quaternion. */
+export type Quaternion = [number, number, number, number];
+
+export const Clear: Readonly<Color> = [0, 0, 0, 0];
+export const Black: Readonly<Color> = [0, 0, 0, 1];
+export const White: Readonly<Color> = [1, 1, 1, 1];
+export const Pink: Readonly<Color> = [1, .41, .71, 1];
 
 export class Vec {
 	/** Sets *b* arguments onto *a*. */
