@@ -71,6 +71,11 @@ export class Engine {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
 
+		// Update the bounds of the viewports.
+		for (let i = 0; i < this._viewports.length; i++) {
+			this._viewports.get(i).updateBounds();
+		}
+
 		// Render all of the stages.
 		this._renderer.render();
 

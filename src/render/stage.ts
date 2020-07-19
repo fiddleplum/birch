@@ -118,10 +118,6 @@ export class Stage extends UniqueId.Object {
 
 	/** Renders the stage. */
 	render(): void {
-		if (this.scene === null) {
-			return;
-		}
-
 		// Setup the frame buffer and viewport.
 		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
 		this._gl.viewport(this.bounds.min.x, this.bounds.size.y - this.bounds.min.y, this.bounds.size.x, this.bounds.size.y);
@@ -145,7 +141,9 @@ export class Stage extends UniqueId.Object {
 		}
 
 		// Render the scene.
-		this.scene.render(this.uniformsFunction);
+		if (this.scene !== null) {
+			this.scene.render(this.uniformsFunction);
+		}
 	}
 
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */

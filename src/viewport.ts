@@ -56,8 +56,9 @@ export class Viewport {
 		return this._stage.bounds;
 	}
 
-	update(): void {
-		this._stage.bounds.min.
+	/** Updates the bounds of the viewport to reflect the div. */
+	updateBounds(): void {
+		this._stage.bounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
 	}
 
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
