@@ -1,5 +1,5 @@
 import { System } from './systems/system';
-import { OrderedSet } from '../utils/ordered_set';
+import { List } from '../utils/list';
 import { Component } from './components/component';
 
 /** The event queue. Passes events on to registered systems. */
@@ -19,7 +19,7 @@ export class EventQueue {
 	subscribeToEvent(system: System, eventType: symbol): void {
 		let systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
-			systems = new OrderedSet();
+			systems = new List();
 			this._eventSubscribers.set(eventType, systems);
 		}
 		systems.add(system);
@@ -39,7 +39,7 @@ export class EventQueue {
 	}
 
 	/** The event subscribers. */
-	private _eventSubscribers: Map<symbol, OrderedSet<System>> = new Map();
+	private _eventSubscribers: Map<symbol, List<System>> = new Map();
 }
 
 export namespace EventQueue {

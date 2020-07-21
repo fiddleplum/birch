@@ -10,13 +10,13 @@ export class SortedList<Item> extends OrderedBase<Item> {
 		this._isLess = isLess;
 	}
 
-	/** Adds an item to the sorted list. */
+	/** Adds an item to the sorted list. O(log n) */
 	add(item: Item): void {
 		const index = this._find(item);
 		this._a.splice(index, 0, item);
 	}
 
-	/** Removes an item from the sorted list. Returns true if the item was found and removed. */
+	/** Removes an item from the sorted list. Returns true if the item was found and removed. O(log n) */
 	remove(item: Item): boolean {
 		const index = this._find(item);
 		if (this._a[index] !== item) {
@@ -31,7 +31,7 @@ export class SortedList<Item> extends OrderedBase<Item> {
 		return new SortedList.Iterator(this._a);
 	}
 
-	/** Finds an item in the sorted array in O(log n) time. */
+	/** Finds an item in the sorted array. O(log n) */
 	private _find(item: Item): number {
 		let low = 0;
 		let high = this._a.length;

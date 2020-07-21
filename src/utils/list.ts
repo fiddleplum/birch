@@ -1,10 +1,7 @@
 import { Ordered, OrderedBase } from './ordered';
 
-// I need to implement ResourceList to use this but with given constructors/destructors.
-// I need to possibly remove or repurpose Cache.
-
-export class OrderedSet<Value> extends OrderedBase<Value> {
-	/** The constructor. Takes an *iterable*. */
+export class List<Value> extends OrderedBase<Value> {
+	/** Constructs the List. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
 		super();
 		if (iterable !== undefined) {
@@ -14,26 +11,26 @@ export class OrderedSet<Value> extends OrderedBase<Value> {
 		}
 	}
 
-	/** Returns true if there are no values in the set. */
-	isEmpty(): boolean {
-		return this._head === undefined;
+	/** Gets the number of values. */
+	size(): number {
+		return this._valuesToNodes.size;
 	}
 
-	/** Returns true if the *value* is in the set. O(1). */
+	/** Returns true if the *value* is in the set. (1). */
 	has(value: Value): boolean {
 		return this._valuesToNodes.has(value);
 	}
 
-	/** Adds a node with the *value* placed before the *before* node or at the end. */
+	/** Adds a node with the *value* placed before the *before* node or at the end. O(1) */
 	add(value: Value, before?: Value): void {
 		if (this._valuesToNodes.has(value)) {
 			return;
 		}
-		const newNode = new OrderedSet.Node<Value>(value);
+		const newNode = new List.Node<Value>(value);
 		if (before !== undefined) {
 			const beforeNode = this._valuesToNodes.get(before);
 			if (beforeNode === undefined) {
-				throw new Error('The node for ' + before + ' was not found.');
+				throw new Error('The value ' + before + ' was not found.');
 			}
 			if (beforeNode.prev !== undefined) { // Not the head node.
 				newNode.prev = beforeNode.prev;
@@ -89,7 +86,7 @@ export class OrderedSet<Value> extends OrderedBase<Value> {
 		this._tail = undefined;
 	}
 
-	/** Sorts the values for iteration based on the *isLess* function. O(sorting algorithm). */
+	/** Sorts the values for iteration based on the *isLess* function. Uses insertion sort. */
 	sort(isLess: (a: Value, b: Value) => boolean): void {
 		if (this._head === undefined) {
 			return;
@@ -108,27 +105,27 @@ export class OrderedSet<Value> extends OrderedBase<Value> {
 	}
 
 	/** Creates a new iterator. */
-	protected _createNewIterator(): OrderedSet.SetIterator<Value> {
-		return new OrderedSet.SetIterator(this._getHead.bind(this));
+	protected _createNewIterator(): List.Iterator<Value> {
+		return new List.Iterator(this._getHead.bind(this));
 	}
 
 	/** Gets the head. */
-	private _getHead(): OrderedSet.Node<Value> | undefined {
+	private _getHead(): List.Node<Value> | undefined {
 		return this._head;
 	}
 
 	/** The head node. */
-	private _head: OrderedSet.Node<Value> | undefined = undefined;
+	private _head: List.Node<Value> | undefined = undefined;
 
 	/** The tail node. */
-	private _tail: OrderedSet.Node<Value> | undefined = undefined;
+	private _tail: List.Node<Value> | undefined = undefined;
 
 	/** A mapping from values to nodes for easier access. */
-	private _valuesToNodes = new Map<Value, OrderedSet.Node<Value>>();
+	private _valuesToNodes = new Map<Value, List.Node<Value>>();
 }
 
-export namespace OrderedSet {
-	export class SetIterator<Value> extends Ordered.Iterator<Value> {
+export namespace List {
+	export class Iterator<Value> extends Ordered.Iterator<Value> {
 		private _getHead: () => Node<Value>;
 
 		private node: Node<Value> | undefined = undefined;

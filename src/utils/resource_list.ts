@@ -1,59 +1,47 @@
-export class ResourceList<Item> {
+import { List } from './list';
+import { Ordered } from './ordered';
+
+export class ResourceList<Resource> {
 	/** Constructs this. */
-	constructor(createItem: () => Item, destroyItem: (item: Item) => void) {
-		this._createItem = createItem;
-		this._destroyItem = destroyItem;
+	constructor(createResource: () => Resource, destroyResource: (resource: Resource) => void) {
+		this._createResource = createResource;
+		this._destroyResource = destroyResource;
 	}
 
 	/** Destroys this. */
 	destroy(): void {
-		for (let i = 0; i < this._items.length; i++) {
-			this._destroyItem(this._items[i]);
+		for (const resource of this._resources) {
+			this._destroyResource(resource);
 		}
-		this._items = [];
 	}
 
-	/** Creates an item at the *index* or at the end. */
-	add(index?: number): Item {
-		if (index !== undefined && (index < 0 || this._items.length < index)) {
-			throw new RangeError();
-		}
-		const item = this._createItem();
-		if (index !== undefined) {
-			this._items.splice(index, 0, item);
-		}
-		else {
-			this._items.push(item);
-		}
-		return item;
+	/** Creates a resource.
+	 * @param before - The resource will be created and inserted right before this resource. */
+	add(before?: Resource): Resource {
+		const resource = this._createResource();
+		this._resources.add(resource, before);
+		return resource;
 	}
 
-	/** Destroys the item at the *index*. */
-	remove(index: number): void {
-		this._destroyItem(this.get(index));
-		this._items.splice(index, 1);
-	}
-
-	/** Get the item at the *index*. */
-	get(index: number): Item {
-		if (index < 0 || this._items.length <= index) {
-			throw new RangeError();
+	/** Destroys the resource. */
+	remove(resource: Resource): void {
+		if (this._resources.has(resource)) {
+			this._destroyResource(resource);
+			this._resources.remove(resource);
 		}
-		return this._items[index];
 	}
 
-	/** Get the number of items. */
-	get length(): number {
-		return this._items.length;
+	/** Returns an iterator. */
+	[Symbol.iterator](): Ordered.Iterator<Resource> {
+		return this._resources[Symbol.iterator]();
 	}
 
-	/** The create item function. */
-	private _createItem: () => Item;
+	/** The create resource function. */
+	private _createResource: () => Resource;
 
-	/** The destroy item function. */
-	private _destroyItem: (item: Item) => void;
+	/** The destroy resource function. */
+	private _destroyResource: (resource: Resource) => void;
 
-	/** The list of items. */
-	private _items: Item[] = [];
+	/** The list of resources. */
+	private _resources: List<Resource> = new List();
 }
-

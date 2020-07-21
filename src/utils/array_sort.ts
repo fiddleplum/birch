@@ -11,7 +11,7 @@ export class ArraySort {
 		array.isLess = isLess;
 	}
 
-	/** Gets the index of the item, or if not found, where the item would be. */
+	/** Gets the index of the item, or if not found, where the item would be. O(log n) */
 	static find<T, Y>(sortedArray: T[], item: Y, isLess?: (a: T, b: Y) => boolean): number {
 		let isLessFunction = isLess;
 		if (isLessFunction === undefined) {
@@ -34,13 +34,13 @@ export class ArraySort {
 		return low;
 	}
 
-	/** Inserts an item into the sorted array. */
+	/** Inserts an item into the sorted array. O(n). */
 	static insert<T>(sortedArray: T[], item: T, isLess?: (a: T, b: T) => boolean): void {
-		const index = this.find(sortedArray, item, isLess);
-		sortedArray.splice(index, 0, item);
+		const index = this.find(sortedArray, item, isLess); // O(log n)
+		sortedArray.splice(index, 0, item); // O(n)
 	}
 
-	/** Insertion sort. */
+	/** Insertion sort. O(n^2) worst, O(n) if mostly sorted. */
 	static sortByInsertion<T>(array: T[], isLess?: (a: T, b: T) => boolean): void {
 		let isLessFunction = isLess;
 		if (isLessFunction === undefined) {
@@ -49,16 +49,28 @@ export class ArraySort {
 		if (isLessFunction === undefined) {
 			throw new Error('isLess must be set.');
 		}
-		let i = 1;
-		while (i < array.length) {
+		for (let i = 1, l = array.length; i < l; i++) {
 			const x = array[i];
-			let j = i - 1;
-			while (j >= 0 && isLessFunction(x, array[j])) {
-				array[i] = array[j];
-				array[j] = x;
-				j -= 1;
+			// If x is less than the previous element,
+			if (isLessFunction(x, array[i - 1])) {
+				// Do a binary search to find where it should go.
+				let low = 0;
+				let high = i;
+				while (low < high) {
+					const mid = (low + high) >>> 1;
+					if (isLessFunction(array[mid], x)) {
+						low = mid + 1;
+					}
+					else {
+						high = mid;
+					}
+				}
+				// Move up all of the other elements.
+				for (let j = i; j > low; j--) {
+					array[j] = array[j - 1];
+				}
+				array[low] = x;
 			}
-			i += 1;
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { Ordered } from './ordered';
-import { OrderedSet } from './ordered_set';
+import { List } from './list';
 
 export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Value>> {
 	/** The constructor. Takes an *iterable*. */
@@ -66,20 +66,20 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 	private _keyMap: Map<Key, OrderedMap.Entry<Key, Value>> = new Map();
 
 	/** The ordered list of items. */
-	private _keyList: OrderedSet<OrderedMap.Entry<Key, Value>> = new OrderedSet();
+	private _keyList: List<OrderedMap.Entry<Key, Value>> = new List();
 }
 
 export namespace OrderedMap {
 	// export class MapIterator<Key, Value> extends Ordered.Iterator<Entry<Key, Value>> {
 	// 	private _keyMap: Map<Key, Value>;
-	// 	private _keyList: OrderedSet<Key>;
+	// 	private _keyList: List<Key>;
 
 	// 	private _entry: Entry<Key, Value> = new Entry<Key, Value>(undefined, undefined);
 
 	// 	private _iterator: Ordered.Iterator<Key>;
 
 	// 	/** The constructor. */
-	// 	constructor(keyMap: Map<Key, Value>, keyList: OrderedSet<Key>) {
+	// 	constructor(keyMap: Map<Key, Value>, keyList: List<Key>) {
 	// 		super();
 	// 		this._keyMap = keyMap;
 	// 		this._keyList = keyList;

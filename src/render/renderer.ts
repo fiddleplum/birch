@@ -1,4 +1,5 @@
 import { ColorReadonly } from '../utils/color_readonly';
+import { ResourceSet } from '../utils/resource_set';
 import { Mesh } from './mesh';
 import { Shader } from './shader';
 import { Texture } from './texture';
@@ -8,6 +9,7 @@ import { Scene } from './scene';
 import { Model } from './model';
 
 export class Renderer {
+	/** Constructs this. */
 	constructor(canvas: HTMLCanvasElement, antialias: boolean) {
 		// Save the canvas.
 		this._canvas = canvas;
@@ -19,7 +21,7 @@ export class Renderer {
 		this._gl = gl;
 	}
 
-	/** Destroys the renderer. */
+	/** Destroys this. */
 	destroy(): void {
 		// Destroy the WebGL context.
 		const loseContextExtension = this._gl.getExtension('WEBGL_lose_context');
@@ -50,18 +52,8 @@ export class Renderer {
 		}
 	}
 
-	/** Creates a mesh. */
-	createMesh(numVerticesPerPrimitive: number, vertexFormat: Mesh.Component[][]): Mesh {
-		const mesh = new Mesh(this._gl, numVerticesPerPrimitive, vertexFormat);
-		this._meshes.add(mesh);
-		return mesh;
-	}
-
-	/** Destroys a mesh. */
-	destroyMesh(mesh: Mesh): void {
-		if (this._meshes.delete(mesh)) {
-			mesh.destroy();
-		}
+	get meshes(): ResourceSet<Mesh> {
+		return this._meshes;
 	}
 
 	/** Creates a shader. */
@@ -73,7 +65,7 @@ export class Renderer {
 
 	/** Destroys a shader. */
 	destroyShader(shader: Shader): void {
-		if (this._shaders.delete(shader)) {
+		if (this._shaders.remove(shader)) {
 			shader.destroy();
 		}
 	}
@@ -87,7 +79,7 @@ export class Renderer {
 
 	/** Destroys a texture. */
 	destroyTexture(texture: Texture): void {
-		if (this._textures.delete(texture)) {
+		if (this._textures.remove(texture)) {
 			texture.destroy();
 		}
 	}
@@ -101,7 +93,7 @@ export class Renderer {
 
 	/** Destroys a model. */
 	destroyModel(model: Model): void {
-		if (this._models.delete(model)) {
+		if (this._models.remove(model)) {
 			model.destroy();
 		}
 	}
@@ -115,7 +107,7 @@ export class Renderer {
 
 	/** Destroys a stage. */
 	destroyStage(stage: Stage): void {
-		if (this._stages.delete(stage)) {
+		if (this._stages.remove(stage)) {
 			stage.destroy();
 		}
 	}
@@ -129,7 +121,7 @@ export class Renderer {
 
 	/** Destroys a uniform block. */
 	destroyUniformBlock(uniformBlock: UniformBlock): void {
-		if (this._uniformBlocks.delete(uniformBlock)) {
+		if (this._uniformBlocks.remove(uniformBlock)) {
 			uniformBlock.destroy();
 		}
 	}
@@ -143,7 +135,7 @@ export class Renderer {
 
 	/** Destroys a scene. */
 	destroyScene(scene: Scene): void {
-		if (this._scenes.delete(scene)) {
+		if (this._scenes.remove(scene)) {
 			scene.destroy();
 		}
 	}
@@ -168,23 +160,27 @@ export class Renderer {
 	private _gl: WebGL2RenderingContext;
 
 	/** The meshes. */
-	private _meshes: Set<Mesh> = new Set();
+	private _meshes: ResourceSet<Mesh> = new ResourceSet(() => {
+		return new Mesh(this._gl);
+	}, (mesh: Mesh) => {
+		mesh.destroy();
+	});
 
 	/** The shaders. */
-	private _shaders: Set<Shader> = new Set();
+	private _shaders: List<Shader> = new List();
 
 	/** The textures. */
-	private _textures: Set<Texture> = new Set();
+	private _textures: List<Texture> = new List();
 
 	/** The models. */
-	private _models: Set<Model> = new Set();
+	private _models: List<Model> = new List();
 
 	/** The stages. */
-	private _stages: Set<Stage> = new Set();
+	private _stages: List<Stage> = new List();
 
 	/** The uniform blocks. */
-	private _uniformBlocks: Set<UniformBlock> = new Set();
+	private _uniformBlocks: List<UniformBlock> = new List();
 
 	/** The scenes. */
-	private _scenes: Set<Scene> = new Set();
+	private _scenes: List<Scene> = new List();
 }

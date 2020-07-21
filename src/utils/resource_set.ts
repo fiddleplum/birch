@@ -1,48 +1,46 @@
-export class ResourceSet<Item> {
-	constructor(createItem: () => Item, destroyItem: (item: Item) => void) {
-		this._createItem = createItem;
-		this._destroyItem = destroyItem;
+import { List } from './list';
+import { Ordered } from './ordered';
+
+export class ResourceSet<Resource> {
+	/** Constructs this. */
+	constructor(createResource: () => Resource, destroyResource: (resource: Resource) => void) {
+		this._createResource = createResource;
+		this._destroyResource = destroyResource;
 	}
 
-	/** Adds a new item. */
-	create(before?: Item): Item {
-		const item = this._createItem();
-		this._set.add(item);
-		return item;
+	/** Destroys this. */
+	destroy(): void {
+		for (const resource of this._resources) {
+			this._destroyResource(resource);
+		}
 	}
 
-	/** Removes an item. */
-	destroy(item: Item): boolean {
-		const removed = this._set.remove(item);
-		this._destroyItem(item);
-		return removed;
+	/** Creates a resource. */
+	add(): Resource {
+		const resource = this._createResource();
+		this._resources.add(resource);
+		return resource;
 	}
 
-	/** The create item function. */
-	private _createItem: () => Item;
+	/** Destroys the resource. */
+	remove(resource: Resource): void {
+		if (this._resources.has(resource)) {
+			this._destroyResource(resource);
+			this._resources.remove(resource);
+		}
+	}
 
-	/** The destroy item function. */
-	private _destroyItem: (item: Item) => void;
+	/** Returns an iterator. */
+	[Symbol.iterator](): Ordered.Iterator<Resource> {
+		return this._resources[Symbol.iterator]();
+	}
 
-	/** The set of items. */
-	private _set = new Set<Item>();
+	/** The create resource function. */
+	private _createResource: () => Resource;
+
+	/** The destroy resource function. */
+	private _destroyResource: (resource: Resource) => void;
+
+	/** The list of resources. */
+	private _resources: List<Resource> = new List();
 }
-
-
-/*
-
-If array,
-	addNew(before) is O(n) because it must move every index up.
-	addNew() is O(1)
-	remove() is O(n) because the index must be found from the item,
-		unless the item has the index within
-	iteration is simple getAt and size
-
-If doubly linked list,
-	addNew(before) is O(1)
-	addNew() is O(1), just keep the tail recorded
-	remove() is O(1), just join prev and next
-	iteration has to use an iterator with reset, and next
-		the iterator can be inside the resource list, but must be indexed,
-		like: for (const iter = r.begin(iterIndex); iter !== undefined; iter.next())
-*/

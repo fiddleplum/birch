@@ -1,4 +1,4 @@
-import { OrderedSet } from '../internal';
+import { List } from '../internal';
 import { Render } from '../render/index';
 import { Engine, Entity } from '../internal';
 import { EventQueue } from './event_queue';
@@ -12,6 +12,10 @@ export class World {
 		// Create the render scene and set the uniforms function.
 		this._scene = new Render.Scene();
 		// this._scene.uniformsFunction = this._sceneUniforms.bind(this);
+	}
+
+	/** Destroys this. */
+	destroy(): void {
 	}
 
 	/** Gets the engine that contains this. */
@@ -40,7 +44,7 @@ export class World {
 	// }
 
 	/** The list of entities this contains. */
-	private _entities: OrderedSet<Entity> = new OrderedSet();
+	private _entities: List<Entity> = new List();
 
 	private _scene: Render.Scene = new Render.Scene();
 

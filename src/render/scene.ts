@@ -1,4 +1,4 @@
-import { OrderedSet } from '../utils/ordered_set';
+import { List } from '../utils/list';
 import { Model } from './model';
 import { UniqueId } from '../utils/unique_id';
 
@@ -7,7 +7,7 @@ export class Scene extends UniqueId.Object {
 	uniformsFunction: Model.UniformsFunction | null = null;
 
 	/** Gets the set of models. */
-	get models(): OrderedSet<Model> {
+	get models(): List<Model> {
 		return this._models;
 	}
 
@@ -65,5 +65,5 @@ export class Scene extends UniqueId.Object {
 	}
 
 	/** The set of models. */
-	private _models: OrderedSet<Model> = new OrderedSet();
+	private _models: List<Model> = new List();
 }

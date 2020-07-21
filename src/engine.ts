@@ -1,6 +1,7 @@
-import { OrderedSet, Viewport, World } from './internal';
+import { List, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
 import { ResourceList } from './utils/resource_list';
+import { ResourceSet } from './utils/resource_set';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -28,6 +29,10 @@ export class Engine {
 	/** Gets the viewports. */
 	get viewports(): ResourceList<Viewport> {
 		return this._viewports;
+	}
+
+	/** Gets the worlds. */
+	get worlds(): ResourceSet<World> {
 	}
 
 	/** Creates a world. */
@@ -147,5 +152,9 @@ export class Engine {
 	});
 
 	/** The worlds. */
-	private _worlds: OrderedSet<World> = new OrderedSet();
+	private _worlds: ResourceSet<World> = new ResourceSet(() => {
+		return new World(this);
+	}, (world: World) => {
+		world.destroy();
+	});
 }
