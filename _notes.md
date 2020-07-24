@@ -1,12 +1,5 @@
 # Issues I'm running into
 
-## TODO
-
-Make all of the resources have constructors that aren't configurable.
-Make renderer resources just use ResourceList.
-Delete the _all parts of the resources.
-
-
 ## How to handle Model uniforms?
 
 Right now I have Frame and Model components and a Model system. Whenever a Frame component changes its position or orientation, it sends an event to the Model system, which updates the uniforms on the Model component.

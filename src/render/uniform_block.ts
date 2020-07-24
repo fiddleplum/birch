@@ -27,7 +27,7 @@ In the shader:
 */
 
 export class UniformBlock extends UniqueId.Object {
-	constructor(gl: WebGL2RenderingContext, uniforms: UniformBlock.Uniform[]) {
+	constructor(gl: WebGL2RenderingContext) {
 		super();
 
 		// Save the WebGL context.
@@ -39,9 +39,22 @@ export class UniformBlock extends UniqueId.Object {
 			throw new Error('Could not create UBO buffer.');
 		}
 		this._buffer = buffer;
+	}
 
+	/** Destroys this. */
+	destroy(): void {
+		// Delete the buffer.
+		this._gl.deleteBuffer(this._buffer);
+		super.destroy();
+	}
+
+	/** Sets the uniforms. */
+	setUniformTypes(uniforms: UniformBlock.Uniform[]): void {
+		// Clean up any previous uniforms.
+		this._uniformNames = [];
+		this._uniformInfos.clear();
 		// Setup the uniform names and types.
-		this._gl.bindBuffer(gl.UNIFORM_BUFFER, this._buffer);
+		this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
 			this._uniformNames.push(uniform.name);
@@ -54,19 +67,6 @@ export class UniformBlock extends UniqueId.Object {
 
 		// Setup the offsets.
 		this._calcShaderOffsets();
-
-		// Add it to the set of all created meshes.
-		if (!UniformBlock._all.has(gl)) {
-			UniformBlock._all.set(gl, new Set());
-		}
-		UniformBlock._all.get(gl)?.add(this);
-	}
-
-	/** Destroys this. */
-	destroy(): void {
-		this._gl.deleteBuffer(this._buffer);
-		UniformBlock._all.get(this._gl)?.delete(this);
-		super.destroy();
 	}
 
 	/** Sets the uniform to a value. */
@@ -134,17 +134,13 @@ export class UniformBlock extends UniqueId.Object {
 
 	/** Calculates the uniform block offsets by creating a temporary shader and then querying the uniform offsets of that shader. */
 	private _calcShaderOffsets(): void {
-		// Create the shader objects.
+		// Create the vertex shader object.
 		const vertexObject = this._gl.createShader(this._gl.VERTEX_SHADER);
 		if (vertexObject === null) {
 			throw new Error('Could not create a new shader object.');
 		}
-		const fragmentObject = this._gl.createShader(this._gl.FRAGMENT_SHADER);
-		if (fragmentObject === null) {
-			throw new Error('Could not create a new shader object.');
-		}
-		// Compile the shader objects.
 		this._gl.shaderSource(vertexObject, `#version 300 es\n${this.getGLSL()}void main() {}`);
+		// Compile the vertex shader objects
 		this._gl.compileShader(vertexObject);
 		const success = this._gl.getShaderParameter(vertexObject, this._gl.COMPILE_STATUS) as GLboolean;
 		if (!success) {
@@ -152,11 +148,20 @@ export class UniformBlock extends UniqueId.Object {
 			this._gl.deleteShader(vertexObject);
 			throw new Error('The uniform block\'s shader object did not compile correctly: ' + error);
 		}
+		// Create the fragment shader object.
+		const fragmentObject = this._gl.createShader(this._gl.FRAGMENT_SHADER);
+		if (fragmentObject === null) {
+			this._gl.deleteShader(vertexObject);
+			throw new Error('Could not create a new shader object.');
+		}
 		this._gl.shaderSource(fragmentObject, `#version 300 es\nvoid main() {}`);
+		// Compile the fragment shader object.
 		this._gl.compileShader(fragmentObject);
 		// Create the program, attach the shader objects, and link.
 		const program = this._gl.createProgram();
 		if (program === null) {
+			this._gl.deleteShader(vertexObject);
+			this._gl.deleteShader(fragmentObject);
 			throw new Error('Could not create a new shader program.');
 		}
 		this._gl.attachShader(program, vertexObject);
@@ -165,28 +170,22 @@ export class UniformBlock extends UniqueId.Object {
 
 		// Get the index of the uniform block.
 		const uniformBlockIndex = this._gl.getUniformBlockIndex(program, 'Example');
-		console.log(uniformBlockIndex);
 		// Get the size in bytes of the uniform block, and create the data array.
 		const dataSizeInBytes = this._gl.getActiveUniformBlockParameter(program, uniformBlockIndex, this._gl.UNIFORM_BLOCK_DATA_SIZE);
-		console.log(dataSizeInBytes);
 		this._data = new ArrayBuffer(dataSizeInBytes);
 		this._dataView = new DataView(this._data);
 		// Get the indices for each of the uniforms in the uniform block.
-		console.log(this._uniformNames);
 		const indicesOfUniformBlock = this._gl.getUniformIndices(program, this._uniformNames) as number[];
-		console.log(indicesOfUniformBlock);
-		// const indicesOfUniformBlock = this._gl.getActiveUniformBlockParameter(program, uniformBlockIndex, this._gl.UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES) as Uint32Array;
 		const offsetsOfUniformBlock = this._gl.getActiveUniforms(program, indicesOfUniformBlock, this._gl.UNIFORM_OFFSET) as number[];
-		console.log(offsetsOfUniformBlock);
 		for (let i = 0, l = offsetsOfUniformBlock.length; i < l; i++) {
 			const uniformInfo = this._uniformInfos.get(this._uniformNames[i]) as UniformInfo;
 			uniformInfo.offset = offsetsOfUniformBlock[i];
 		}
 
 		// Clean up the shader objects and program.
+		this._gl.deleteProgram(program);
 		this._gl.deleteShader(vertexObject);
 		this._gl.deleteShader(fragmentObject);
-		this._gl.deleteProgram(program);
 	}
 
 	/**  The WebGL context. */

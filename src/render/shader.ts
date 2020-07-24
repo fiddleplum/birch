@@ -2,49 +2,48 @@ import { UniqueId } from '../utils/unique_id';
 
 export class Shader extends UniqueId.Object {
 	/** The constructor. */
-	constructor(gl: WebGL2RenderingContext, vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>) {
+	constructor(gl: WebGL2RenderingContext) {
 		super();
 
 		// Save the WebGL context.
 		this._gl = gl;
 
-		try {
-			// Create the shader program.
-			let vertexObject = null;
-			let fragmentObject = null;
-			try {
-				vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
-				fragmentObject = this._compile(fragmentCode, this._gl.FRAGMENT_SHADER);
-				this._program = this._link(vertexObject, fragmentObject, attributeLocations);
-			}
-			finally {
-				if (vertexObject !== null) {
-					this._gl.deleteShader(vertexObject);
-				}
-				if (fragmentObject !== null) {
-					this._gl.deleteShader(fragmentObject);
-				}
-			}
-			this._initializeUniforms();
-			this._initializeAttributes();
+		// Create the program.
+		const program = this._gl.createProgram();
+		if (program === null) {
+			throw new Error('Could not create a new shader program.');
 		}
-		catch (e) {
-			this.destroy();
-			throw e;
-		}
-
-		// Add it to the set of all created shaders.
-		if (!Shader._all.has(gl)) {
-			Shader._all.set(gl, new Set());
-		}
-		Shader._all.get(gl)?.add(this);
+		this._program = program;
 	}
 
 	/** Destructs the shader. */
 	destroy(): void {
+		// Delete the program.
 		this._gl.deleteProgram(this._program);
-		Shader._all.get(this._gl)?.delete(this);
 		super.destroy();
+	}
+
+	/** Sets the vertex and fragment code for the shader and bind the attribute locations. */
+	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>): void {
+		let vertexObject = null;
+		let fragmentObject = null;
+		try {
+			// Compile the shader stages.
+			vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
+			fragmentObject = this._compile(fragmentCode, this._gl.FRAGMENT_SHADER);
+			// Link the shader program.
+			this._link(vertexObject, fragmentObject, attributeLocations);
+		}
+		finally {
+			if (vertexObject !== null) {
+				this._gl.deleteShader(vertexObject);
+			}
+			if (fragmentObject !== null) {
+				this._gl.deleteShader(fragmentObject);
+			}
+		}
+		this._initializeUniforms();
+		this._initializeAttributes();
 	}
 
 	/** Activates the shader for use in rendering. */
@@ -190,39 +189,29 @@ export class Shader extends UniqueId.Object {
 	}
 
 	/** Links shader objects to create a shader program. */
-	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: Map<string, number>): WebGLProgram {
-		// Create the program.
-		const program = this._gl.createProgram();
-		if (program === null) {
-			throw new Error('Could not create a new shader program.');
-		}
-
+	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: Map<string, number>): void {
 		// Attach the shader objects.
-		this._gl.attachShader(program, vertexObject);
-		this._gl.attachShader(program, fragmentObject);
+		this._gl.attachShader(this._program, vertexObject);
+		this._gl.attachShader(this._program, fragmentObject);
 
 		// Bind the given attrbute locations.
 		for (const [key, value] of attributeLocations) {
-			this._gl.bindAttribLocation(program, value, key);
+			this._gl.bindAttribLocation(this._program, value, key);
 		}
 
 		// Link the shaders to the program.
-		this._gl.linkProgram(program);
+		this._gl.linkProgram(this._program);
 
 		// Detach the shader objects.
-		this._gl.detachShader(program, vertexObject);
-		this._gl.detachShader(program, fragmentObject);
+		this._gl.detachShader(this._program, vertexObject);
+		this._gl.detachShader(this._program, fragmentObject);
 
 		// Check for success.
-		const success = this._gl.getProgramParameter(program, this._gl.LINK_STATUS) as GLboolean;
+		const success = this._gl.getProgramParameter(this._program, this._gl.LINK_STATUS) as GLboolean;
 		if (!success) {
-			const error = this._gl.getProgramInfoLog(program);
-			this._gl.deleteProgram(program);
+			const error = this._gl.getProgramInfoLog(this._program);
 			throw new Error('The shader program did not link correctly: ' + error);
 		}
-
-		// Return the program.
-		return program;
 	}
 
 	/** Gets the mapping from uniform names to locations. */
@@ -294,8 +283,5 @@ export class Shader extends UniqueId.Object {
 	private _attributeNamesToLocations: Map<string, number> = new Map();
 
 	/** The Gl shader program. */
-	private _program: WebGLProgram | null = null;
-
-	/** A set of all created shaders, one for each WebGL context. */
-	private static _all: Map<WebGL2RenderingContext, Set<Shader>> = new Map();
+	private _program: WebGLProgram;
 }

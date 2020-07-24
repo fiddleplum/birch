@@ -16,14 +16,14 @@ export class ResourceSet<Resource> {
 	}
 
 	/** Creates a resource. */
-	add(): Resource {
+	createResource(): Resource {
 		const resource = this._createResource();
 		this._resources.add(resource);
 		return resource;
 	}
 
 	/** Destroys the resource. */
-	remove(resource: Resource): void {
+	destroyResource(resource: Resource): void {
 		if (this._resources.has(resource)) {
 			this._destroyResource(resource);
 			this._resources.remove(resource);

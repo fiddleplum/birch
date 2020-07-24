@@ -27,12 +27,6 @@ export class Stage extends UniqueId.Object {
 
 		// Save the WebGL context.
 		this._gl = gl;
-
-		// Add it to the set of all created stages.
-		if (!Stage._all.has(gl)) {
-			Stage._all.set(gl, new Set());
-		}
-		Stage._all.get(gl)?.add(this);
 	}
 
 	/** Destroys the stage. */
@@ -40,12 +34,11 @@ export class Stage extends UniqueId.Object {
 		if (this._frameBuffer !== null) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
-		Stage._all.get(this._gl)?.delete(this);
 		super.destroy();
 	}
 
 	/** Set whether it will render to textures or to the canvas. Defaults to false. */
-	setRenderToTexture(renderToTexture: boolean) {
+	setRenderToTexture(renderToTexture: boolean): void {
 		// If it's changing to be render to texture.
 		if (this._frameBuffer === null && renderToTexture) {
 			// Create the frame buffer.
@@ -94,7 +87,7 @@ export class Stage extends UniqueId.Object {
 	}
 
 	/** Sets the clear color. It does not clear if it is undefined. */
-	setClearColor(color: ColorReadonly | undefined) {
+	setClearColor(color: ColorReadonly | undefined): void {
 		if (color !== undefined) {
 			if (this._clearColor === undefined) {
 				this._clearColor = new Color();
@@ -107,12 +100,12 @@ export class Stage extends UniqueId.Object {
 	}
 
 	/** Sets the clear depth. It does not clear if it is undefined. */
-	setClearDepth(depth: number | undefined) {
+	setClearDepth(depth: number | undefined): void {
 		this._clearDepth = depth;
 	}
 
 	/** Sets the clear stencil. It does not clear if it is undefined. */
-	setClearStencil(stencil: number | undefined) {
+	setClearStencil(stencil: number | undefined): void {
 		this._clearStencil = stencil;
 	}
 
@@ -173,7 +166,4 @@ export class Stage extends UniqueId.Object {
 
 	/** The clear stencil. */
 	private _clearStencil: number | undefined;
-
-	/** A set of all created stages, one for each WebGL context. */
-	private static _all: Map<WebGL2RenderingContext, Set<Stage>> = new Map();
 }

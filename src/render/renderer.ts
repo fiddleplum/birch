@@ -1,4 +1,3 @@
-import { ColorReadonly } from '../utils/color_readonly';
 import { ResourceSet } from '../utils/resource_set';
 import { Mesh } from './mesh';
 import { Shader } from './shader';
@@ -52,97 +51,39 @@ export class Renderer {
 		}
 	}
 
+	/** Gets the meshes. */
 	get meshes(): ResourceSet<Mesh> {
 		return this._meshes;
 	}
 
-	/** Creates a shader. */
-	createShader(vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>): Shader {
-		const shader = new Shader(this._gl, vertexCode, fragmentCode, attributeLocations);
-		this._shaders.add(shader);
-		return shader;
+	/** Gets the shaders. */
+	get shaders(): ResourceSet<Shader> {
+		return this._shaders;
 	}
 
-	/** Destroys a shader. */
-	destroyShader(shader: Shader): void {
-		if (this._shaders.remove(shader)) {
-			shader.destroy();
-		}
+	/** Gets the textures. */
+	get textures(): ResourceSet<Texture> {
+		return this._textures;
 	}
 
-	/** Creates a texture. */
-	createTexture(source: null | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): Texture {
-		const texture = new Texture(this._gl, source, width, height, format);
-		this._textures.add(texture);
-		return texture;
+	/** Gets the models. */
+	get models(): ResourceSet<Model> {
+		return this._models;
 	}
 
-	/** Destroys a texture. */
-	destroyTexture(texture: Texture): void {
-		if (this._textures.remove(texture)) {
-			texture.destroy();
-		}
+	/** Gets the stages. */
+	get stages(): ResourceSet<Stage> {
+		return this._stages;
 	}
 
-	/** Creates a model. */
-	createModel(): Model {
-		const model = new Model(this._gl);
-		this._models.add(model);
-		return model;
+	/** Gets the uniform blocks. */
+	get uniformBlocks(): ResourceSet<UniformBlock> {
+		return this._uniformBlocks;
 	}
 
-	/** Destroys a model. */
-	destroyModel(model: Model): void {
-		if (this._models.remove(model)) {
-			model.destroy();
-		}
-	}
-
-	/** Creates a stage. */
-	createStage(): Stage {
-		const stage = new Stage(this._gl);
-		this._stages.add(stage);
-		return stage;
-	}
-
-	/** Destroys a stage. */
-	destroyStage(stage: Stage): void {
-		if (this._stages.remove(stage)) {
-			stage.destroy();
-		}
-	}
-
-	/** Creates a uniform block. */
-	createUniformBlock(uniforms: UniformBlock.Uniform[]): UniformBlock {
-		const uniformBlock = new UniformBlock(this._gl, uniforms);
-		this._uniformBlocks.add(uniformBlock);
-		return uniformBlock;
-	}
-
-	/** Destroys a uniform block. */
-	destroyUniformBlock(uniformBlock: UniformBlock): void {
-		if (this._uniformBlocks.remove(uniformBlock)) {
-			uniformBlock.destroy();
-		}
-	}
-
-	/** Creates a scene. */
-	createScene(): Scene {
-		const scene = new Scene();
-		this._scenes.add(scene);
-		return scene;
-	}
-
-	/** Destroys a scene. */
-	destroyScene(scene: Scene): void {
-		if (this._scenes.remove(scene)) {
-			scene.destroy();
-		}
-	}
-
-	clear(color: ColorReadonly): void {
-		this._gl.clearColor(color.r, color.g, color.b, color.a);
-		this._gl.clear(this._gl.COLOR_BUFFER_BIT);
+	/** Gets the scenes. */
+	get scenes(): ResourceSet<Scene> {
+		return this._scenes;
 	}
 
 	/** Render the stages. */
@@ -167,20 +108,43 @@ export class Renderer {
 	});
 
 	/** The shaders. */
-	private _shaders: List<Shader> = new List();
+	private _shaders: ResourceSet<Shader> = new ResourceSet(() => {
+		return new Shader(this._gl);
+	}, (shader: Shader) => {
+		shader.destroy();
+	});
 
 	/** The textures. */
-	private _textures: List<Texture> = new List();
+	private _textures: ResourceSet<Texture> = new ResourceSet(() => {
+		return new Texture(this._gl);
+	}, (texture: Texture) => {
+		texture.destroy();
+	});
 
 	/** The models. */
-	private _models: List<Model> = new List();
+	private _models: ResourceSet<Model> = new ResourceSet(() => {
+		return new Model(this._gl);
+	}, (model: Model) => {
+		model.destroy();
+	});
 
 	/** The stages. */
-	private _stages: List<Stage> = new List();
+	private _stages: ResourceSet<Stage> = new ResourceSet(() => {
+		return new Stage(this._gl);
+	}, (stage: Stage) => {
+		stage.destroy();
+	});
 
 	/** The uniform blocks. */
-	private _uniformBlocks: List<UniformBlock> = new List();
+	private _uniformBlocks: ResourceSet<UniformBlock> = new ResourceSet(() => {
+		return new UniformBlock(this._gl);
+	}, (uniformBlock: UniformBlock) => {
+		uniformBlock.destroy();
+	});
 
 	/** The scenes. */
-	private _scenes: List<Scene> = new List();
+	private _scenes: ResourceSet<Scene> = new ResourceSet(() => {
+		return new Scene();
+	}, () => {
+	});
 }
