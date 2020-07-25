@@ -25,11 +25,11 @@ export class Matrix44Readonly {
 
 	/** Gets *this* as a string. */
 	toString(): string {
-		return ('['
-			+ '[' + this._m[0] + ', ' + this._m[4] + ', ' + this._m[8] + ', ' + this._m[12] + '], '
-			+ '[' + this._m[1] + ', ' + this._m[5] + ', ' + this._m[9] + ', ' + this._m[13] + '], '
-			+ '[' + this._m[2] + ', ' + this._m[6] + ', ' + this._m[10] + ', ' + this._m[14] + '], '
-			+ '[' + this._m[3] + ', ' + this._m[7] + ', ' + this._m[11] + ', ' + this._m[15] + ']]');
+		return ('[' +
+			'[' + this._m[0] + ', ' + this._m[4] + ', ' + this._m[8] + ', ' + this._m[12] + '], ' +
+			'[' + this._m[1] + ', ' + this._m[5] + ', ' + this._m[9] + ', ' + this._m[13] + '], ' +
+			'[' + this._m[2] + ', ' + this._m[6] + ', ' + this._m[10] + ', ' + this._m[14] + '], ' +
+			'[' + this._m[3] + ', ' + this._m[7] + ', ' + this._m[11] + ', ' + this._m[15] + ']]');
 	}
 
 	/** Gets the component at the *row* and *column*. */

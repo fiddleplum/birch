@@ -23,8 +23,8 @@ export class FrameModelSystem extends System {
 		if (eventType === FrameComponent.Events.PositionChanged || eventType === FrameComponent.Events.OrientationChanged) {
 			const numModelComponents = component.entity.getNumComponentsOfType(ModelComponent);
 			for (let i = 0; i < numModelComponents; i++) {
-				const modelComponent = component.entity.getComponent(ModelComponent, i) as ModelComponent;
-				modelComponent.model.uniformsFunction
+				// const modelComponent = component.entity.getComponent(ModelComponent, i) as ModelComponent;
+				// modelComponent.model.uniformsFunction
 			}
 		}
 	}

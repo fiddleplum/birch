@@ -1,4 +1,4 @@
-import { Entity } from '../../internal';
+import { Engine, Entity } from '../../internal';
 import { EventQueue } from '../event_queue';
 
 export abstract class Component {
@@ -13,6 +13,11 @@ export abstract class Component {
 
 	/** Destroys this. */
 	destroy(): void {
+	}
+
+	/** Gets the engine as a shortcut. */
+	get engine(): Engine {
+		return this._entity.world.engine;
 	}
 
 	/** Gets the entity that contains this. */

@@ -32,7 +32,7 @@ export class EventQueue {
 			return false;
 		}
 		const existed = systems.remove(system);
-		if (existed && systems.isEmpty()) {
+		if (existed && systems.size() === 0) {
 			this._eventSubscribers.delete(eventType);
 		}
 		return existed;

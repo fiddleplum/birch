@@ -1,7 +1,5 @@
 import { List, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
-import { ResourceList } from './utils/resource_list';
-import { ResourceSet } from './utils/resource_set';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -26,13 +24,19 @@ export class Engine {
 		return this._renderer;
 	}
 
-	/** Gets the viewports. */
-	get viewports(): ResourceList<Viewport> {
-		return this._viewports;
+	/** Creates a viewport. */
+	createViewport(): Viewport {
+		const viewport = new Viewport(this._renderer, this._viewportsElement);
+		this._viewports.add(viewport);
+		return viewport;
 	}
 
-	/** Gets the worlds. */
-	get worlds(): ResourceSet<World> {
+	/** Destroys a viewport. */
+	destroyViewport(viewport: Viewport): void {
+		if (this._viewports.has(viewport)) {
+			viewport.destroy();
+			this._viewports.remove(viewport);
+		}
 	}
 
 	/** Creates a world. */
@@ -44,8 +48,9 @@ export class Engine {
 
 	/** Destroys a world. */
 	destroyWorld(world: World): void {
-		if (this._worlds.remove(world)) {
-			// world.destroy();
+		if (this._worlds.has(world)) {
+			world.destroy();
+			this._worlds.remove(world);
 		}
 	}
 
@@ -56,7 +61,12 @@ export class Engine {
 
 	/** Destroys the engine. */
 	private _destroy(): void {
-		this._viewports.destroy();
+		for (const viewport of this._viewports) {
+			viewport.destroy();
+		}
+		for (const world of this._worlds) {
+			world.destroy();
+		}
 	}
 
 	/** Runs the main engine loop. */
@@ -77,8 +87,8 @@ export class Engine {
 		}
 
 		// Update the bounds of the viewports.
-		for (let i = 0; i < this._viewports.length; i++) {
-			this._viewports.get(i).updateBounds();
+		for (const viewport of this._viewports) {
+			viewport.updateBounds();
 		}
 
 		// Render all of the stages.
@@ -145,16 +155,8 @@ export class Engine {
 	private _renderer: Renderer;
 
 	/** The viewports. */
-	private _viewports: ResourceList<Viewport> = new ResourceList(() => {
-		return new Viewport(this._renderer, this._viewportsElement);
-	}, (viewport: Viewport) => {
-		viewport.destroy();
-	});
+	private _viewports: List<Viewport> = new List();
 
 	/** The worlds. */
-	private _worlds: ResourceSet<World> = new ResourceSet(() => {
-		return new World(this);
-	}, (world: World) => {
-		world.destroy();
-	});
+	private _worlds: List<World> = new List();
 }

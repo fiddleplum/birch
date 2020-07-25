@@ -36,7 +36,7 @@ export class Viewport {
 	}
 
 	/** Sets the clear color. It does not clear if it is undefined. */
-	setClearColor(color: ColorReadonly | undefined) {
+	setClearColor(color: ColorReadonly | undefined): void {
 		this._stage.setClearColor(color);
 	}
 

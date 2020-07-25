@@ -106,7 +106,7 @@ export class Vec {
 	}
 
 	/** Sets *a* to the *u* lerp from *v0* to *v1*. */
-	static lerp(a: number[], v0: readonly number[], v1: readonly number[], u: number) {
+	static lerp(a: number[], v0: readonly number[], v1: readonly number[], u: number): void {
 		const minLength = Math.min(a.length, v0.length, v1.length);
 		for (let i = 0; i < minLength; i++) {
 			a[i] = Num.lerp(v0[i], v1[i], u);
