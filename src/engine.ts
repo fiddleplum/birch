@@ -1,5 +1,6 @@
 import { List, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
+import { Input } from './input/index';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -8,6 +9,8 @@ export class Engine {
 		this._prepareRootElement();
 		// Create the renderer.
 		this._renderer = new Renderer(this._canvas, true);
+		// Create the input system.
+		this._input = new Input.Input();
 		// Run the engine.
 		this._running = true;
 		this._runBound = this._run.bind(this);
@@ -22,6 +25,11 @@ export class Engine {
 	/** Gets the renderer. */
 	get renderer(): Renderer {
 		return this._renderer;
+	}
+
+	/** Gets the input system. */
+	get input(): Input.Input {
+		return this._input;
 	}
 
 	/** Creates a viewport. */
@@ -153,6 +161,9 @@ export class Engine {
 
 	/** The renderer. */
 	private _renderer: Renderer;
+
+	/** The input system. */
+	private _input: Input.Input;
 
 	/** The viewports. */
 	private _viewports: List<Viewport> = new List();
