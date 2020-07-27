@@ -10,17 +10,23 @@ export class World {
 		this._engine = engine;
 
 		// Create the render scene and set the uniforms function.
-		this._scene = new Render.Scene();
+		this._scene = this.engine.renderer.createScene();
 		// this._scene.uniformsFunction = this._sceneUniforms.bind(this);
 	}
 
 	/** Destroys this. */
 	destroy(): void {
+		this.engine.renderer.destroyScene(this._scene);
 	}
 
 	/** Gets the engine that contains this. */
 	get engine(): Engine {
 		return this._engine;
+	}
+
+	/** Gets the scene. */
+	get scene(): Render.Scene {
+		return this._scene;
 	}
 
 	/** Gets the event queue. */

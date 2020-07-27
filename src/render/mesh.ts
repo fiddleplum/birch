@@ -37,7 +37,7 @@ export class Mesh extends UniqueId.Object {
 			this._numInstances = 1;
 
 			// Set the initial mode to triangles.
-			this._mode = 3;
+			this._mode = this._gl.TRIANGLES;
 		}
 		catch (e) {
 			this.destroy();

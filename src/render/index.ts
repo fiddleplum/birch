@@ -1,2 +1,1 @@
-import * as Render from './internal';
-export { Render };
+export * as Render from './internal';

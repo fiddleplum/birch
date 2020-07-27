@@ -160,7 +160,7 @@ export class Renderer {
 	render(): void {
 		// Render the stages in order.
 		for (const stage of this._stages) {
-			stage.render();
+			stage.render(this._canvas.height);
 		}
 	}
 

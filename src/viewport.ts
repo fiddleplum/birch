@@ -30,6 +30,10 @@ export class Viewport {
 		return this._divElement;
 	}
 
+	getStage(): Render.Stage {
+		return this._stage;
+	}
+
 	/** Gets the aspect ratio as the *width* / *height*. */
 	getAspectRatio(): number {
 		return this._divElement.clientWidth / this._divElement.clientHeight;
