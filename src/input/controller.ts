@@ -4,11 +4,6 @@ export class Controller {
 		this._gamepad = gamepad;
 	}
 
-	/** Gets the name of the controller. */
-	get name(): string {
-		return 'Controller ' + (this._gamepad.index + 1);
-	}
-
 	/** Gets the value of the *index* button. 0 means unpressed, 1 means fully pressed. */
 	button(index: number): number {
 		return this._gamepad.buttons[index].value;

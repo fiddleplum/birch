@@ -11,6 +11,11 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 		}
 	}
 
+	/** Gets the number of entries in the map. */
+	get size(): number {
+		return this._keyMap.size;
+	}
+
 	/** Returns true if the *key* is in the map. O(1). */
 	has(key: Key): boolean {
 		return this._keyMap.has(key);
@@ -70,47 +75,7 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 }
 
 export namespace OrderedMap {
-	// export class MapIterator<Key, Value> extends Ordered.Iterator<Entry<Key, Value>> {
-	// 	private _keyMap: Map<Key, Value>;
-	// 	private _keyList: List<Key>;
-
-	// 	private _entry: Entry<Key, Value> = new Entry<Key, Value>(undefined, undefined);
-
-	// 	private _iterator: Ordered.Iterator<Key>;
-
-	// 	/** The constructor. */
-	// 	constructor(keyMap: Map<Key, Value>, keyList: List<Key>) {
-	// 		super();
-	// 		this._keyMap = keyMap;
-	// 		this._keyList = keyList;
-	// 		this._iterator = keyList[Symbol.iterator]();
-	// 	}
-
-	// 	/** Resets the iterator to the beginning. */
-	// 	reset(): void {
-	// 		this._iterator.reset();
-	// 		this._entry.key = this._iterator.value;
-	// 		this._entry.value = this._keyMap.get(this._entry.key);
-	// 		this.node = this._getHead();
-	// 		this.value = this.node?.value;
-	// 	}
-
-	// 	/** Increments the iterator. Returns false if it could not increment. */
-	// 	increment(): boolean {
-	// 		this.value
-	// 		if (this.node !== undefined && this.node.next !== undefined) {
-	// 			this.node = this.node.next;
-	// 			this.value = this.node?.value;
-	// 			return true;
-	// 		}
-	// 		return false;
-	// 	}
-
-	// 	/** Close up what is necessary for the iterator. */
-	// 	finish(): void {
-	// 	}
-	// }
-
+	/** An entry in the ordered map. */
 	export class Entry<Key, Value> {
 		key: Key;
 		value: Value;
