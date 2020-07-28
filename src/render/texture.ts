@@ -146,6 +146,7 @@ export class Texture extends UniqueId.Object {
 		else {
 			this._gl.texImage2D(this._gl.TEXTURE_2D, 0, glInternalFormat, this._size.x, this._size.y, 0, glFormat, glType, source);
 		}
+		this._gl.generateMipmap(this._gl.TEXTURE_2D);
 	}
 
 	private _formatToGLInternalFormat(format: Texture.Format): number {
