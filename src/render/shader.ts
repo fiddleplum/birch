@@ -23,8 +23,28 @@ export class Shader extends UniqueId.Object {
 		super.destroy();
 	}
 
+	/** Sets the shader from an options configuration. */
+	setFromOptions(options: Shader.Options): void {
+		let vertexCode = '';
+		if (Array.isArray(options.vertex)) {
+			vertexCode = options.vertex.join('\n');
+		}
+		else {
+			vertexCode = options.vertex;
+		}
+
+		let fragmentCode = '';
+		if (Array.isArray(options.fragment)) {
+			fragmentCode = options.fragment.join('\n');
+		}
+		else {
+			fragmentCode = options.fragment;
+		}
+		this.setCodeAndAttributes(vertexCode, fragmentCode, options.attributeLocations);
+	}
+
 	/** Sets the vertex and fragment code for the shader and bind the attribute locations. */
-	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: Map<string, number>): void {
+	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: { [key: string]: number }): void {
 		let vertexObject = null;
 		let fragmentObject = null;
 		try {
@@ -67,11 +87,6 @@ export class Shader extends UniqueId.Object {
 			throw new Error('Could not get location for attribute ' + name + '.');
 		}
 		return location;
-	}
-
-	/** Sets a uniform block. */
-	setUniformBlock(): void {
-
 	}
 
 	/** Sets the uniform location to an integer value. */
@@ -189,13 +204,13 @@ export class Shader extends UniqueId.Object {
 	}
 
 	/** Links shader objects to create a shader program. */
-	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: Map<string, number>): void {
+	private _link(vertexObject: WebGLShader, fragmentObject: WebGLShader, attributeLocations: { [key: string]: number }): void {
 		// Attach the shader objects.
 		this._gl.attachShader(this._program, vertexObject);
 		this._gl.attachShader(this._program, fragmentObject);
 
 		// Bind the given attrbute locations.
-		for (const [key, value] of attributeLocations) {
+		for (const [key, value] of Object.entries(attributeLocations)) {
 			this._gl.bindAttribLocation(this._program, value, key);
 		}
 
@@ -284,4 +299,17 @@ export class Shader extends UniqueId.Object {
 
 	/** The Gl shader program. */
 	private _program: WebGLProgram;
+}
+
+export namespace Shader {
+	export class Options {
+		/** The vertex shader code. */
+		vertex: string | string[] = '';
+
+		/** The fragment shader code. */
+		fragment: string | string[] = '';
+
+		/** Attribute locations. */
+		attributeLocations: { [key: string]: number } = {};
+	}
 }
