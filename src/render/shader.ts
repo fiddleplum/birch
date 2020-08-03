@@ -171,11 +171,14 @@ export class Shader extends UniqueId.Object {
 	}
 
 	/** Sets the uniform location to the texture slot. */
-	setTexture(location: WebGLUniformLocation, textureSlot: number): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
+	setTexture(nameOrLocation: string | WebGLUniformLocation, textureSlot: number): void {
+		if (typeof nameOrLocation === 'string') {
+			nameOrLocation = this.getUniformLocation('colorTexture');
+		}
+		const existingValue = this._uniformLocationsToValues.get(nameOrLocation);
 		if (existingValue !== textureSlot) {
-			this._uniformLocationsToValues.set(location, textureSlot);
-			this._gl.uniform1i(location, textureSlot);
+			this._uniformLocationsToValues.set(nameOrLocation, textureSlot);
+			this._gl.uniform1i(nameOrLocation, textureSlot);
 		}
 	}
 
