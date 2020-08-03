@@ -1,6 +1,7 @@
 import { List, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
 import { Input } from './input/index';
+import { Downloader } from './downloader';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -11,6 +12,8 @@ export class Engine {
 		this._renderer = new Renderer(this._canvas, true);
 		// Create the input system.
 		this._input = new Input.Input();
+		// Create the downloader.
+		this._downloader = new Downloader();
 		// Run the engine.
 		this._running = true;
 		this._runBound = this._run.bind(this);
@@ -30,6 +33,11 @@ export class Engine {
 	/** Gets the input system. */
 	get input(): Input.Input {
 		return this._input;
+	}
+
+	/** Gets the downloader. */
+	get downloader(): Downloader {
+		return this._downloader;
 	}
 
 	/** Creates a viewport. */
@@ -164,6 +172,9 @@ export class Engine {
 
 	/** The input system. */
 	private _input: Input.Input;
+
+	/** The downloader. */
+	private _downloader: Downloader;
 
 	/** The viewports. */
 	private _viewports: List<Viewport> = new List();
