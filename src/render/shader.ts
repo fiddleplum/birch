@@ -89,6 +89,15 @@ export class Shader extends UniqueId.Object {
 		return location;
 	}
 
+	/** Binds a uniform block name to a binding slot. */
+	bindUniformBlock(uniformBlockName: string, bindingSlot: number): void {
+		const uniformBlockIndex = this._uniformBlockNamesToIndices.get(uniformBlockName);
+		if (uniformBlockIndex === undefined) {
+			throw new Error('Uniform block with name ' + uniformBlockName + ' does not exist in the shader.');
+		}
+		this._gl.uniformBlockBinding(this._program, uniformBlockIndex, bindingSlot);
+	}
+
 	/** Sets the uniform location to an integer value. */
 	setUniformInt(location: WebGLUniformLocation, value: number): void {
 		const existingValue = this._uniformLocationsToValues.get(location);
@@ -232,6 +241,14 @@ export class Shader extends UniqueId.Object {
 		}
 	}
 
+	private _initializeUniformBlocks(): void {
+		// for () {
+		// 	const uniformBlockName = '';
+		// 	const uniformBlockIndex = this._gl.getUniformBlockIndex(this._program, uniformBlockName);
+		// 	this._uniformBlockNamesToIndices.set(uniformBlockName, uniformBlockIndex);
+		// }
+	}
+
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
@@ -288,6 +305,9 @@ export class Shader extends UniqueId.Object {
 
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
+
+	/** A mapping from uniform block names to indices. */
+	private _uniformBlockNamesToIndices: Map<string, number> = new Map();
 
 	/** A mapping from uniform names to locations. */
 	private _uniformNamesToLocations: Map<string, WebGLUniformLocation> = new Map();

@@ -143,7 +143,7 @@ export class Renderer {
 
 	/** Creates a scene. */
 	createScene(): Scene {
-		const scene = new Scene();
+		const scene = new Scene(this._gl);
 		this._scenes.add(scene);
 		return scene;
 	}

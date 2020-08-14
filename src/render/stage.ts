@@ -1,5 +1,4 @@
 import { Scene } from './scene';
-import { Model } from './model';
 import { Texture } from './texture';
 import { Rectangle } from '../utils/rectangle';
 import { Vector2 } from '../utils/vector2';
@@ -9,6 +8,7 @@ import { Vector3Readonly } from '../utils/vector3_readonly';
 import { UniqueId } from '../utils/unique_id';
 import { Color } from '../utils/color';
 import { ColorReadonly } from '../utils/color_readonly';
+import { UniformBlock } from './uniform_block';
 
 /** A render stage. It either renders to the canvas or to textures. */
 export class Stage extends UniqueId.Object {
@@ -18,15 +18,15 @@ export class Stage extends UniqueId.Object {
 	/** The scene. */
 	scene: Scene | undefined = undefined;
 
-	/** The uniforms function. Stage-specific uniforms should be set here. */
-	uniformsFunction: Model.UniformsFunction | undefined = undefined;
-
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext) {
 		super();
 
 		// Save the WebGL context.
 		this._gl = gl;
+
+		// Create the uniform block.
+		this._uniformBlock = new UniformBlock(this._gl);
 	}
 
 	/** Destroys the stage. */
@@ -34,7 +34,13 @@ export class Stage extends UniqueId.Object {
 		if (this._frameBuffer !== undefined) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
+		this._uniformBlock.destroy();
 		super.destroy();
+	}
+
+	/** Gets the uniform block associated with this stage. */
+	get uniformBlock(): UniformBlock {
+		return this._uniformBlock;
 	}
 
 	/** Set whether it will render to textures or to the canvas. Defaults to false. */
@@ -138,7 +144,7 @@ export class Stage extends UniqueId.Object {
 
 		// Render the scene.
 		if (this.scene !== undefined) {
-			this.scene.render(this.uniformsFunction);
+			this.scene.render(this._uniformBlock);
 		}
 	}
 
@@ -157,6 +163,9 @@ export class Stage extends UniqueId.Object {
 
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
+
+	/** The stage-specific uniform block. */
+	private _uniformBlock: UniformBlock;
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | undefined = undefined;

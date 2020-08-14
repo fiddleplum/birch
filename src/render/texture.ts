@@ -24,7 +24,7 @@ export class Texture extends UniqueId.Object {
 	}
 
 	/** Sets the source of the texture. */
-	setSource(source: undefined | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width: number, height?: number, format?: Texture.Format): void {
+	setSource(source: undefined | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): void {
 		// Depending on the type of source, set the formats, size, and apply the source.
 		if (typeof source === 'string') {
 			// Set the texture to hot pink 1x1 RGB until the image loads.
@@ -141,7 +141,7 @@ export class Texture extends UniqueId.Object {
 		const glType = this._formatToGLType(this._format);
 		this._gl.bindTexture(this._gl.TEXTURE_2D, this._handle);
 		if (source instanceof Uint8Array || source instanceof Uint16Array || source instanceof Uint32Array || source === undefined) {
-			this._gl.texImage2D(this._gl.TEXTURE_2D, 0, glInternalFormat, this._size.x, this._size.y, 0, glFormat, glType, source);
+			this._gl.texImage2D(this._gl.TEXTURE_2D, 0, glInternalFormat, this._size.x, this._size.y, 0, glFormat, glType, source !== undefined ? source : null);
 		}
 		else {
 			this._gl.texImage2D(this._gl.TEXTURE_2D, 0, glInternalFormat, this._size.x, this._size.y, 0, glFormat, glType, source);

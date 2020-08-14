@@ -52,7 +52,7 @@ export class World {
 	/** The list of entities this contains. */
 	private _entities: List<Entity> = new List();
 
-	private _scene: Render.Scene = new Render.Scene();
+	private _scene: Render.Scene;
 
 	private _eventQueue: EventQueue = new EventQueue();
 

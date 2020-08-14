@@ -2,6 +2,7 @@ import { Shader } from './shader';
 import { Mesh } from './mesh';
 import { Texture } from './texture';
 import { UniqueId } from '../utils/unique_id';
+import { UniformBlock } from './uniform_block';
 
 export class Model extends UniqueId.Object {
 	/** The mesh. */
@@ -22,12 +23,15 @@ export class Model extends UniqueId.Object {
 	/** The depth test. */
 	depthTest: Model.DepthTest = Model.DepthTest.LessOrEqual;
 
-	/** The uniforms function for this model. */
-	uniformsFunction: Model.UniformsFunction | undefined = undefined;
-
 	/** Constructor. */
 	constructor(gl: WebGL2RenderingContext) {
 		super();
+
+		// Save the WebGL context.
+		this._gl = gl;
+
+		// Create the uniform block.
+		this._uniformBlock = new UniformBlock(this._gl);
 
 		// If the WebGL state object hasn't been created, create it.
 		if (!Model._state.has(gl)) {
@@ -36,8 +40,18 @@ export class Model extends UniqueId.Object {
 		this._state = Model._state.get(gl) as WebGLState;
 	}
 
+	/** Destroys this. */
+	destroy(): void {
+		this._uniformBlock.destroy();
+	}
+
+	/** Gets the uniform block associated with this model. */
+	get uniformBlock(): UniformBlock {
+		return this._uniformBlock;
+	}
+
 	/** Renders the model. */
-	render(stageUniformsFunction: Model.UniformsFunction | undefined, sceneUniformsFunction: Model.UniformsFunction | undefined): void {
+	render(stageUniformBlock: UniformBlock, sceneUniformBlock: UniformBlock): void {
 		if (this.shader === undefined || this.mesh === undefined) {
 			return;
 		}
@@ -45,16 +59,14 @@ export class Model extends UniqueId.Object {
 		if (this._state.activeShader !== this.shader) {
 			this.shader.activate();
 			this._state.activeShader = this.shader;
-			if (stageUniformsFunction !== undefined) {
-				stageUniformsFunction(this.shader);
-			}
-			if (sceneUniformsFunction !== undefined) {
-				sceneUniformsFunction(this.shader);
-			}
+			// Bind the stage and scene uniform blocks to the shader.
+			this._state.activeShader.bindUniformBlock('stage', 0);
+			stageUniformBlock.bind(0);
+			this._state.activeShader.bindUniformBlock('scene', 1);
+			sceneUniformBlock.bind(1);
 		}
-		if (this.uniformsFunction !== undefined) {
-			this.uniformsFunction(this.shader);
-		}
+		this._state.activeShader.bindUniformBlock('model', 2);
+		this._uniformBlock.bind(2);
 		// Activate any new textures.
 		for (let slot = 0; slot < this.textures.length; slot++) {
 			if (this._state.activeTextures[slot] !== this.textures[slot]) {
@@ -70,6 +82,12 @@ export class Model extends UniqueId.Object {
 		// Render the mesh.
 		this.mesh.render();
 	}
+
+	/**  The WebGL context. */
+	private _gl: WebGL2RenderingContext;
+
+	/** The scene-specific uniform block. */
+	private _uniformBlock: UniformBlock;
 
 	/** The WebGL state for the context of this model. */
 	private _state: WebGLState;

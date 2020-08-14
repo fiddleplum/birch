@@ -1,10 +1,28 @@
 import { List } from '../utils/list';
 import { Model } from './model';
 import { UniqueId } from '../utils/unique_id';
+import { UniformBlock } from './uniform_block';
 
 export class Scene extends UniqueId.Object {
-	/** The uniforms function for this scene. */
-	uniformsFunction: Model.UniformsFunction | undefined = undefined;
+	constructor(gl: WebGL2RenderingContext) {
+		super();
+
+		// Save the WebGL context.
+		this._gl = gl;
+
+		// Create the uniform block.
+		this._uniformBlock = new UniformBlock(this._gl);
+	}
+
+	/** Destroys this. */
+	destroy(): void {
+		this._uniformBlock.destroy();
+	}
+
+	/** Gets the uniform block associated with this scene. */
+	get uniformBlock(): UniformBlock {
+		return this._uniformBlock;
+	}
 
 	/** Gets the set of models. */
 	get models(): List<Model> {
@@ -12,13 +30,13 @@ export class Scene extends UniqueId.Object {
 	}
 
 	/** Renders the scene. */
-	render(stageUniformsFunction: Model.UniformsFunction | undefined): void {
+	render(stageUniformBlock: UniformBlock): void {
 		// Sort the models to be optimal in terms of state changes and blending.
 		this._models.sort(Scene._isModelLess);
 
 		// Render each model.
 		for (const model of this._models) {
-			model.render(stageUniformsFunction, this.uniformsFunction);
+			model.render(stageUniformBlock, this._uniformBlock);
 		}
 	}
 
@@ -63,6 +81,12 @@ export class Scene extends UniqueId.Object {
 			return a.id < b.id;
 		}
 	}
+
+	/**  The WebGL context. */
+	private _gl: WebGL2RenderingContext;
+
+	/** The scene-specific uniform block. */
+	private _uniformBlock: UniformBlock;
 
 	/** The set of models. */
 	private _models: List<Model> = new List();

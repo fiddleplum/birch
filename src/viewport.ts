@@ -55,7 +55,7 @@ export class Viewport {
 	setCamera(camera: World.Entity | undefined): void {
 		if (camera !== undefined) {
 			if (camera.getComponent(World.CameraComponent, 0) === undefined ||
-				camera.getComponent(World.FrameComponent, 0) === undefined)) {
+				camera.getComponent(World.FrameComponent, 0) === undefined) {
 				throw new Error('The camera entity does not have a camera and frame component.');
 			}
 		}

@@ -111,13 +111,14 @@ export class UniformBlock extends UniqueId.Object {
 		this._dataNeedsSend = true;
 	}
 
-	/** Activate the uniform block. Sends data to WebGL if needed. */
-	activate(): void {
+	/** Binds the uniform buffer to a binding slot. Sends changed data to WebGL if needed. */
+	bind(bindingSlot: number): void {
 		if (this._dataNeedsSend) {
 			this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 			this._gl.bufferData(this._gl.UNIFORM_BUFFER, this._data, this._gl.DYNAMIC_READ);
 			this._dataNeedsSend = false;
 		}
+		this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingSlot, this._buffer);
 	}
 
 	/** Gets the GLSL that should be used. */
@@ -208,9 +209,6 @@ export class UniformBlock extends UniqueId.Object {
 
 	/** If true, the data needs to be sent to the buffer. */
 	private _dataNeedsSend: boolean = true;
-
-	/** A set of all created meshes, one for each WebGL context. */
-	private static _all: Map<WebGL2RenderingContext, Set<UniformBlock>> = new Map();
 }
 
 class UniformInfo {
