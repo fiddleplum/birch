@@ -1,4 +1,5 @@
-import { Component, OrderedMap, World } from '../internal';
+import { OrderedMap } from '../utils/ordered_map';
+import { Component, World } from './internal';
 
 export class Entity {
 	/** Constructor. */

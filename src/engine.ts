@@ -56,14 +56,14 @@ export class Engine {
 	}
 
 	/** Creates a world. */
-	createWorld(): World {
-		const world = new World(this);
+	createWorld(): World.World {
+		const world = new World.World(this);
 		this._worlds.add(world);
 		return world;
 	}
 
 	/** Destroys a world. */
-	destroyWorld(world: World): void {
+	destroyWorld(world: World.World): void {
 		if (this._worlds.has(world)) {
 			world.destroy();
 			this._worlds.remove(world);
@@ -180,5 +180,5 @@ export class Engine {
 	private _viewports: List<Viewport> = new List();
 
 	/** The worlds. */
-	private _worlds: List<World> = new List();
+	private _worlds: List<World.World> = new List();
 }

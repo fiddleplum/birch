@@ -1,5 +1,5 @@
 import { Component } from '../components/component';
-import { World } from '../../internal';
+import { World } from '../internal';
 import { EventQueue } from '../event_queue';
 
 /*

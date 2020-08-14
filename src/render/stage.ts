@@ -16,10 +16,10 @@ export class Stage extends UniqueId.Object {
 	bounds: Rectangle = new Rectangle(0, 0, 0, 0);
 
 	/** The scene. */
-	scene: Scene | null = null;
+	scene: Scene | undefined = undefined;
 
 	/** The uniforms function. Stage-specific uniforms should be set here. */
-	uniformsFunction: Model.UniformsFunction | null = null;
+	uniformsFunction: Model.UniformsFunction | undefined = undefined;
 
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext) {
@@ -31,7 +31,7 @@ export class Stage extends UniqueId.Object {
 
 	/** Destroys the stage. */
 	destroy(): void {
-		if (this._frameBuffer !== null) {
+		if (this._frameBuffer !== undefined) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
 		super.destroy();
@@ -40,7 +40,7 @@ export class Stage extends UniqueId.Object {
 	/** Set whether it will render to textures or to the canvas. Defaults to false. */
 	setRenderToTexture(renderToTexture: boolean): void {
 		// If it's changing to be render to texture.
-		if (this._frameBuffer === null && renderToTexture) {
+		if (this._frameBuffer === undefined && renderToTexture) {
 			// Create the frame buffer.
 			const frameBuffer = this._gl.createFramebuffer();
 			if (frameBuffer === null) {
@@ -49,19 +49,19 @@ export class Stage extends UniqueId.Object {
 			this._frameBuffer = frameBuffer;
 		}
 		// If it's changing to be render to canvas.
-		if (this._frameBuffer !== null && !renderToTexture) {
+		if (this._frameBuffer !== undefined && !renderToTexture) {
 			// Destroy the frame buffer.
 			this._gl.deleteFramebuffer(this._frameBuffer);
-			this._frameBuffer = null;
+			this._frameBuffer = undefined;
 		}
 	}
 
 	/** Sets the color output texture for the *index*. */
 	setOutputColorTexture(index: number, texture: Texture): void {
-		if (this._frameBuffer === null) {
+		if (this._frameBuffer === undefined) {
 			throw new Error('You must first set the renderToTexture to true.');
 		}
-		if (texture !== null && texture.format !== Texture.Format.RGBA) {
+		if (texture !== undefined && texture.format !== Texture.Format.RGBA) {
 			throw new Error('The texture must be in the RGBA format.');
 		}
 		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
@@ -73,10 +73,10 @@ export class Stage extends UniqueId.Object {
 
 	/** Sets the depth & stencil texture. The depth part is 24 bits and the stencil part is 8 bits. */
 	setOutputDepthStencilTexture(texture: Texture): void {
-		if (this._frameBuffer === null) {
+		if (this._frameBuffer === undefined) {
 			throw new Error('You must first set the renderToTexture to true.');
 		}
-		if (texture !== null && texture.format !== Texture.Format.DEPTH_STENCIL) {
+		if (texture !== undefined && texture.format !== Texture.Format.DEPTH_STENCIL) {
 			throw new Error('The texture must be in the DEPTH_STENCIL format.');
 		}
 		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
@@ -111,6 +111,9 @@ export class Stage extends UniqueId.Object {
 
 	/** Renders the stage. */
 	render(renderHeight: number): void {
+		if (this._frameBuffer === undefined) {
+			return;
+		}
 		// Setup the frame buffer and viewport.
 		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
 		this._gl.viewport(this.bounds.min.x, renderHeight - (this.bounds.min.y + this.bounds.size.y), this.bounds.size.x, this.bounds.size.y);
@@ -134,7 +137,7 @@ export class Stage extends UniqueId.Object {
 		}
 
 		// Render the scene.
-		if (this.scene !== null) {
+		if (this.scene !== undefined) {
 			this.scene.render(this.uniformsFunction);
 		}
 	}
@@ -156,14 +159,14 @@ export class Stage extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The frame buffer. */
-	private _frameBuffer: WebGLFramebuffer | null = null;
+	private _frameBuffer: WebGLFramebuffer | undefined = undefined;
 
 	/** The clear color. */
-	private _clearColor: Color | undefined;
+	private _clearColor: Color | undefined = undefined;
 
 	/** The clear depth. */
-	private _clearDepth: number | undefined;
+	private _clearDepth: number | undefined = undefined;
 
 	/** The clear stencil. */
-	private _clearStencil: number | undefined;
+	private _clearStencil: number | undefined = undefined;
 }

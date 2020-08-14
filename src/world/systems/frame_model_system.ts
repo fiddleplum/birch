@@ -1,4 +1,4 @@
-import { Component, FrameComponent, ModelComponent, System, World } from '../../internal';
+import { Component, FrameComponent, ModelComponent, System, World } from '../internal';
 
 export class FrameModelSystem extends System {
 	/** Constructs this. */

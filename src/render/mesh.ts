@@ -184,13 +184,13 @@ export class Mesh extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The vertex array object. */
-	private _vertexArrayObject: WebGLVertexArrayObject | null = null;
+	private _vertexArrayObject: WebGLVertexArrayObject;
 
 	/** The vertex buffers. */
 	private _vertexBuffers: WebGLBuffer[] = [];
 
 	/** The WebGL index buffer that will be rendered. */
-	private _indexBuffer: WebGLBuffer | null = null;
+	private _indexBuffer: WebGLBuffer;
 
 	/** The type of primitive to render. It can be points, lines, or triangles. */
 	private _mode: GLenum;

@@ -1,6 +1,5 @@
-import { CameraComponent, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { World, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 import { RectangleReadonly } from './utils/rectangle_readonly';
-import { Renderer } from './render/renderer';
 import { ColorReadonly } from './utils/color_readonly';
 
 export class Viewport {
@@ -15,6 +14,18 @@ export class Viewport {
 		this._divElement.style.position = 'absolute';
 		this._divElement.style.overflow = 'hidden';
 		viewportsElement.appendChild(this._divElement);
+		// Creates a uniform block.
+		const uniformBlock = renderer.createUniformBlock();
+		uniformBlock.setUniformTypes([{
+			name: 'viewMatrix',
+			type: Render.UniformBlock.Type.mat4x4
+		}, {
+			name: 'projectionMatrix',
+			type: Render.UniformBlock.Type.mat4x4
+		}, {
+			name: 'renderSize',
+			type: Render.UniformBlock.Type.vec2
+		}]);
 	}
 
 	/** Destroys the viewport. */
@@ -30,8 +41,25 @@ export class Viewport {
 		return this._divElement;
 	}
 
+	/** Gets the stage created by this viewport. */
 	getStage(): Render.Stage {
 		return this._stage;
+	}
+
+	/** Gets the camera connected to this viewport. */
+	getCamera(): World.Entity | undefined {
+		return this._camera;
+	}
+
+	/** Sets the camera connected to this viewport. It must have a camera and frame component. */
+	setCamera(camera: World.Entity | undefined): void {
+		if (camera !== undefined) {
+			if (camera.getComponent(World.CameraComponent, 0) === undefined ||
+				camera.getComponent(World.FrameComponent, 0) === undefined)) {
+				throw new Error('The camera entity does not have a camera and frame component.');
+			}
+		}
+		this._camera = camera;
 	}
 
 	/** Gets the aspect ratio as the *width* / *height*. */
@@ -76,7 +104,7 @@ export class Viewport {
 	}
 
 	/** The renderer. */
-	private _renderer: Renderer;
+	private _renderer: Render.Renderer;
 
 	/** The div element for the viewport. */
 	private _divElement: HTMLDivElement;
@@ -88,5 +116,5 @@ export class Viewport {
 	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
-	private _camera: CameraComponent | null = null;
+	private _camera: World.Entity | undefined = undefined;
 }

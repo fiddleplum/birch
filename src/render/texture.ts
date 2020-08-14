@@ -24,7 +24,7 @@ export class Texture extends UniqueId.Object {
 	}
 
 	/** Sets the source of the texture. */
-	setSource(source: null | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): void {
+	setSource(source: undefined | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width: number, height?: number, format?: Texture.Format): void {
 		// Depending on the type of source, set the formats, size, and apply the source.
 		if (typeof source === 'string') {
 			// Set the texture to hot pink 1x1 RGB until the image loads.
@@ -86,7 +86,7 @@ export class Texture extends UniqueId.Object {
 			this._source = 'Uint32Array';
 			this._setGLTexture(source);
 		}
-		else if (source === null) { // no source
+		else if (source === undefined) { // no source
 			if (width === undefined || height === undefined || format === undefined) {
 				throw new Error('A width, height, and format must be specified when creating a blank texture.');
 			}
@@ -135,12 +135,12 @@ export class Texture extends UniqueId.Object {
 		return this._loadedPromise;
 	}
 
-	private _setGLTexture(source: TexImageSource | Uint8Array | Uint16Array | Uint32Array | null): void {
+	private _setGLTexture(source: TexImageSource | Uint8Array | Uint16Array | Uint32Array | undefined): void {
 		const glInternalFormat = this._formatToGLInternalFormat(this._format);
 		const glFormat = this._formatToGLFormat(this._format);
 		const glType = this._formatToGLType(this._format);
 		this._gl.bindTexture(this._gl.TEXTURE_2D, this._handle);
-		if (source instanceof Uint8Array || source instanceof Uint16Array || source instanceof Uint32Array || source === null) {
+		if (source instanceof Uint8Array || source instanceof Uint16Array || source instanceof Uint32Array || source === undefined) {
 			this._gl.texImage2D(this._gl.TEXTURE_2D, 0, glInternalFormat, this._size.x, this._size.y, 0, glFormat, glType, source);
 		}
 		else {

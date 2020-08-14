@@ -45,8 +45,8 @@ export class Shader extends UniqueId.Object {
 
 	/** Sets the vertex and fragment code for the shader and bind the attribute locations. */
 	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: { [key: string]: number }): void {
-		let vertexObject = null;
-		let fragmentObject = null;
+		let vertexObject: WebGLShader | undefined = undefined;
+		let fragmentObject: WebGLShader | undefined = undefined;
 		try {
 			// Compile the shader stages.
 			vertexObject = this._compile(vertexCode, this._gl.VERTEX_SHADER);
@@ -55,10 +55,10 @@ export class Shader extends UniqueId.Object {
 			this._link(vertexObject, fragmentObject, attributeLocations);
 		}
 		finally {
-			if (vertexObject !== null) {
+			if (vertexObject !== undefined) {
 				this._gl.deleteShader(vertexObject);
 			}
-			if (fragmentObject !== null) {
+			if (fragmentObject !== undefined) {
 				this._gl.deleteShader(fragmentObject);
 			}
 		}
@@ -71,7 +71,7 @@ export class Shader extends UniqueId.Object {
 		this._gl.useProgram(this._program);
 	}
 
-	/** Gets the uniform location from its name. Returns undefined if the name is not found. */
+	/** Gets the uniform location from its name. Throws an error if the name is not found. */
 	getUniformLocation(name: string): WebGLUniformLocation {
 		const location = this._uniformNamesToLocations.get(name);
 		if (location === undefined) {
@@ -80,7 +80,7 @@ export class Shader extends UniqueId.Object {
 		return location;
 	}
 
-	/** Gets the attribute location from its name. Returns undefined if the name is not found. */
+	/** Gets the attribute location from its name. Throws an error if the name is not found. */
 	getAttributeLocation(name: string): number {
 		const location = this._attributeNamesToLocations.get(name);
 		if (location === undefined) {
@@ -234,9 +234,6 @@ export class Shader extends UniqueId.Object {
 
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
-		if (this._program === null) {
-			return;
-		}
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
 		for (let i = 0; i < numUniforms; i++) {
 			const uniformInfo = this._gl.getActiveUniform(this._program, i);
@@ -245,7 +242,7 @@ export class Shader extends UniqueId.Object {
 			}
 			const location = this._gl.getUniformLocation(this._program, uniformInfo.name);
 			if (location === null) {
-				throw new Error('Error getting the location for uniform ' + uniformInfo.name + '.');
+				continue;
 			}
 			this._uniformNamesToLocations.set(uniformInfo.name, location);
 			let initialValue: number | number[] = 0;
@@ -258,16 +255,17 @@ export class Shader extends UniqueId.Object {
 
 	/** Gets the mapping from attribute names to locations. */
 	private _initializeAttributes(): void {
-		if (this._program === null) {
-			return;
-		}
 		const numAttributes = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_ATTRIBUTES);
 		for (let i = 0; i < numAttributes; i++) {
 			const activeAttrib = this._gl.getActiveAttrib(this._program, i);
 			if (activeAttrib === null) {
 				throw new Error('Error getting the attribute ' + i + ' on the shader.');
 			}
-			this._attributeNamesToLocations.set(activeAttrib.name, this._gl.getAttribLocation(this._program, activeAttrib.name));
+			const location = this._gl.getAttribLocation(this._program, activeAttrib.name);
+			if (location === -1) {
+				return;
+			}
+			this._attributeNamesToLocations.set(activeAttrib.name, location);
 		}
 	}
 

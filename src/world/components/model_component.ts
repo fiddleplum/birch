@@ -1,6 +1,4 @@
-import { Component } from './component';
-import { Entity } from '../../internal';
-// import { Model as RenderModel, Shader } from '../../internal';
+import { Component, Entity } from '../internal';
 import { Render } from '../../render/index';
 
 export class ModelComponent extends Component {

@@ -126,7 +126,7 @@ export class List<Value> extends OrderedBase<Value> {
 
 export namespace List {
 	export class Iterator<Value> extends Ordered.Iterator<Value> {
-		private _getHead: () => Node<Value>;
+		private _getHead: () => Node<Value> | undefined;
 
 		private node: Node<Value> | undefined = undefined;
 

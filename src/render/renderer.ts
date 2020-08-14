@@ -59,8 +59,8 @@ export class Renderer {
 	}
 
 	/** Destroys a mesh. */
-	destroyMesh(mesh: Mesh | null): void {
-		if (mesh !== null && this._meshes.has(mesh)) {
+	destroyMesh(mesh: Mesh | undefined): void {
+		if (mesh !== undefined && this._meshes.has(mesh)) {
 			mesh.destroy();
 			this._meshes.remove(mesh);
 		}
@@ -74,8 +74,8 @@ export class Renderer {
 	}
 
 	/** Destroys a shader. */
-	destroyShader(shader: Shader | null): void {
-		if (shader !== null && this._shaders.has(shader)) {
+	destroyShader(shader: Shader | undefined): void {
+		if (shader !== undefined && this._shaders.has(shader)) {
 			shader.destroy();
 			this._shaders.remove(shader);
 		}
@@ -89,8 +89,8 @@ export class Renderer {
 	}
 
 	/** Destroys a texture. */
-	destroyTexture(texture: Texture | null): void {
-		if (texture !== null && this._textures.has(texture)) {
+	destroyTexture(texture: Texture | undefined): void {
+		if (texture !== undefined && this._textures.has(texture)) {
 			texture.destroy();
 			this._textures.remove(texture);
 		}
@@ -104,8 +104,8 @@ export class Renderer {
 	}
 
 	/** Destroys a model. */
-	destroyModel(model: Model | null): void {
-		if (model !== null && this._models.has(model)) {
+	destroyModel(model: Model | undefined): void {
+		if (model !== undefined && this._models.has(model)) {
 			model.destroy();
 			this._models.remove(model);
 		}
@@ -119,8 +119,8 @@ export class Renderer {
 	}
 
 	/** Destroys a stage. */
-	destroyStage(stage: Stage | null): void {
-		if (stage !== null && this._stages.has(stage)) {
+	destroyStage(stage: Stage | undefined): void {
+		if (stage !== undefined && this._stages.has(stage)) {
 			stage.destroy();
 			this._stages.remove(stage);
 		}
@@ -134,8 +134,8 @@ export class Renderer {
 	}
 
 	/** Destroys a uniformBlock. */
-	destroyUniformBlock(uniformBlock: UniformBlock | null): void {
-		if (uniformBlock !== null && this._uniformBlocks.has(uniformBlock)) {
+	destroyUniformBlock(uniformBlock: UniformBlock | undefined): void {
+		if (uniformBlock !== undefined && this._uniformBlocks.has(uniformBlock)) {
 			uniformBlock.destroy();
 			this._uniformBlocks.remove(uniformBlock);
 		}
@@ -149,8 +149,8 @@ export class Renderer {
 	}
 
 	/** Destroys a scene. */
-	destroyScene(scene: Scene | null): void {
-		if (scene !== null && this._scenes.has(scene)) {
+	destroyScene(scene: Scene | undefined): void {
+		if (scene !== undefined && this._scenes.has(scene)) {
 			scene.destroy();
 			this._scenes.remove(scene);
 		}

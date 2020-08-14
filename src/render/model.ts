@@ -5,10 +5,10 @@ import { UniqueId } from '../utils/unique_id';
 
 export class Model extends UniqueId.Object {
 	/** The mesh. */
-	mesh: Mesh | null = null;
+	mesh: Mesh | undefined = undefined;
 
 	/** The model. */
-	shader: Shader | null = null;
+	shader: Shader | undefined = undefined;
 
 	/** The list of textures. */
 	textures: Texture[] = [];
@@ -23,7 +23,7 @@ export class Model extends UniqueId.Object {
 	depthTest: Model.DepthTest = Model.DepthTest.LessOrEqual;
 
 	/** The uniforms function for this model. */
-	uniformsFunction: Model.UniformsFunction | null = null;
+	uniformsFunction: Model.UniformsFunction | undefined = undefined;
 
 	/** Constructor. */
 	constructor(gl: WebGL2RenderingContext) {
@@ -37,22 +37,22 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Renders the model. */
-	render(stageUniformsFunction: Model.UniformsFunction | null, sceneUniformsFunction: Model.UniformsFunction | null): void {
-		if (this.shader === null || this.mesh === null) {
+	render(stageUniformsFunction: Model.UniformsFunction | undefined, sceneUniformsFunction: Model.UniformsFunction | undefined): void {
+		if (this.shader === undefined || this.mesh === undefined) {
 			return;
 		}
 		// Activate the shader and run the uniform functions.
 		if (this._state.activeShader !== this.shader) {
 			this.shader.activate();
 			this._state.activeShader = this.shader;
-			if (stageUniformsFunction !== null) {
+			if (stageUniformsFunction !== undefined) {
 				stageUniformsFunction(this.shader);
 			}
-			if (sceneUniformsFunction !== null) {
+			if (sceneUniformsFunction !== undefined) {
 				sceneUniformsFunction(this.shader);
 			}
 		}
-		if (this.uniformsFunction !== null) {
+		if (this.uniformsFunction !== undefined) {
 			this.uniformsFunction(this.shader);
 		}
 		// Activate any new textures.
@@ -86,12 +86,12 @@ export namespace Model {
 	export enum DepthTest { Never, Always, Less, Greater, Equal, NotEqual, LessOrEqual, GreaterOrEqual }
 
 	/** The function for setting uniforms. */
-	export type UniformsFunction = (shader: Shader) => {} | null;
+	export type UniformsFunction = (shader: Shader) => {} | undefined;
 }
 
 export class WebGLState {
 	/** The active shader. */
-	activeShader: Shader | null = null;
+	activeShader: Shader | undefined = undefined;
 
 	/** The active textures in their slots. */
 	activeTextures: Texture[] = [];

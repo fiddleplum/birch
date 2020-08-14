@@ -1,6 +1,7 @@
-import { Engine, Entity } from '../../internal';
-import { EventQueue } from '../event_queue';
+import { Engine } from '../../internal';
+import { Entity, EventQueue } from '../internal';
 
+/** The base component in the Component-Entity-System framework from which all other components are subclassed. */
 export abstract class Component {
 	/** Constructs this. */
 	constructor(entity: Entity) {

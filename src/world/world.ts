@@ -1,7 +1,7 @@
 import { List } from '../internal';
+import { Engine } from '../internal';
 import { Render } from '../render/index';
-import { Engine, Entity } from '../internal';
-import { EventQueue } from './event_queue';
+import { Entity, EventQueue } from './internal';
 
 export class World {
 	/** Constructor. */

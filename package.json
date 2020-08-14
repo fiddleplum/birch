@@ -22,6 +22,7 @@
 	"homepage": "https://github.com/fiddleplum/birch",
 	"devDependencies": {
 		"eslint": "latest",
+		"eslint-plugin-no-null": "latest",
 		"@typescript-eslint/parser": "latest",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"raw-loader": "latest",

@@ -23,13 +23,4 @@ export * from './utils/vector2_readonly';
 export * from './utils/vector3';
 export * from './utils/vector3_readonly';
 
-export * from './world/entity';
-export * from './world/world';
-
-export * from './world/components/camera_component';
-export * from './world/components/component';
-export * from './world/components/frame_component';
-export * from './world/components/model_component';
-
-export * from './world/systems/system';
-export * from './world/systems/frame_model_system';
+export * from './world/index';
