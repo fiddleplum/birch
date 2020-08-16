@@ -1,0 +1,34 @@
+<span class="member.signature.title">
+{{#unless hideName}}{{{wbr name}}}{{/unless}}
+{{#if typeParameters}}
+    &lt;
+    {{#each typeParameters}}
+        {{#if @index}},&nbsp;{{/if}}
+        {{name}}
+    {{/each}}
+    &gt;
+{{/if}}
+<span>(</span>
+{{#each parameters}}
+    {{#if @index}},&nbsp;{{/if}}
+    {{#if flags.isRest}}<span>...</span>{{/if}}
+    {{name}}
+    <span>
+        {{#if flags.isOptional}}?{{/if}}
+        {{#if defaultValue}}?{{/if}}
+        :&nbsp;
+    </span>
+    {{#with type}}{{>type}}{{/with}}
+{{/each}}
+<span>)</span>
+{{#if type}}
+    {{#if arrowStyle}}
+        <span> =&gt; </span>
+    {{else}}
+        <span>: </span>
+    {{/if}}
+    {{#with type}}
+        {{>type}}
+    {{/with}}
+{{/if}}
+</span>

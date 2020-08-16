@@ -1,0 +1,10 @@
+{{#each typeParameters}}
+    <p>{{#compact}}
+        {{name}}
+        {{#if type}}
+            <span>:&nbsp;</span>
+            {{#with type}}{{> type}}{{/with}}
+        {{/if}}
+    {{/compact}}</p>
+    {{> comment}}
+{{/each}}

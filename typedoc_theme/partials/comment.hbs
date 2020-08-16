@@ -1,0 +1,18 @@
+{{#with comment}}
+    {{#if hasVisibleComponent}}
+        <div class="comment">
+            {{#if shortText}}
+                {{#markdown}}{{{shortText}}}{{/markdown}}
+            {{/if}}
+            {{#if text}}
+            {{#markdown}}{{{text}}}{{/markdown}}
+            {{/if}}
+            {{#if tags}}
+                {{#each tags}}
+                    <dt>{{tagName}}</dt>
+                    <dd>{{#markdown}}{{{text}}}{{/markdown}}</dd>
+                {{/each}}
+            {{/if}}
+        </div>
+    {{/if}}
+{{/with}}

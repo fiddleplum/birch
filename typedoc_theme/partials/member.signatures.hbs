@@ -1,0 +1,10 @@
+<div class="member.signatures">
+{{#each signatures}}
+    {{> comment}}
+    <p><code>{{#compact}}{{> member.signature.title }}{{/compact}}</code></p>
+{{/each}}
+
+{{#each signatures}}
+    {{> member.signature.body }}
+{{/each}}
+</div>

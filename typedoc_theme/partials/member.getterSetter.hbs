@@ -1,0 +1,25 @@
+<div class="member.getterSetter">
+{{> comment}}
+
+{{#if getSignature}}
+    {{#with getSignature}}
+        <p><code>{{#compact}}get {{../name}}{{> member.signature.title hideName=true }}{{/compact}}</code></p>
+    {{/with}}
+{{/if}}
+{{#if setSignature}}
+    {{#with setSignature}}
+        <p><code></code>{{#compact}}set {{../name}}{{> member.signature.title hideName=true }}{{/compact}}</code></p>
+    {{/with}}
+{{/if}}
+
+{{#if getSignature}}
+    {{#with getSignature}}
+        {{> member.signature.body }}
+    {{/with}}
+{{/if}}
+{{#if setSignature}}
+    {{#with setSignature}}
+        {{> member.signature.body }}
+    {{/with}}
+{{/if}}
+</div>

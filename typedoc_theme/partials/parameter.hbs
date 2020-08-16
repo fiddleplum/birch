@@ -1,0 +1,73 @@
+<span class="parameter">
+{{> comment}}
+
+{{#if signatures}}
+    {{#each signatures}}
+        <p>{{#compact}}{{> member.signature.title hideName=true }}{{/compact}}</p>
+    {{/each}}
+
+    {{#each signatures}}
+        <p>{{> member.signature.body hideSources=true }}</p>
+    {{/each}}
+{{/if}}
+{{#if indexSignature}}
+    {{#compact}}
+        <span>[</span>
+        {{#each indexSignature.parameters}}
+            {{#if flags.isRest}}<span>...</span>{{/if}}{{name}}:&nbsp;{{#with type}}{{>type}}{{/with}}
+        {{/each}}
+        <span>]:&nbsp;</span>
+        {{#with indexSignature.type}}{{>type}}{{/with}}
+    {{/compact}}
+
+    {{#with indexSignature}}
+        {{> comment}}
+    {{/with}}
+
+    {{#if indexSignature.type.declaration}}
+        {{#with indexSignature.type.declaration}}
+            {{> parameter}}
+        {{/with}}
+    {{/if}}
+{{/if}}
+{{#each children}}
+    {{#if signatures}}
+        <h5>{{#compact}}
+            {{#if flags.isRest}}<span>...</span>{{/if}}
+            {{{wbr name}}}
+            <span>
+                {{#if isOptional}}?{{/if}}
+                :&nbsp;
+            </span>
+            function
+        {{/compact}}</h5>
+
+        {{> member.signatures}}
+    {{else}}
+        <h5>{{#compact}}
+            {{#each flags}}
+                <span class="tsd-flag ts-flag{{this}}">{{this}}</span>&nbsp;
+            {{/each}}
+            {{#if flags.isRest}}<span>...</span>{{/if}}
+            {{{wbr name}}}
+            <span>
+                {{#if flags.isOptional}}?{{/if}}
+                :&nbsp;
+            </span>
+            {{#with type}}{{>type}}{{/with}}
+        {{/compact}}</h5>
+
+        {{> comment}}
+
+        {{#if children}}
+            {{> parameter}}
+        {{/if}}
+
+        {{#if type.declaration}}
+            {{#with type.declaration}}
+                {{> parameter}}
+            {{/with}}
+        {{/if}}
+    {{/if}}
+{{/each}}
+</span>

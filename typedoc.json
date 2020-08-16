@@ -1,0 +1,11 @@
+{
+	"name": "Birch",
+	"includeVersion": true,
+	"inputFiles": ["./src"],
+	"mode": "file",
+	"out": "docs",
+	"excludePrivate": true,
+	"stripInternal": true,
+	"disableSources": true,
+	"theme": "./typedoc_theme"
+}

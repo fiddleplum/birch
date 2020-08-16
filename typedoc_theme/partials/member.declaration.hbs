@@ -1,0 +1,33 @@
+<div class="member.declaration">
+{{> comment}}
+<p>{{#compact}}
+    {{{wbr name}}}
+    {{#if typeParameters}}
+        &lt;
+        {{#each typeParameters}}
+            {{#if @index}},&nbsp;{{/if}}
+            {{name}}
+        {{/each}}
+        &gt;
+    {{/if}}
+    {{#if isOptional}}?{{/if}}:&nbsp;{{#with type}}{{>type}}{{/with}}
+    {{#if defaultValue}}
+        &nbsp;=&nbsp;
+        {{defaultValue}}
+    {{/if}}
+{{/compact}}</p>
+
+{{#if typeParameters}}
+    <h4 class="tsd-type-parameters-title">Type parameters</h4>
+    {{> typeParameters}}
+{{/if}}
+
+{{!-- {{#if type.declaration}}
+    <h4>Type declaration</h4>
+    {{#with type.declaration}}
+        {{> parameter}}
+    {{/with}}
+{{/if}} --}}
+
+{{> member.sources}}
+</div>

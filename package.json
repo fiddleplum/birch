@@ -8,7 +8,8 @@
 		"update": "yarn install --no-default-rc",
 		"build": "webpack --config webpack.dev.js",
 		"build-production": "webpack --config webpack.prod.js",
-		"start": "webpack-dev-server --config webpack.dev.js --content-base src/"
+		"start": "webpack-dev-server --config webpack.dev.js --content-base src/",
+		"docs": "typedoc --options typedoc.json"
 	},
 	"repository": {
 		"type": "git",
@@ -21,13 +22,16 @@
 	},
 	"homepage": "https://github.com/fiddleplum/birch",
 	"devDependencies": {
-		"eslint": "latest",
-		"eslint-plugin-no-null": "latest",
 		"@typescript-eslint/parser": "latest",
 		"@typescript-eslint/eslint-plugin": "latest",
+		"eslint": "latest",
+		"eslint-plugin-no-null": "latest",
+
 		"raw-loader": "latest",
 		"ts-loader": "latest",
 		"typescript": "latest",
+		"typedoc": "latest",
+
 		"webpack": "latest",
 		"webpack-cli": "latest",
 		"webpack-dev-server": "latest",

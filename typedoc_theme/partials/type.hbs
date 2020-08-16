@@ -1,0 +1,213 @@
+{{! Each type gets its own inline helper to determine how it is rendered. }}
+{{! The name of the helper is the value of the 'type' property on the type.}}
+
+{{!
+The type helper accepts an optional needsParens parameter that is checked
+if an inner type may result in invalid output without them. For example:
+1 | 2[] !== (1 | 2)[]
+() => 1 | 2 !== (() => 1) | 2
+}}
+
+<span class="type">
+{{#*inline 'array'}}
+    {{#with elementType}}
+        {{> type needsParens=true}}
+        <span>[]</span>
+    {{/with}}
+{{/inline}}
+
+{{#*inline 'conditional'}}
+    {{#if needsParens}}
+        <span>(</span>
+    {{/if}}
+    {{#with checkType}}
+        {{> type needsParens=true}}
+    {{/with}}
+    <span> extends </span>
+    {{#with extendsType}}
+        {{> type}}
+    {{/with}}
+    <span> ? </span>
+    {{#with trueType}}
+        {{> type}}
+    {{/with}}
+    <span> : </span>
+    {{#with falseType}}
+        {{> type}}
+    {{/with}}
+    {{#if needsParens}}
+        <span>)</span>
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'indexedAccess'}}
+    {{#with objectType}}
+        {{> type}}
+    {{/with}}
+    <span>[</span>
+    {{#with indexType}}
+        {{> type}}
+    {{/with}}
+    <span>]</span>
+{{/inline}}
+
+{{#*inline 'inferred'}}
+    <span>infer </span> {{name}}
+{{/inline}}
+
+{{#*inline 'intersection'}}
+    {{#if needsParens}}
+        <span>(</span>
+    {{/if}}
+    {{#each types}}
+        {{#unless @first}}
+            <span> &amp; </span>
+        {{/unless}}
+        {{> type}}
+    {{/each}}
+    {{#if needsParens}}
+        <span>)</span>
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'intrinsic'}}
+    <span>{{name}}</span>
+{{/inline}}
+
+{{#*inline 'predicate'}}
+    {{#if asserts}}
+        <span>asserts</span>
+    {{/if}}
+    <span>{{name}}</span>
+    {{#if targetType}}
+        <span> is </span>
+        {{#with targetType}}
+            {{>type}}
+        {{/with}}
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'query'}}
+    <span>typeof </span>
+    {{#with queryType}}
+        {{> type}}
+    {{/with}}
+{{/inline}}
+
+{{#*inline 'reference'}}
+    {{#if reflection}}
+        <a href="{{relativeURL reflection.url}}">
+            {{reflection.name}}
+        </a>
+    {{else}}
+        <span>{{name}}</span>
+    {{/if}}
+    {{#if typeArguments}}
+        <span>&lt;</span>
+        {{#each typeArguments}}
+            {{#unless @first}}
+                <span>, </span>
+            {{/unless}}
+            {{> type}}
+        {{/each}}
+        <span>&gt;</span>
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'reflection'}}
+    {{#if declaration.children}} {{! object literal }}
+        <span>{ </span>
+        {{#each declaration.children}}
+            {{#unless @first}}
+                <span>; </span>
+            {{/unless}}
+            {{name}}
+            {{#if flags.isOptional }}
+                <span>?: </span>
+            {{else}}
+                <span>: </span>
+            {{/if}}
+            {{#with type}}
+                {{> type}}
+            {{else}}
+                <span>any</span>
+            {{/with}}
+        {{/each}}
+        <span> }</span>
+    {{else if declaration.signatures}}
+        {{#if (lookup declaration.signatures 1) }} {{! more than one signature}}
+            <span>{ </span>
+            {{#each declaration.signatures}}
+                {{> member.signature.title hideName=true}}
+                {{#unless @last}}
+                    <span>; </span>
+                {{/unless}}
+            {{/each}}
+            <span> }</span>
+        {{else}}
+            {{#if needsParens}}
+                <span>(</span>
+            {{/if}}
+            {{#with (lookup declaration.signatures '0') }}
+                {{> member.signature.title hideName=true arrowStyle=true}}
+            {{/with}}
+            {{#if needsParens}}
+                <span>)</span>
+            {{/if}}
+        {{/if}}
+    {{else}}
+        <span>{&nbsp;{{#with declaration}}{{> parameter}}{{/with}}&nbsp;}</span>
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'stringLiteral'}}
+    <span>"{{value}}"</span>
+{{/inline}}
+
+{{#*inline 'tuple'}}
+    <span>[</span>
+    {{#each elements}}
+        {{#unless @first}}
+            <span>, </span>
+        {{/unless}}
+        {{> type}}
+    {{/each}}
+    <span>]</span>
+{{/inline}}
+
+{{#*inline 'typeOperator'}}
+    <span>{{operator}} </span>
+    {{#with target}}
+        {{> type}}
+    {{/with}}
+{{/inline}}
+
+{{#*inline 'typeParameter'}}
+    <span>{{name}}</span>
+{{/inline}}
+
+{{#*inline 'union'}}
+    {{#if needsParens}}
+        <span>(</span>
+    {{/if}}
+    {{#each types}}
+        {{#unless @first}}
+            <span> | </span>
+        {{/unless}}
+        {{> type needsParens=true}}
+    {{/each}}
+    {{#if needsParens}}
+        <span>)</span>
+    {{/if}}
+{{/inline}}
+
+{{#*inline 'unknown'}}
+    <span>{{name}}</span>
+{{/inline}}
+
+{{#if this}}
+    {{> (lookup . 'type') }}
+{{else}}
+    <span>void</span>
+{{/if}}
+</span>
