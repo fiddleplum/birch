@@ -8,7 +8,7 @@ import { Vector3Readonly } from '../utils/vector3_readonly';
 import { UniqueId } from '../utils/unique_id';
 import { Color } from '../utils/color';
 import { ColorReadonly } from '../utils/color_readonly';
-import { UniformBlock } from './uniform_block';
+import { Uniforms } from './uniforms';
 
 /** A render stage. It either renders to the canvas or to textures. */
 export class Stage extends UniqueId.Object {
@@ -26,7 +26,7 @@ export class Stage extends UniqueId.Object {
 		this._gl = gl;
 
 		// Create the uniform block.
-		this._uniformBlock = new UniformBlock(this._gl);
+		this._uniforms = new Uniforms(this._gl);
 	}
 
 	/** Destroys the stage. */
@@ -34,13 +34,13 @@ export class Stage extends UniqueId.Object {
 		if (this._frameBuffer !== undefined) {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
-		this._uniformBlock.destroy();
+		this._uniforms.destroy();
 		super.destroy();
 	}
 
-	/** Gets the uniform block associated with this stage. */
-	get uniformBlock(): UniformBlock {
-		return this._uniformBlock;
+	/** Gets the uniforms associated with this stage. */
+	get uniforms(): Uniforms {
+		return this._uniforms;
 	}
 
 	/** Set whether it will render to textures or to the canvas. Defaults to false. */
@@ -144,7 +144,7 @@ export class Stage extends UniqueId.Object {
 
 		// Render the scene.
 		if (this.scene !== undefined) {
-			this.scene.render(this._uniformBlock);
+			this.scene.render(this._uniforms);
 		}
 	}
 
@@ -165,7 +165,7 @@ export class Stage extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The stage-specific uniform block. */
-	private _uniformBlock: UniformBlock;
+	private _uniforms: Uniforms;
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | undefined = undefined;

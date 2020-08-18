@@ -104,7 +104,7 @@ export class Engine {
 
 		// Update the bounds of the viewports.
 		for (const viewport of this._viewports) {
-			viewport.updateBounds();
+			viewport.prepareForRender();
 		}
 
 		// Render all of the stages.

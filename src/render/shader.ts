@@ -62,6 +62,7 @@ export class Shader extends UniqueId.Object {
 				this._gl.deleteShader(fragmentObject);
 			}
 		}
+		this._initializeUniformBlocks();
 		this._initializeUniforms();
 		this._initializeAttributes();
 	}
@@ -89,107 +90,119 @@ export class Shader extends UniqueId.Object {
 		return location;
 	}
 
-	/** Binds a uniform block name to a binding slot. */
-	bindUniformBlock(uniformBlockName: string, bindingSlot: number): void {
-		const uniformBlockIndex = this._uniformBlockNamesToIndices.get(uniformBlockName);
-		if (uniformBlockIndex === undefined) {
-			throw new Error('Uniform block with name ' + uniformBlockName + ' does not exist in the shader.');
-		}
-		this._gl.uniformBlockBinding(this._program, uniformBlockIndex, bindingSlot);
+	/** Gets the binding index for the uniform block name. */
+	getUniformBlockBindingPoint(uniformBlockName: string): number | undefined {
+		const uniformBlockBindingPoint = this._uniformBlockNamesToBindingPoints.get(uniformBlockName);
+		return uniformBlockBindingPoint;
 	}
 
-	/** Sets the uniform location to an integer value. */
-	setUniformInt(location: WebGLUniformLocation, value: number): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue !== value) {
-			this._uniformLocationsToValues.set(location, value);
-			this._gl.uniform1i(location, value);
-		}
+	/** Gets the binding index for the sampler name. */
+	getSamplerTextureUnit(samplerName: string): number | undefined {
+		const samplerTextureUnit = this._samplerNamesToTextureUnits.get(samplerName);
+		return samplerTextureUnit;
 	}
 
-	/** Sets the uniform location to a Vector2 value. */
-	setUniformInt2(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 2)) {
-			Shader._arrayCopy(existingValue, value, 2);
-			this._gl.uniform2iv(location, value);
-		}
-	}
+	// /** Binds a uniform block name to a binding slot. */
+	// bindUniformBlock(uniformBlockName: string, bindingSlot: number): void {
+	// 	const uniformBlockIndex = this._uniformBlockNamesToIndices.get(uniformBlockName);
+	// 	if (uniformBlockIndex === undefined) {
+	// 		throw new Error('Uniform block with name ' + uniformBlockName + ' does not exist in the shader.');
+	// 	}
+	// 	this._gl.uniformBlockBinding(this._program, uniformBlockIndex, bindingSlot);
+	// }
 
-	/** Sets the uniform location to a Vector3 value. */
-	setUniformInt3(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 3)) {
-			Shader._arrayCopy(existingValue, value, 3);
-			this._gl.uniform3iv(location, value);
-		}
-	}
+	// /** Sets the uniform location to an integer value. */
+	// setUniformInt(location: WebGLUniformLocation, value: number): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue !== value) {
+	// 		this._uniformLocationsToValues.set(location, value);
+	// 		this._gl.uniform1i(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a Vector4 value. */
-	setUniformInt4(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 4)) {
-			Shader._arrayCopy(existingValue, value, 4);
-			this._gl.uniform4iv(location, value);
-		}
-	}
+	// /** Sets the uniform location to a Vector2 value. */
+	// setUniformInt2(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 2)) {
+	// 		Shader._arrayCopy(existingValue, value, 2);
+	// 		this._gl.uniform2iv(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a floating-point value. */
-	setUniformFloat(location: WebGLUniformLocation, value: number): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (typeof existingValue === 'number' && existingValue !== value) {
-			this._uniformLocationsToValues.set(location, value);
-			this._gl.uniform1f(location, value);
-		}
-	}
+	// /** Sets the uniform location to a Vector3 value. */
+	// setUniformInt3(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 3)) {
+	// 		Shader._arrayCopy(existingValue, value, 3);
+	// 		this._gl.uniform3iv(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a Vector2 value. */
-	setUniformFloat2(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 2)) {
-			Shader._arrayCopy(existingValue, value, 2);
-			this._gl.uniform2fv(location, value);
-		}
-	}
+	// /** Sets the uniform location to a Vector4 value. */
+	// setUniformInt4(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 4)) {
+	// 		Shader._arrayCopy(existingValue, value, 4);
+	// 		this._gl.uniform4iv(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a Vector3 value. */
-	setUniformFloat3(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 3)) {
-			Shader._arrayCopy(existingValue, value, 3);
-			this._gl.uniform3fv(location, value);
-		}
-	}
+	// /** Sets the uniform location to a floating-point value. */
+	// setUniformFloat(location: WebGLUniformLocation, value: number): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (typeof existingValue === 'number' && existingValue !== value) {
+	// 		this._uniformLocationsToValues.set(location, value);
+	// 		this._gl.uniform1f(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a Vector4 value. */
-	setUniformFloat4(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 4)) {
-			Shader._arrayCopy(existingValue, value, 4);
-			this._gl.uniform4fv(location, value);
-		}
-	}
+	// /** Sets the uniform location to a Vector2 value. */
+	// setUniformFloat2(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 2)) {
+	// 		Shader._arrayCopy(existingValue, value, 2);
+	// 		this._gl.uniform2fv(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to a Matrix44 value. */
-	setUniformMatrix44(location: WebGLUniformLocation, value: number[]): void {
-		const existingValue = this._uniformLocationsToValues.get(location);
-		if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 16)) {
-			Shader._arrayCopy(existingValue, value, 16);
-			this._gl.uniformMatrix4fv(location, false, value);
-		}
-	}
+	// /** Sets the uniform location to a Vector3 value. */
+	// setUniformFloat3(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 3)) {
+	// 		Shader._arrayCopy(existingValue, value, 3);
+	// 		this._gl.uniform3fv(location, value);
+	// 	}
+	// }
 
-	/** Sets the uniform location to the texture slot. */
-	setTexture(nameOrLocation: string | WebGLUniformLocation, textureSlot: number): void {
-		if (typeof nameOrLocation === 'string') {
-			nameOrLocation = this.getUniformLocation('colorTexture');
-		}
-		const existingValue = this._uniformLocationsToValues.get(nameOrLocation);
-		if (existingValue !== textureSlot) {
-			this._uniformLocationsToValues.set(nameOrLocation, textureSlot);
-			this._gl.uniform1i(nameOrLocation, textureSlot);
-		}
-	}
+	// /** Sets the uniform location to a Vector4 value. */
+	// setUniformFloat4(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 4)) {
+	// 		Shader._arrayCopy(existingValue, value, 4);
+	// 		this._gl.uniform4fv(location, value);
+	// 	}
+	// }
+
+	// /** Sets the uniform location to a Matrix44 value. */
+	// setUniformMatrix44(location: WebGLUniformLocation, value: number[]): void {
+	// 	const existingValue = this._uniformLocationsToValues.get(location);
+	// 	if (existingValue instanceof Array && !Shader._arrayEquals(existingValue, value, 16)) {
+	// 		Shader._arrayCopy(existingValue, value, 16);
+	// 		this._gl.uniformMatrix4fv(location, false, value);
+	// 	}
+	// }
+
+	// /** Sets the uniform location to the texture slot. */
+	// setTexture(nameOrLocation: string | WebGLUniformLocation, textureSlot: number): void {
+	// 	if (typeof nameOrLocation === 'string') {
+	// 		nameOrLocation = this.getUniformLocation('colorTexture');
+	// 	}
+	// 	const existingValue = this._uniformLocationsToValues.get(nameOrLocation);
+	// 	if (existingValue !== textureSlot) {
+	// 		this._uniformLocationsToValues.set(nameOrLocation, textureSlot);
+	// 		this._gl.uniform1i(nameOrLocation, textureSlot);
+	// 	}
+	// }
 
 	/** Compiles some shader code to create a shader object. */
 	private _compile(shaderCode: string, shaderType: number): WebGLShader {
@@ -241,17 +254,38 @@ export class Shader extends UniqueId.Object {
 		}
 	}
 
+	/** Gets the mapping from uniform blocks to indices. */
 	private _initializeUniformBlocks(): void {
-		// for () {
-		// 	const uniformBlockName = '';
-		// 	const uniformBlockIndex = this._gl.getUniformBlockIndex(this._program, uniformBlockName);
-		// 	this._uniformBlockNamesToIndices.set(uniformBlockName, uniformBlockIndex);
-		// }
+		let nextOpenBindingPoint = 3;
+		const numUniformBlocks = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORM_BLOCKS);
+		for (let uniformBlockIndex = 0; uniformBlockIndex < numUniformBlocks; uniformBlockIndex++) {
+			const uniformBlockName = this._gl.getActiveUniformBlockName(this._program, uniformBlockIndex);
+			if (uniformBlockName === null) {
+				continue;
+			}
+			// The uniform blocks stage, scene, and model always have constant binding indices.
+			if (uniformBlockName === 'stage') {
+				this._gl.uniformBlockBinding(this._program, uniformBlockIndex, 0);
+			}
+			else if (uniformBlockName === 'scene') {
+				this._gl.uniformBlockBinding(this._program, uniformBlockIndex, 1);
+			}
+			else if (uniformBlockName === 'model') {
+				this._gl.uniformBlockBinding(this._program, uniformBlockIndex, 2);
+			}
+			else {
+				this._gl.uniformBlockBinding(this._program, uniformBlockIndex, nextOpenBindingPoint);
+				this._uniformBlockNamesToBindingPoints.set(uniformBlockName, nextOpenBindingPoint);
+				nextOpenBindingPoint += 1;
+			}
+		}
 	}
 
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
+		const maxTextureUnits = this._gl.getParameter(this._gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		let nextTextureUnit = 0;
 		for (let i = 0; i < numUniforms; i++) {
 			const uniformInfo = this._gl.getActiveUniform(this._program, i);
 			if (uniformInfo === null) {
@@ -265,6 +299,14 @@ export class Shader extends UniqueId.Object {
 			let initialValue: number | number[] = 0;
 			if (![this._gl.BOOL, this._gl.INT, this._gl.FLOAT, this._gl.SAMPLER_2D, this._gl.SAMPLER_CUBE].includes(uniformInfo.type)) {
 				initialValue = [];
+			}
+			if (uniformInfo.type === this._gl.SAMPLER_2D) {
+				if (nextTextureUnit >= maxTextureUnits) {
+					throw new Error('At least ' + nextTextureUnit + ' textures, but the maximum supported is ' + maxTextureUnits + '.');
+				}
+				this._gl.uniform1i(location, nextTextureUnit);
+				this._samplerNamesToTextureUnits.set(uniformInfo.name, nextTextureUnit);
+				nextTextureUnit += 1;
 			}
 			this._uniformLocationsToValues.set(location, initialValue);
 		}
@@ -306,8 +348,11 @@ export class Shader extends UniqueId.Object {
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 
-	/** A mapping from uniform block names to indices. */
-	private _uniformBlockNamesToIndices: Map<string, number> = new Map();
+	/** A mapping from uniform block names to binding indices. */
+	private _uniformBlockNamesToBindingPoints: Map<string, number> = new Map();
+
+	/** A mapping from sampler names to binding indices. */
+	private _samplerNamesToTextureUnits: Map<string, number> = new Map();
 
 	/** A mapping from uniform names to locations. */
 	private _uniformNamesToLocations: Map<string, WebGLUniformLocation> = new Map();

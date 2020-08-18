@@ -1,39 +1,17 @@
 import { UniqueId } from '../utils/unique_id';
+import { Texture } from './texture';
+import { OrderedMap } from '../utils/ordered_map';
+import { Shader } from './shader';
 
-/*
-
-Which layout:
-Use the shared layout which guarantees it can be used by any shader.
-All of the queries of offsets and sizes for uniforms within a block require the shader.
-But since this needs to work independent of the shader, I can't use the queries,
-	which means I'll need to use the std140 layout.
-Or I can have the uniform block create a super basic shader program, do the queries,
-	and delete the shader program. Then I can still have shared layout.
-
-***
-I've written the code to get offsets for the uniform block.
-Now I have to figure out how to actually write data to do the UBO.
-***
-
-Textures can't be in uniform blocks.
-
-In the shader:
-* Have a number of blocks and static max blocks variable.
-* Have a static total number of blocks and check that against the COMBINED max blocks.
-* Use GetUniformBlockIndex in the shader to get the *index* of the uniform block of a given *name*.
-* Bind the uniform block to a binding point via ????
-* Use UniformBlockBinding to assign a *binding point* given the *index*.
-
-*/
-
-export class UniformBlock extends UniqueId.Object {
+/** A group of uniforms that can be used by a stage, scene, model, or model group. */
+export class Uniforms extends UniqueId.Object {
 	constructor(gl: WebGL2RenderingContext) {
 		super();
 
 		// Save the WebGL context.
 		this._gl = gl;
 
-		// Create the buffer.
+		// Create the uniform buffer.
 		const buffer = this._gl.createBuffer();
 		if (buffer === null) {
 			throw new Error('Could not create UBO buffer.');
@@ -48,8 +26,13 @@ export class UniformBlock extends UniqueId.Object {
 		super.destroy();
 	}
 
+	/** Gets the textures of the uniforms. */
+	get textures(): OrderedMap<string, Texture> {
+		return this._textures;
+	}
+
 	/** Sets the uniforms. */
-	setUniformTypes(uniforms: UniformBlock.Uniform[]): void {
+	setUniformTypes(uniforms: Uniforms.Uniform[]): void {
 		// Clean up any previous uniforms.
 		this._uniformNames = [];
 		this._uniformInfos.clear();
@@ -57,11 +40,10 @@ export class UniformBlock extends UniqueId.Object {
 		this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
-			this._uniformNames.push(uniform.name);
 			this._uniformInfos.set(uniform.name, {
 				type: uniform.type,
 				offset: 0,
-				numComponents: UniformBlock.numComponents.get(uniform.type) as number
+				numComponents: Uniforms.NumComponents.get(uniform.type) as number
 			});
 		}
 
@@ -70,34 +52,40 @@ export class UniformBlock extends UniqueId.Object {
 	}
 
 	/** Sets the uniform to a value. */
-	setUniform(name: string, value: number | number[]): void {
-		// Get the type and offset info given the name.
+	setUniform(name: string, value: number | readonly number[] | Texture): void {
+		// Get the info for the uniform.
 		const uniformInfo = this._uniformInfos.get(name);
 		if (uniformInfo === undefined) {
-			throw new Error(`The uniform ${name} does not exist in this block.`);
+			throw new Error(`The uniform ${name} does not exist.`);
 		}
 		const type = uniformInfo.type;
 
-		if (type === UniformBlock.Type.float || type === UniformBlock.Type.int) {
+		if (type === Uniforms.Type.float || type === Uniforms.Type.int) {
 			// Make sure the type and the data match.
 			if (typeof value !== 'number') {
-				throw new Error(`The uniform ${name} has type ${UniformBlock.Type[type]}, but the value is not a number.`);
+				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a number.`);
 			}
 			// Set the data. Assuming hardware is little-endian.
-			if (type === UniformBlock.Type.float) {
+			if (type === Uniforms.Type.float) {
 				this._dataView.setFloat32(uniformInfo.offset, value, true);
 			}
 			else {
 				this._dataView.setInt32(uniformInfo.offset, value, true);
 			}
 		}
-		else {
+		else if (type === Uniforms.Type.sampler2D) {
+			if (!(value instanceof Texture)) {
+				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a texture.`);
+			}
+			this._textures.set(name, value);
+		}
+		else { // A number array such as vec4 or mat4x4.
 			// Make sure the type and the data match.
 			if (!Array.isArray(value) || value.length !== uniformInfo.numComponents) {
-				throw new Error(`The uniform ${name} has type ${UniformBlock.Type[type]}, but the value is not a array of length ${uniformInfo.numComponents}.`);
+				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a array of length ${uniformInfo.numComponents}.`);
 			}
 			// Set the data. Assuming hardware is little-endian.
-			if (type === UniformBlock.Type.vec2 || type === UniformBlock.Type.vec3 || type === UniformBlock.Type.vec4 || type === UniformBlock.Type.mat4x4) {
+			if (type === Uniforms.Type.vec2 || type === Uniforms.Type.vec3 || type === Uniforms.Type.vec4 || type === Uniforms.Type.mat4x4) {
 				for(let i = 0, l = value.length; i < l; i++) {
 					this._dataView.setFloat32(uniformInfo.offset + i * 4, value[i], true);
 				}
@@ -111,26 +99,48 @@ export class UniformBlock extends UniqueId.Object {
 		this._dataNeedsSend = true;
 	}
 
-	/** Binds the uniform buffer to a binding slot. Sends changed data to WebGL if needed. */
-	bind(bindingSlot: number): void {
+	/** Binds the uniform buffer to a binding point. Sends changed data to WebGL if needed. */
+	bindUniformBuffer(bindingPoint: number): void {
 		if (this._dataNeedsSend) {
 			this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 			this._gl.bufferData(this._gl.UNIFORM_BUFFER, this._data, this._gl.DYNAMIC_READ);
 			this._dataNeedsSend = false;
 		}
-		this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingSlot, this._buffer);
+		this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingPoint, this._buffer);
+	}
+
+	/** Unbinds the uniform buffer from the binding point. */
+	unbindUniformBuffer(bindingPoint: number): void {
+		this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingPoint, null);
 	}
 
 	/** Gets the GLSL that should be used. */
 	getGLSL(): string {
-		let glsl = `uniform Example {\n`;
+		let uniformBlockGLSL = '';
+		let opaqueItemsGLSL = '';
+		let firstInUniformBlock = true;
 		for (let i = 0; i < this._uniformNames.length; i++) {
 			const name = this._uniformNames[i];
 			const uniformInfo = this._uniformInfos.get(name) as UniformInfo;
-			glsl += `\t${UniformBlock.Type[uniformInfo.type]} ${name};\n`;
+			// Only non-opaque items go in the uniform block.
+			if (uniformInfo.type !== Uniforms.Type.sampler2D) {
+				// Open the uniform block.
+				if (firstInUniformBlock) {
+					uniformBlockGLSL += `uniform Example {\n`;
+					firstInUniformBlock = false;
+				}
+				// Add the uniform.
+				uniformBlockGLSL += `\t${Uniforms.Type[uniformInfo.type]} ${name};\n`;
+			}
+			else { // An opaque item (sampler2D, etc).
+				opaqueItemsGLSL += `${Uniforms.Type[uniformInfo.type]} ${name};\n`;
+			}
 		}
-		glsl += `};\n`;
-		return glsl;
+		// If there was at least one item in the uniform block, close the uniform block.
+		if (!firstInUniformBlock) {
+			uniformBlockGLSL += `};\n`;
+		}
+		return uniformBlockGLSL + opaqueItemsGLSL;
 	}
 
 	/** Calculates the uniform block offsets by creating a temporary shader and then querying the uniform offsets of that shader. */
@@ -192,17 +202,20 @@ export class UniformBlock extends UniqueId.Object {
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 
-	/** The WebGL buffer. */
+	/** The WebGL buffer. It will hold all non-opaque variables. */
 	private _buffer: WebGLBuffer;
 
 	/** The names of the uniforms in the order they appear. */
 	private _uniformNames: string[] = [];
 
-	/** The info for the uniforms. */
+	/** The items for the uniform block. */
 	private _uniformInfos: Map<string, UniformInfo> = new Map();
 
 	/** The data. */
 	private _data: ArrayBuffer = new ArrayBuffer(0);
+
+	/** A mapping from samplers to textures. */
+	private _textures: OrderedMap<string, Texture> = new OrderedMap();
 
 	/** A DataView of the data. */
 	private _dataView: DataView = new DataView(this._data);
@@ -212,12 +225,12 @@ export class UniformBlock extends UniqueId.Object {
 }
 
 class UniformInfo {
-	type: UniformBlock.Type = 0;
+	type: Uniforms.Type = 0;
 	offset: number = 0;
 	numComponents: number = 0;
 }
 
-export namespace UniformBlock {
+export namespace Uniforms {
 	/** The types of supported shader uniforms. */
 	export enum Type {
 		int,
@@ -228,19 +241,21 @@ export namespace UniformBlock {
 		vec2,
 		vec3,
 		vec4,
-		mat4x4
+		mat4x4,
+		sampler2D
 	}
 
-	export const numComponents: Map<UniformBlock.Type, number> = new Map([
-		[UniformBlock.Type.int, 1],
-		[UniformBlock.Type.float, 1],
-		[UniformBlock.Type.ivec2, 2],
-		[UniformBlock.Type.ivec3, 3],
-		[UniformBlock.Type.ivec4, 4],
-		[UniformBlock.Type.vec2, 2],
-		[UniformBlock.Type.vec3, 3],
-		[UniformBlock.Type.vec4, 4],
-		[UniformBlock.Type.mat4x4, 16],
+	export const NumComponents: Map<Uniforms.Type, number> = new Map([
+		[Uniforms.Type.int, 1],
+		[Uniforms.Type.float, 1],
+		[Uniforms.Type.ivec2, 2],
+		[Uniforms.Type.ivec3, 3],
+		[Uniforms.Type.ivec4, 4],
+		[Uniforms.Type.vec2, 2],
+		[Uniforms.Type.vec3, 3],
+		[Uniforms.Type.vec4, 4],
+		[Uniforms.Type.mat4x4, 16],
+		[Uniforms.Type.sampler2D, 1]
 	]);
 
 	/** The basic interface for declaring a uniform. */

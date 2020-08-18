@@ -5,7 +5,7 @@ import { Scene } from './scene';
 import { Shader } from './shader';
 import { Stage } from './stage';
 import { Texture } from './texture';
-import { UniformBlock } from './uniform_block';
+import { Uniforms } from './uniforms';
 
 export class Renderer {
 	/** Constructs this. */
@@ -127,14 +127,14 @@ export class Renderer {
 	}
 
 	/** Creates a uniformBlock. */
-	createUniformBlock(): UniformBlock {
-		const uniformBlock = new UniformBlock(this._gl);
+	createUniforms(): Uniforms {
+		const uniformBlock = new Uniforms(this._gl);
 		this._uniformBlocks.add(uniformBlock);
 		return uniformBlock;
 	}
 
 	/** Destroys a uniformBlock. */
-	destroyUniformBlock(uniformBlock: UniformBlock | undefined): void {
+	destroyUniforms(uniformBlock: Uniforms | undefined): void {
 		if (uniformBlock !== undefined && this._uniformBlocks.has(uniformBlock)) {
 			uniformBlock.destroy();
 			this._uniformBlocks.remove(uniformBlock);
@@ -186,7 +186,7 @@ export class Renderer {
 	private _stages: List<Stage> = new List();
 
 	/** The uniform blocks. */
-	private _uniformBlocks: List<UniformBlock> = new List();
+	private _uniformBlocks: List<Uniforms> = new List();
 
 	/** The scenes. */
 	private _scenes: List<Scene> = new List();

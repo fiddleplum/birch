@@ -9,9 +9,8 @@ export class World {
 		// Set the engine that contains this.
 		this._engine = engine;
 
-		// Create the render scene and set the uniforms function.
+		// Create the render scene.
 		this._scene = this.engine.renderer.createScene();
-		// this._scene.uniformsFunction = this._sceneUniforms.bind(this);
 	}
 
 	/** Destroys this. */
@@ -46,12 +45,10 @@ export class World {
 		return this._entities.remove(entity);
 	}
 
-	// private _sceneUniforms(shader: Render.Shader): void {
-	// }
-
 	/** The list of entities this contains. */
 	private _entities: List<Entity> = new List();
 
+	/** The render scene for the world. */
 	private _scene: Render.Scene;
 
 	private _eventQueue: EventQueue = new EventQueue();

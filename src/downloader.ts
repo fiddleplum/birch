@@ -19,7 +19,7 @@ export class Downloader {
 	}
 
 	/** Downloads data from the url and returns the response if successful. */
-	async _get(url: string): Promise<Response> {
+	private async _get(url: string): Promise<Response> {
 		if (this._downloads.has(url)) {
 			return this._downloads.get(url);
 		}
@@ -39,5 +39,5 @@ export class Downloader {
 	}
 
 	// The set of active downloads.
-	_downloads: Map<string, Promise<any>> = new Map();
+	private _downloads: Map<string, Promise<any>> = new Map();
 }

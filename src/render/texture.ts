@@ -118,15 +118,15 @@ export class Texture extends UniqueId.Object {
 		return this._source;
 	}
 
-	/** Activates the texture at the given slot. */
-	activate(slot: number): void {
-		this._gl.activeTexture(this._gl.TEXTURE0 + slot);
+	/** Binds the texture to the given bindingIndex. */
+	bind(bindingIndex: number): void {
+		this._gl.activeTexture(this._gl.TEXTURE0 + bindingIndex);
 		this._gl.bindTexture(this._gl.TEXTURE_2D, this._handle);
 	}
 
-	/** Deactivates any texture at the given slot. */
-	deactivate(slot: number): void {
-		this._gl.activeTexture(this._gl.TEXTURE0 + slot);
+	/** Unbinds any texture at the given bindingIndex. */
+	unbind(bindingIndex: number): void {
+		this._gl.activeTexture(this._gl.TEXTURE0 + bindingIndex);
 		this._gl.bindTexture(this._gl.TEXTURE_2D, null);
 	}
 

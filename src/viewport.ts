@@ -1,6 +1,7 @@
 import { World, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 import { RectangleReadonly } from './utils/rectangle_readonly';
 import { ColorReadonly } from './utils/color_readonly';
+import { CameraComponent, FrameComponent } from './world/internal';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
@@ -15,16 +16,16 @@ export class Viewport {
 		this._divElement.style.overflow = 'hidden';
 		viewportsElement.appendChild(this._divElement);
 		// Creates a uniform block.
-		const uniformBlock = renderer.createUniformBlock();
+		const uniformBlock = renderer.createUniforms();
 		uniformBlock.setUniformTypes([{
 			name: 'viewMatrix',
-			type: Render.UniformBlock.Type.mat4x4
+			type: Render.Uniforms.Type.mat4x4
 		}, {
 			name: 'projectionMatrix',
-			type: Render.UniformBlock.Type.mat4x4
+			type: Render.Uniforms.Type.mat4x4
 		}, {
 			name: 'renderSize',
-			type: Render.UniformBlock.Type.vec2
+			type: Render.Uniforms.Type.vec2
 		}]);
 	}
 
@@ -37,38 +38,32 @@ export class Viewport {
 	}
 
 	/** Gets the div element. */
-	getDiv(): HTMLDivElement {
+	get div(): HTMLDivElement {
 		return this._divElement;
 	}
 
 	/** Gets the stage created by this viewport. */
-	getStage(): Render.Stage {
+	get stage(): Render.Stage {
 		return this._stage;
 	}
 
 	/** Gets the camera connected to this viewport. */
-	getCamera(): World.Entity | undefined {
-		return this._camera;
+	get camera(): World.Entity | undefined {
+		return this._cameraEntity;
 	}
 
-	/** Sets the camera connected to this viewport. It must have a camera and frame component. */
-	setCamera(camera: World.Entity | undefined): void {
-		if (camera !== undefined) {
-			if (camera.getComponent(World.CameraComponent, 0) === undefined ||
-				camera.getComponent(World.FrameComponent, 0) === undefined) {
-				throw new Error('The camera entity does not have a camera and frame component.');
-			}
-		}
-		this._camera = camera;
+	/** Sets the camera connected to this viewport. It must have a camera and frame component to work. */
+	set camera(camera: World.Entity | undefined) {
+		this._cameraEntity = camera;
 	}
 
 	/** Gets the aspect ratio as the *width* / *height*. */
-	getAspectRatio(): number {
+	get aspectRatio(): number {
 		return this._divElement.clientWidth / this._divElement.clientHeight;
 	}
 
 	/** Sets the clear color. It does not clear if it is undefined. */
-	setClearColor(color: ColorReadonly | undefined): void {
+	set clearColor(color: ColorReadonly | undefined) {
 		this._stage.setClearColor(color);
 	}
 
@@ -88,9 +83,20 @@ export class Viewport {
 		return this._stage.bounds;
 	}
 
-	/** Updates the bounds of the viewport to reflect the div. */
-	updateBounds(): void {
+	/** Prepares the viewport for a render. */
+	prepareForRender(): void {
+		// Updates the bounds of the viewport to reflect the div.
 		this._stage.bounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
+		// Set the uniforms.
+		if (this._cameraEntity !== undefined) {
+			const cameraComponent = this._cameraEntity.getComponent(CameraComponent, 0);
+			const frameComponent = this._cameraEntity.getComponent(FrameComponent, 0);
+			if (cameraComponent !== undefined && frameComponent !== undefined) {
+				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
+				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
+				this._stage.uniforms.setUniform('renderSize', this._stage.bounds.size.array);
+			}
+		}
 	}
 
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
@@ -116,5 +122,5 @@ export class Viewport {
 	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
-	private _camera: World.Entity | undefined = undefined;
+	private _cameraEntity: World.Entity | undefined = undefined;
 }

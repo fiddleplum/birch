@@ -24,13 +24,13 @@ export class Entity {
 	}
 
 	/** Gets the component of the given type. If there are more than 1, the index specifies which component. If no component is found, it returns undefined. */
-	getComponent(type: typeof Component, index: number): Component | undefined {
+	getComponent<Type extends Component>(type: { new (entity: Entity): Type }, index: number): Type | undefined {
 		// Get the list of components of the same type.
 		const componentsOfType = this._components.get(type);
 		if (componentsOfType === undefined) {
 			return undefined;
 		}
-		return componentsOfType[index];
+		return componentsOfType[index] as Type;
 	}
 
 	/** Gets the number of components of a given type. */

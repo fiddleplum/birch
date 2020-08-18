@@ -1,7 +1,7 @@
 import { List } from '../utils/list';
 import { Model } from './model';
 import { UniqueId } from '../utils/unique_id';
-import { UniformBlock } from './uniform_block';
+import { Uniforms } from './uniforms';
 
 export class Scene extends UniqueId.Object {
 	constructor(gl: WebGL2RenderingContext) {
@@ -11,17 +11,17 @@ export class Scene extends UniqueId.Object {
 		this._gl = gl;
 
 		// Create the uniform block.
-		this._uniformBlock = new UniformBlock(this._gl);
+		this._uniforms = new Uniforms(this._gl);
 	}
 
 	/** Destroys this. */
 	destroy(): void {
-		this._uniformBlock.destroy();
+		this._uniforms.destroy();
 	}
 
-	/** Gets the uniform block associated with this scene. */
-	get uniformBlock(): UniformBlock {
-		return this._uniformBlock;
+	/** Gets the uniforms associated with this scene. */
+	get uniforms(): Uniforms {
+		return this._uniforms;
 	}
 
 	/** Gets the set of models. */
@@ -30,13 +30,13 @@ export class Scene extends UniqueId.Object {
 	}
 
 	/** Renders the scene. */
-	render(stageUniformBlock: UniformBlock): void {
+	render(stageUniforms: Uniforms): void {
 		// Sort the models to be optimal in terms of state changes and blending.
 		this._models.sort(Scene._isModelLess);
 
 		// Render each model.
 		for (const model of this._models) {
-			model.render(stageUniformBlock, this._uniformBlock);
+			model.render(stageUniforms, this._uniforms);
 		}
 	}
 
@@ -58,17 +58,6 @@ export class Scene extends UniqueId.Object {
 			if (a.shader !== b.shader) {
 				return a.shader.id < b.shader.id;
 			}
-			for (let slot = 0, maxSlot = Math.min(Math.max(a.textures.length, b.textures.length) - 1, 32); slot <= maxSlot; slot++) {
-				if (slot == a.textures.length && slot < b.textures.length) {
-					return true;
-				}
-				if (slot == b.textures.length) {
-					return false;
-				}
-				if (a.textures[slot] !== b.textures[slot]) {
-					return a.textures[slot].id < b.textures[slot].id;
-				}
-			}
 			return a.mesh.id < b.mesh.id;
 		}
 		else if (a.depth < b.depth) { // Since there is some blending, sort by depth.
@@ -86,7 +75,7 @@ export class Scene extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The scene-specific uniform block. */
-	private _uniformBlock: UniformBlock;
+	private _uniforms: Uniforms;
 
 	/** The set of models. */
 	private _models: List<Model> = new List();
