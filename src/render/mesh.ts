@@ -57,14 +57,14 @@ export class Mesh extends UniqueId.Object {
 
 	/** Sets the number of vertices per primitive.
 	 * @param numVerticesPerPrimitive - The number of vertices per primitive. 1 means points, 2 means lines, and 3 means triangles. */
-	setNumVerticesPerPrimitive(numVerticesPerPrimitive: number): void {
-		if (numVerticesPerPrimitive === 1) {
+	setPrimitiveType(primitiveType: 'points' | 'lines' | 'triangles'): void {
+		if (primitiveType === 'points') {
 			this._mode = this._gl.POINTS;
 		}
-		else if (numVerticesPerPrimitive === 2) {
+		else if (primitiveType === 'lines') {
 			this._mode = this._gl.LINES;
 		}
-		else if (numVerticesPerPrimitive === 3) {
+		else if (primitiveType === 'triangles') {
 			this._mode = this._gl.TRIANGLES;
 		}
 		else {
