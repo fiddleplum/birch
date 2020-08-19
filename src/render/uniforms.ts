@@ -34,69 +34,80 @@ export class Uniforms extends UniqueId.Object {
 	/** Sets the uniforms. */
 	setUniformTypes(uniforms: Uniforms.Uniform[]): void {
 		// Clean up any previous uniforms.
-		this._uniformNames = [];
-		this._uniformInfos.clear();
+		this._uniformBlockNames = [];
+		this._samplerNames = [];
+		this._uniformBlockInfos.clear();
+		this._textures.clear();
 		// Setup the uniform names and types.
 		this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
-			this._uniformInfos.set(uniform.name, {
-				type: uniform.type,
-				offset: 0,
-				numComponents: Uniforms.NumComponents.get(uniform.type) as number
-			});
+			if (uniform.type === Uniforms.Type.sampler2D) {
+				this._samplerNames.push(uniform.name);
+			}
+			else {
+				this._uniformBlockNames.push(uniform.name);
+				this._uniformBlockInfos.set(uniform.name, {
+					type: uniform.type,
+					offset: 0,
+					numComponents: Uniforms.NumComponents.get(uniform.type) as number
+				});
+			}
 		}
 
 		// Setup the offsets.
-		this._calcShaderOffsets();
+		if (this._uniformBlockNames.length > 0) {
+			this._calcUniformBlockOffsets();
+		}
 	}
 
 	/** Sets the uniform to a value. */
 	setUniform(name: string, value: number | readonly number[] | Texture): void {
-		// Get the info for the uniform.
-		const uniformInfo = this._uniformInfos.get(name);
-		if (uniformInfo === undefined) {
-			throw new Error(`The uniform ${name} does not exist.`);
-		}
-		const type = uniformInfo.type;
-
-		if (type === Uniforms.Type.float || type === Uniforms.Type.int) {
-			// Make sure the type and the data match.
-			if (typeof value !== 'number') {
-				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a number.`);
-			}
-			// Set the data. Assuming hardware is little-endian.
-			if (type === Uniforms.Type.float) {
-				this._dataView.setFloat32(uniformInfo.offset, value, true);
-			}
-			else {
-				this._dataView.setInt32(uniformInfo.offset, value, true);
-			}
-		}
-		else if (type === Uniforms.Type.sampler2D) {
-			if (!(value instanceof Texture)) {
-				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a texture.`);
+		if (value instanceof Texture) {
+			if (!this._samplerNames.includes(name)) {
+				throw new Error(`There is no sampler with the name ${name}.`);
 			}
 			this._textures.set(name, value);
 		}
-		else { // A number array such as vec4 or mat4x4.
-			// Make sure the type and the data match.
-			if (!Array.isArray(value) || value.length !== uniformInfo.numComponents) {
-				throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a array of length ${uniformInfo.numComponents}.`);
+		else {
+			// Get the info for the uniform.
+			const uniformBlockInfo = this._uniformBlockInfos.get(name);
+			if (uniformBlockInfo === undefined) {
+				throw new Error(`The uniform ${name} does not exist.`);
 			}
-			// Set the data. Assuming hardware is little-endian.
-			if (type === Uniforms.Type.vec2 || type === Uniforms.Type.vec3 || type === Uniforms.Type.vec4 || type === Uniforms.Type.mat4x4) {
-				for(let i = 0, l = value.length; i < l; i++) {
-					this._dataView.setFloat32(uniformInfo.offset + i * 4, value[i], true);
+			const type = uniformBlockInfo.type;
+			if (type === Uniforms.Type.float || type === Uniforms.Type.int) {
+				// Make sure the type and the data match.
+				if (typeof value !== 'number') {
+					throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a number.`);
+				}
+				// Set the data. Assuming hardware is little-endian.
+				if (type === Uniforms.Type.float) {
+					this._dataView.setFloat32(uniformBlockInfo.offset, value, true);
+				}
+				else {
+					this._dataView.setInt32(uniformBlockInfo.offset, value, true);
 				}
 			}
-			else {
-				for(let i = 0, l = value.length; i < l; i++) {
-					this._dataView.setInt32(uniformInfo.offset + i * 4, value[i], true);
+			else { // A number array such as vec4 or mat4x4.
+				// Make sure the type and the data match.
+				if (!Array.isArray(value) || value.length !== uniformBlockInfo.numComponents) {
+					throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a array of length ${uniformBlockInfo.numComponents}.`);
+				}
+				// Set the data. Assuming hardware is little-endian.
+				if (type === Uniforms.Type.vec2 || type === Uniforms.Type.vec3 || type === Uniforms.Type.vec4 || type === Uniforms.Type.mat4x4) {
+					for(let i = 0, l = value.length; i < l; i++) {
+						this._dataView.setFloat32(uniformBlockInfo.offset + i * 4, value[i], true);
+					}
+				}
+				else {
+					for(let i = 0, l = value.length; i < l; i++) {
+						this._dataView.setInt32(uniformBlockInfo.offset + i * 4, value[i], true);
+					}
 				}
 			}
+			this._dataNeedsSend = true;
 		}
-		this._dataNeedsSend = true;
 	}
 
 	/** Binds the uniform buffer to a binding point. Sends changed data to WebGL if needed. */
@@ -116,35 +127,25 @@ export class Uniforms extends UniqueId.Object {
 
 	/** Gets the GLSL that should be used. */
 	getGLSL(): string {
-		let uniformBlockGLSL = '';
-		let opaqueItemsGLSL = '';
-		let firstInUniformBlock = true;
-		for (let i = 0; i < this._uniformNames.length; i++) {
-			const name = this._uniformNames[i];
-			const uniformInfo = this._uniformInfos.get(name) as UniformInfo;
-			// Only non-opaque items go in the uniform block.
-			if (uniformInfo.type !== Uniforms.Type.sampler2D) {
-				// Open the uniform block.
-				if (firstInUniformBlock) {
-					uniformBlockGLSL += `uniform Example {\n`;
-					firstInUniformBlock = false;
-				}
-				// Add the uniform.
-				uniformBlockGLSL += `\t${Uniforms.Type[uniformInfo.type]} ${name};\n`;
+		let glsl = '';
+		// Add the uniform block.
+		if (this._uniformBlockNames.length > 0) {
+			glsl += `uniform Example {\n`;
+			for (let i = 0; i < this._uniformBlockNames.length; i++) {
+				const name = this._uniformBlockNames[i];
+				const uniformBlockInfo = this._uniformBlockInfos.get(name) as UniformInfo;
+				glsl += `\t${Uniforms.Type[uniformBlockInfo.type]} ${name};\n`;
 			}
-			else { // An opaque item (sampler2D, etc).
-				opaqueItemsGLSL += `${Uniforms.Type[uniformInfo.type]} ${name};\n`;
-			}
+			glsl += `};\n`;
 		}
-		// If there was at least one item in the uniform block, close the uniform block.
-		if (!firstInUniformBlock) {
-			uniformBlockGLSL += `};\n`;
+		for (let i = 0; i < this._samplerNames.length; i++) {
+			glsl += `uniform sampler2D ${this._samplerNames[i]};\n`;
 		}
-		return uniformBlockGLSL + opaqueItemsGLSL;
+		return glsl;
 	}
 
 	/** Calculates the uniform block offsets by creating a temporary shader and then querying the uniform offsets of that shader. */
-	private _calcShaderOffsets(): void {
+	private _calcUniformBlockOffsets(): void {
 		// Create the vertex shader object.
 		const vertexObject = this._gl.createShader(this._gl.VERTEX_SHADER);
 		if (vertexObject === null) {
@@ -186,11 +187,11 @@ export class Uniforms extends UniqueId.Object {
 		this._data = new ArrayBuffer(dataSizeInBytes);
 		this._dataView = new DataView(this._data);
 		// Get the indices for each of the uniforms in the uniform block.
-		const indicesOfUniformBlock = this._gl.getUniformIndices(program, this._uniformNames) as number[];
+		const indicesOfUniformBlock = this._gl.getUniformIndices(program, this._uniformBlockNames) as number[];
 		const offsetsOfUniformBlock = this._gl.getActiveUniforms(program, indicesOfUniformBlock, this._gl.UNIFORM_OFFSET) as number[];
 		for (let i = 0, l = offsetsOfUniformBlock.length; i < l; i++) {
-			const uniformInfo = this._uniformInfos.get(this._uniformNames[i]) as UniformInfo;
-			uniformInfo.offset = offsetsOfUniformBlock[i];
+			const uniformBlockInfo = this._uniformBlockInfos.get(this._uniformBlockNames[i]) as UniformInfo;
+			uniformBlockInfo.offset = offsetsOfUniformBlock[i];
 		}
 
 		// Clean up the shader objects and program.
@@ -205,11 +206,14 @@ export class Uniforms extends UniqueId.Object {
 	/** The WebGL buffer. It will hold all non-opaque variables. */
 	private _buffer: WebGLBuffer;
 
-	/** The names of the uniforms in the order they appear. */
-	private _uniformNames: string[] = [];
+	/** The names of the uniforms in the uniform block in the order they appear. */
+	private _uniformBlockNames: string[] = [];
 
-	/** The items for the uniform block. */
-	private _uniformInfos: Map<string, UniformInfo> = new Map();
+	/** The names of the samplers. */
+	private _samplerNames: string[] = [];
+
+	/** The info for the uniforms. */
+	private _uniformBlockInfos: Map<string, UniformInfo> = new Map();
 
 	/** The data. */
 	private _data: ArrayBuffer = new ArrayBuffer(0);

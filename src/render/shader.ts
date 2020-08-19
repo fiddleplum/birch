@@ -283,6 +283,7 @@ export class Shader extends UniqueId.Object {
 
 	/** Gets the mapping from uniform names to locations. */
 	private _initializeUniforms(): void {
+		this._gl.useProgram(this._program);
 		const numUniforms = this._gl.getProgramParameter(this._program, this._gl.ACTIVE_UNIFORMS);
 		const maxTextureUnits = this._gl.getParameter(this._gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		let nextTextureUnit = 0;

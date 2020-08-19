@@ -42,7 +42,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Gets the uniforms associated with this model. */
-	get uniform(): Uniforms {
+	get uniforms(): Uniforms {
 		return this._uniforms;
 	}
 
