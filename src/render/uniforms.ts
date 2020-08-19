@@ -1,7 +1,6 @@
 import { UniqueId } from '../utils/unique_id';
 import { Texture } from './texture';
 import { OrderedMap } from '../utils/ordered_map';
-import { Shader } from './shader';
 
 /** A group of uniforms that can be used by a stage, scene, model, or model group. */
 export class Uniforms extends UniqueId.Object {
@@ -112,6 +111,9 @@ export class Uniforms extends UniqueId.Object {
 
 	/** Binds the uniform buffer to a binding point. Sends changed data to WebGL if needed. */
 	bindUniformBuffer(bindingPoint: number): void {
+		if (this._uniformBlockNames.length === 0) {
+			return;
+		}
 		if (this._dataNeedsSend) {
 			this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 			this._gl.bufferData(this._gl.UNIFORM_BUFFER, this._data, this._gl.DYNAMIC_READ);
@@ -193,6 +195,7 @@ export class Uniforms extends UniqueId.Object {
 			const uniformBlockInfo = this._uniformBlockInfos.get(this._uniformBlockNames[i]) as UniformInfo;
 			uniformBlockInfo.offset = offsetsOfUniformBlock[i];
 		}
+		this._dataNeedsSend = true;
 
 		// Clean up the shader objects and program.
 		this._gl.deleteProgram(program);

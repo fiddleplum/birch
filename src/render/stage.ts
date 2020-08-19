@@ -117,11 +117,12 @@ export class Stage extends UniqueId.Object {
 
 	/** Renders the stage. */
 	render(renderHeight: number): void {
-		if (this._frameBuffer === undefined) {
-			return;
+		// Setup the frame buffer if necessary.
+		if (this._frameBuffer !== undefined) {
+			this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
 		}
-		// Setup the frame buffer and viewport.
-		this._gl.bindFramebuffer(this._gl.FRAMEBUFFER, this._frameBuffer);
+
+		// Setup the viewport.
 		this._gl.viewport(this.bounds.min.x, renderHeight - (this.bounds.min.y + this.bounds.size.y), this.bounds.size.x, this.bounds.size.y);
 
 		// Clear the buffer, if needed.

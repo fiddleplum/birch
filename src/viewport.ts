@@ -16,8 +16,7 @@ export class Viewport {
 		this._divElement.style.overflow = 'hidden';
 		viewportsElement.appendChild(this._divElement);
 		// Creates a uniform block.
-		const uniformBlock = renderer.createUniforms();
-		uniformBlock.setUniformTypes([{
+		this._stage.uniforms.setUniformTypes([{
 			name: 'viewMatrix',
 			type: Render.Uniforms.Type.mat4x4
 		}, {
