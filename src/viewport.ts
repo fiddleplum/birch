@@ -91,6 +91,7 @@ export class Viewport {
 			const cameraComponent = this._cameraEntity.getComponent(CameraComponent, 0);
 			const frameComponent = this._cameraEntity.getComponent(FrameComponent, 0);
 			if (cameraComponent !== undefined && frameComponent !== undefined) {
+				cameraComponent.aspectRatio = this._stage.bounds.size.x / this._stage.bounds.size.y;
 				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
 				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
 				this._stage.uniforms.setUniform('renderSize', this._stage.bounds.size.array);
