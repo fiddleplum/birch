@@ -1,0 +1,41 @@
+@font-face {
+	font-family: "Main Font";
+	src: url("LibreBaskerville-Regular.ttf");
+}
+
+:root {
+	font-size: 1.25rem;
+}
+
+body {
+	margin: 0 auto;
+	max-width: 40em;
+	font-family: "Main Font", serif;
+	background: #333333;
+	color: #cccccc;
+}
+
+* {
+	box-sizing: content-box;
+}
+
+h1, h2, h3, p, ul, pre {
+	margin: 1em 0 0 0;
+	line-height: 1.5em;
+}
+
+h1:first-child, h2:first-child, h3:first-child, p:first-child, ul:first-child, pre:first-child {
+	margin-top: 0;
+}
+
+h1 {
+	text-align: center;
+}
+
+h2 {
+	border-bottom: 1px solid;
+}
+
+pre {
+	margin-left: 1em;
+}

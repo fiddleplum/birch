@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Birch Documentation</title>
+		<link href='style.css' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<h1>Birch Documentation</h1>
+		<h2>Creation and Destruction of Objects</h2>
+		<p>In Birch, objects are created by the code</p>
+			<pre>const object = system.createObject();</pre>
+		<p>and destroyed by the code</p>
+			<pre>system.destroyObject(object);</pre>
+		<h2>The Render System</h2>
+		<h3>Mesh</h3>
+		<p>The mesh defines the positions, normals, uvs, and other vertex properties, as well as the primitives such as triangles, lines, or points that make up a mesh.</p>
+		<p>A mesh is created and destroyed by</p>
+		<pre>const mesh = birch.render.meshes.create();</pre>
+		<pre>birch.render.meshes.destroy(mesh);</pre>
+		<p>The mesh can be points, lines, or triangles, which you can set via</p>
+		<pre>mesh.setPrimitiveType('points');</pre>
+		<pre>mesh.setPrimitiveType('lines');</pre>
+		<pre>mesh.setPrimitiveType('triangles');</pre>
+		<p>The mesh supports multiple vertex arrays, interleaved arrays, and any combination thereof. You can set the format of the vertices by</p>
+
+		<h2>Rationales</h2>
+		<h3>Null vs Undefined</h3>
+			<p>This has been a tough question for me. I don't want to intermix null and undefined, and want to be consistent throughout the code base.</p>
+			<p>I've decided to use only undefined for these reasons:</p>
+			<ul>
+				<li>Optional parameters and destructured parameters default to undefined.</li>
+				<li>Map.get and other ES6 features use undefined.</li>
+				<li>The distinction between a property existing and being undefined is moot in Typescript and JSON, since they have proper type checks.</li>
+				<li>Arithmetic works well: 4 + undefined = NaN.</li>
+				<li>typeof a === 'undefined' (not 'object' as with null)</li>
+			</ul>			
+	</body>
+</html>

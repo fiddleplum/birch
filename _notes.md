@@ -23,37 +23,6 @@ Then there should be a Team system that handles teams and also sets each charact
 
 There is no way to make it generic enough to handle all possibilities.
 
-## Should the Render system make its own resources or let the user make them?
-
-Make all objects in render system not directly creatable/destroyable.
-* Make a ResourceList class which constructor takes item constructor and destructor.
-  * addNew(before?: Item): Item
-  * remove(item: Item): bool
-  * has(item: Item): bool
-  * clear(): void
-* Make a ResourceSet class which constructor takes item constructor and destructor.
-  * addNew(): Item
-  * remove(item: Item): bool
-  * has(item: Item): bool
-  * clear(): void
-* Scene.models will be ResourceList.
-* Renderer.mesh, Renderer.textures, and Renderer.shaders will be ResourceSet.
-  * When they are referenced in model, there will be a count kept,
-    so that if they are removed, as in Renderer.meshes.remove(mesh), there will
-	be an error thrown if the count is > 0.
-
-The problem with a dedicated ResourceSet object is that the constructor for everything that uses it must be a default constructor, which doesn't work well with RAII constructors.
-
-# Uniform Buffer Objects
-
-Since the UBO can be shared between shaders, it needs to be outside of the shader class. It is similar to textures in how it does binding, so make it similar to that class.
-
-UBO categories:
-* Stage - camera info, viewport, ...
-* Scene - lighting, ...
-* Model - transforms, ...
-* Material - shading, ...
-
 # Other Notes
 
 Use 16-bit or 32-bit indices for meshes automatically.
