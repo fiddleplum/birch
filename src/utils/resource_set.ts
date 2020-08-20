@@ -1,5 +1,5 @@
-import { List } from './list';
-import { Ordered } from './ordered';
+import { FastList } from './fast_list';
+import { FastIterable } from './fast_iterable';
 
 export class ResourceSet<Resource> {
 	/** Constructs this. */
@@ -42,5 +42,5 @@ export class ResourceSet<Resource> {
 	private _destroyResource: (resource: Resource) => void;
 
 	/** The list of resources. */
-	private _resources: List<Resource> = new List();
+	private _resources: FastList<Resource> = new FastList();
 }

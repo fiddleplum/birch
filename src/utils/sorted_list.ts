@@ -1,9 +1,9 @@
-import { Ordered, OrderedBase } from './ordered';
+import { FastIterable, FastIterableBase } from './fast_iterable';
 
 // Find algorithm from https://stackoverflow.com/a/21822316.
 
 /** A sorted list of items. */
-export class SortedList<Item> extends OrderedBase<Item> {
+export class SortedList<Item> extends FastIterableBase<Item> {
 	/** Constructor. */
 	constructor(isLess: (a: Item, b: Item) => boolean) {
 		super();
@@ -27,7 +27,7 @@ export class SortedList<Item> extends OrderedBase<Item> {
 	}
 
 	/** Creates a new iterator. */
-	protected _createNewIterator(): Ordered.Iterator<Item> {
+	protected _createNewIterator(): FastIterable.Iterator<Item> {
 		return new SortedList.Iterator(this._a);
 	}
 
@@ -55,7 +55,7 @@ export class SortedList<Item> extends OrderedBase<Item> {
 }
 
 export namespace SortedList {
-	export class Iterator<Item> extends Ordered.Iterator<Item> {
+	export class Iterator<Item> extends FastIterable.Iterator<Item> {
 		/** The constructor. */
 		constructor(a: Item[]) {
 			super();

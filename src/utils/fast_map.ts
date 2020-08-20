@@ -1,7 +1,7 @@
-import { Ordered } from './ordered';
-import { List } from './list';
+import { FastIterable } from './fast_iterable';
+import { FastList } from './fast_list';
 
-export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Value>> {
+export class FastMap<Key, Value> implements FastIterable<FastMap.Entry<Key, Value>> {
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<[Key, Value]>) {
 		if (iterable !== undefined) {
@@ -36,7 +36,7 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 	set(key: Key, value: Value): void {
 		const entry = this._keyMap.get(key);
 		if (entry === undefined) {
-			const newEntry = new OrderedMap.Entry(key, value);
+			const newEntry = new FastMap.Entry(key, value);
 			this._keyMap.set(key, newEntry);
 			this._keyList.add(newEntry);
 		}
@@ -50,7 +50,7 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 		if (!this._keyMap.has(key)) {
 			return false;
 		}
-		const entry = this._keyMap.get(key) as OrderedMap.Entry<Key, Value>;
+		const entry = this._keyMap.get(key) as FastMap.Entry<Key, Value>;
 		this._keyMap.delete(key);
 		this._keyList.remove(entry);
 		return true;
@@ -63,18 +63,18 @@ export class OrderedMap<Key, Value> implements Ordered<OrderedMap.Entry<Key, Val
 	}
 
 	/** Returns an iterator. */
-	[Symbol.iterator](): Ordered.Iterator<OrderedMap.Entry<Key, Value>> {
+	[Symbol.iterator](): FastIterable.Iterator<FastMap.Entry<Key, Value>> {
 		return this._keyList[Symbol.iterator]();
 	}
 
 	/** The key as a map, for refering to by key. */
-	private _keyMap: Map<Key, OrderedMap.Entry<Key, Value>> = new Map();
+	private _keyMap: Map<Key, FastMap.Entry<Key, Value>> = new Map();
 
 	/** The ordered list of items. */
-	private _keyList: List<OrderedMap.Entry<Key, Value>> = new List();
+	private _keyList: FastList<FastMap.Entry<Key, Value>> = new FastList();
 }
 
-export namespace OrderedMap {
+export namespace FastMap {
 	/** An entry in the ordered map. */
 	export class Entry<Key, Value> {
 		key: Key;

@@ -1,5 +1,5 @@
 // import { Ordered2 } from './ordered';
-// import { OrderedMap } from './ordered_map';
+// import { FastMap } from './ordered_map';
 // import { Sort } from './sort';
 
 // export class Cache<Key, Value> implements Ordered2<Value | undefined> {
@@ -69,12 +69,12 @@
 // 	}
 
 // 	/** Sorts the values for iteration. */
-// 	sort(sort: Sort.sortFunction<OrderedMap.Entry<Key, CountedValue<Value>> | undefined>, compare: Sort.compareFunction<OrderedMap.Entry<Key, CountedValue<Value>>>): void {
+// 	sort(sort: Sort.sortFunction<FastMap.Entry<Key, CountedValue<Value>> | undefined>, compare: Sort.compareFunction<FastMap.Entry<Key, CountedValue<Value>>>): void {
 // 		this._keysToCountedValues.sort(sort, compare);
 // 	}
 
 // 	/** The keys to values map, with counts. */
-// 	private _keysToCountedValues = new OrderedMap<Key, CountedValue<Value>>();
+// 	private _keysToCountedValues = new FastMap<Key, CountedValue<Value>>();
 
 // 	/** The values to keys map. */
 // 	private _valuesToKeys = new Map<Value, Key>();

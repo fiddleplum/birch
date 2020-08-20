@@ -1,4 +1,4 @@
-import { OrderedMap } from '../utils/ordered_map';
+import { FastMap } from '../utils/fast_map';
 import { Component, World } from './internal';
 
 export class Entity {
@@ -98,7 +98,7 @@ export class Entity {
 	private _world: World;
 
 	/** The list of components this contains. */
-	private _components = new OrderedMap<typeof Component, Component[]>();
+	private _components = new FastMap<typeof Component, Component[]>();
 }
 
 export namespace Entity {

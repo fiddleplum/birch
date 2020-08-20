@@ -1,7 +1,7 @@
-import { Ordered, OrderedBase } from './ordered';
+import { FastIterable, FastIterableBase } from './fast_iterable';
 
-export class List<Value> extends OrderedBase<Value> {
-	/** Constructs the List. Takes an *iterable*. */
+export class FastList<Value> extends FastIterableBase<Value> {
+	/** Constructs the FastList. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
 		super();
 		if (iterable !== undefined) {
@@ -26,7 +26,7 @@ export class List<Value> extends OrderedBase<Value> {
 		if (this._valuesToNodes.has(value)) {
 			return;
 		}
-		const newNode = new List.Node<Value>(value);
+		const newNode = new FastList.Node<Value>(value);
 		if (before !== undefined) {
 			const beforeNode = this._valuesToNodes.get(before);
 			if (beforeNode === undefined) {
@@ -105,27 +105,27 @@ export class List<Value> extends OrderedBase<Value> {
 	}
 
 	/** Creates a new iterator. */
-	protected _createNewIterator(): List.Iterator<Value> {
-		return new List.Iterator(this._getHead.bind(this));
+	protected _createNewIterator(): FastList.Iterator<Value> {
+		return new FastList.Iterator(this._getHead.bind(this));
 	}
 
 	/** Gets the head. */
-	private _getHead(): List.Node<Value> | undefined {
+	private _getHead(): FastList.Node<Value> | undefined {
 		return this._head;
 	}
 
 	/** The head node. */
-	private _head: List.Node<Value> | undefined = undefined;
+	private _head: FastList.Node<Value> | undefined = undefined;
 
 	/** The tail node. */
-	private _tail: List.Node<Value> | undefined = undefined;
+	private _tail: FastList.Node<Value> | undefined = undefined;
 
 	/** A mapping from values to nodes for easier access. */
-	private _valuesToNodes = new Map<Value, List.Node<Value>>();
+	private _valuesToNodes = new Map<Value, FastList.Node<Value>>();
 }
 
-export namespace List {
-	export class Iterator<Value> extends Ordered.Iterator<Value> {
+export namespace FastList {
+	export class Iterator<Value> extends FastIterable.Iterator<Value> {
 		private _getHead: () => Node<Value> | undefined;
 
 		private node: Node<Value> | undefined = undefined;

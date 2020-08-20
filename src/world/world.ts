@@ -1,4 +1,4 @@
-import { List } from '../internal';
+import { FastList } from '../internal';
 import { Engine } from '../internal';
 import { Render } from '../render/index';
 import { Entity, EventQueue } from './internal';
@@ -10,12 +10,12 @@ export class World {
 		this._engine = engine;
 
 		// Create the render scene.
-		this._scene = this.engine.renderer.createScene();
+		this._scene = this.engine.renderer.scenes.create();
 	}
 
 	/** Destroys this. */
 	destroy(): void {
-		this.engine.renderer.destroyScene(this._scene);
+		this.engine.renderer.scenes.destroy(this._scene);
 	}
 
 	/** Gets the engine that contains this. */
@@ -46,7 +46,7 @@ export class World {
 	}
 
 	/** The list of entities this contains. */
-	private _entities: List<Entity> = new List();
+	private _entities: FastList<Entity> = new FastList();
 
 	/** The render scene for the world. */
 	private _scene: Render.Scene;

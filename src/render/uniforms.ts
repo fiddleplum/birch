@@ -1,6 +1,6 @@
 import { UniqueId } from '../utils/unique_id';
 import { Texture } from './texture';
-import { OrderedMap } from '../utils/ordered_map';
+import { FastMap } from '../utils/fast_map';
 
 /** A group of uniforms that can be used by a stage, scene, model, or model group. */
 export class Uniforms extends UniqueId.Object {
@@ -26,7 +26,7 @@ export class Uniforms extends UniqueId.Object {
 	}
 
 	/** Gets the textures of the uniforms. */
-	get textures(): OrderedMap<string, Texture> {
+	get textures(): FastMap<string, Texture> {
 		return this._textures;
 	}
 
@@ -222,7 +222,7 @@ export class Uniforms extends UniqueId.Object {
 	private _data: ArrayBuffer = new ArrayBuffer(0);
 
 	/** A mapping from samplers to textures. */
-	private _textures: OrderedMap<string, Texture> = new OrderedMap();
+	private _textures: FastMap<string, Texture> = new FastMap();
 
 	/** A DataView of the data. */
 	private _dataView: DataView = new DataView(this._data);

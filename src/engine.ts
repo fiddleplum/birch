@@ -1,4 +1,4 @@
-import { List, Viewport, World } from './internal';
+import { FastList, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
 import { Input } from './input/index';
 import { Downloader } from './downloader';
@@ -177,8 +177,8 @@ export class Engine {
 	private _downloader: Downloader;
 
 	/** The viewports. */
-	private _viewports: List<Viewport> = new List();
+	private _viewports: FastList<Viewport> = new FastList();
 
 	/** The worlds. */
-	private _worlds: List<World.World> = new List();
+	private _worlds: FastList<World.World> = new FastList();
 }

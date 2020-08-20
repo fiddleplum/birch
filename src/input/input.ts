@@ -1,5 +1,5 @@
 import { Controller } from './controller';
-import { OrderedMap } from '../utils/ordered_map';
+import { FastMap } from '../utils/fast_map';
 
 export class Input {
 	/** Constructs the input system. */
@@ -78,7 +78,7 @@ export class Input {
 	private _gamepadDisconnectedBound: (event: GamepadEvent) => void;
 
 	/** The currently connected gamepads. */
-	private _controllers: OrderedMap<number, Controller> = new OrderedMap();
+	private _controllers: FastMap<number, Controller> = new FastMap();
 
 	/** The highest index of the controllers. */
 	private _highestIndex: number = NaN;

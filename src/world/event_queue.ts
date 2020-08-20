@@ -1,5 +1,5 @@
 import { System } from './systems/system';
-import { List } from '../utils/list';
+import { FastList } from '../utils/fast_list';
 import { Component } from './components/component';
 
 /** The event queue. Passes events on to registered systems. */
@@ -19,7 +19,7 @@ export class EventQueue {
 	subscribeToEvent(system: System, eventType: symbol): void {
 		let systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
-			systems = new List();
+			systems = new FastList();
 			this._eventSubscribers.set(eventType, systems);
 		}
 		systems.add(system);
@@ -39,7 +39,7 @@ export class EventQueue {
 	}
 
 	/** The event subscribers. */
-	private _eventSubscribers: Map<symbol, List<System>> = new Map();
+	private _eventSubscribers: Map<symbol, FastList<System>> = new Map();
 }
 
 export namespace EventQueue {

@@ -1,14 +1,14 @@
-/** An interface for creating ordered containers. */
-export interface Ordered<Value> {
+/** An interface for creating iterables that don't generate garbage. */
+export interface FastIterable<Value> {
 	/** Returns an iterator. */
-	[Symbol.iterator](): Ordered.Iterator<Value>;
+	[Symbol.iterator](): FastIterable.Iterator<Value>;
 }
 
 /** A base class ordered containers that have iterators that get reused. */
-export abstract class OrderedBase<Value> implements Ordered<Value> {
+export abstract class FastIterableBase<Value> implements FastIterable<Value> {
 	/** Returns an iterator. */
-	[Symbol.iterator](): Ordered.Iterator<Value> {
-		let iterator: Ordered.Iterator<Value> | undefined = undefined;
+	[Symbol.iterator](): FastIterable.Iterator<Value> {
+		let iterator: FastIterable.Iterator<Value> | undefined = undefined;
 		// Find an existing iterator that isn't iterating and return it.
 		for (let i = 0, l = this._iterators.length; i < l; i++) {
 			if (!this._iterators[i].iterating) {
@@ -27,13 +27,13 @@ export abstract class OrderedBase<Value> implements Ordered<Value> {
 	}
 
 	/** Creates a new iterator. */
-	protected abstract _createNewIterator(): Ordered.Iterator<Value>;
+	protected abstract _createNewIterator(): FastIterable.Iterator<Value>;
 
 	/** The list of created iterators. */
-	private _iterators: Ordered.Iterator<Value>[] = [];
+	private _iterators: FastIterable.Iterator<Value>[] = [];
 }
 
-export namespace Ordered {
+export namespace FastIterable {
 	/** The ordered iterator. */
 	export abstract class Iterator<Value> {
 		/** If true, the iterator is currently going through a loop. */

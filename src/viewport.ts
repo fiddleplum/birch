@@ -9,7 +9,7 @@ export class Viewport {
 		// Set the viewports element and renderer.
 		this._renderer = renderer;
 		// Create the render stage.
-		this._stage = renderer.createStage();
+		this._stage = renderer.stages.create();
 		// Create the div element.
 		this._divElement = document.createElement('div');
 		this._divElement.style.position = 'absolute';
@@ -33,7 +33,7 @@ export class Viewport {
 		// Destroy the div element.
 		this._divElement.remove();
 		// Remove the render stage.
-		this._renderer.destroyStage(this._stage);
+		this._renderer.stages.destroy(this._stage);
 	}
 
 	/** Gets the div element. */

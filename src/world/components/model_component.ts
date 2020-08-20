@@ -5,7 +5,7 @@ export class ModelComponent extends Component {
 	constructor(entity: Entity) {
 		super(entity);
 
-		this._model = entity.world.engine.renderer.createModel();
+		this._model = entity.world.engine.renderer.models.create();
 	}
 
 	/** Gets the model. */
