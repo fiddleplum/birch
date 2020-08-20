@@ -9,19 +9,14 @@ export class Uniforms extends UniqueId.Object {
 
 		// Save the WebGL context.
 		this._gl = gl;
-
-		// Create the uniform buffer.
-		const buffer = this._gl.createBuffer();
-		if (buffer === null) {
-			throw new Error('Could not create UBO buffer.');
-		}
-		this._buffer = buffer;
 	}
 
 	/** Destroys this. */
 	destroy(): void {
 		// Delete the buffer.
-		this._gl.deleteBuffer(this._buffer);
+		if (this._buffer !== undefined) {
+			this._gl.deleteBuffer(this._buffer);
+		}
 		super.destroy();
 	}
 
@@ -38,7 +33,6 @@ export class Uniforms extends UniqueId.Object {
 		this._uniformBlockInfos.clear();
 		this._textures.clear();
 		// Setup the uniform names and types.
-		this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
 			if (uniform.type === Uniforms.Type.sampler2D) {
@@ -53,9 +47,16 @@ export class Uniforms extends UniqueId.Object {
 				});
 			}
 		}
-
-		// Setup the offsets.
+		// If there are any uniform block types,
 		if (this._uniformBlockNames.length > 0) {
+			// Create the uniform buffer.
+			const buffer = this._gl.createBuffer();
+			if (buffer === null) {
+				throw new Error('Could not create UBO buffer.');
+			}
+			this._buffer = buffer;
+
+			// Setup the offsets.
 			this._calcUniformBlockOffsets();
 		}
 	}
@@ -109,17 +110,20 @@ export class Uniforms extends UniqueId.Object {
 		}
 	}
 
-	/** Binds the uniform buffer to a binding point. Sends changed data to WebGL if needed. */
-	bindUniformBuffer(bindingPoint: number): void {
-		if (this._uniformBlockNames.length === 0) {
-			return;
-		}
-		if (this._dataNeedsSend) {
+	/** Sends any changed uniforms to WebGL. */
+	sendChangedUniforms(): void {
+		if (this._dataNeedsSend && this._buffer !== undefined) {
 			this._gl.bindBuffer(this._gl.UNIFORM_BUFFER, this._buffer);
 			this._gl.bufferData(this._gl.UNIFORM_BUFFER, this._data, this._gl.DYNAMIC_READ);
 			this._dataNeedsSend = false;
 		}
-		this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingPoint, this._buffer);
+	}
+
+	/** Binds the uniform buffer to a binding point. Sends changed data to WebGL if needed. */
+	bindUniformBuffer(bindingPoint: number): void {
+		if (this._buffer !== undefined) {
+			this._gl.bindBufferBase(this._gl.UNIFORM_BUFFER, bindingPoint, this._buffer);
+		}
 	}
 
 	/** Unbinds the uniform buffer from the binding point. */
@@ -207,7 +211,7 @@ export class Uniforms extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The WebGL buffer. It will hold all non-opaque variables. */
-	private _buffer: WebGLBuffer;
+	private _buffer: WebGLBuffer | undefined;
 
 	/** The names of the uniforms in the uniform block in the order they appear. */
 	private _uniformBlockNames: string[] = [];

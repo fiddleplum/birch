@@ -61,10 +61,12 @@ export class Model extends UniqueId.Object {
 		if (stageUniforms !== state.activeStageUniforms) {
 			stageUniforms.bindUniformBuffer(0);
 		}
+		stageUniforms.sendChangedUniforms();
 		// Bind the scene uniform buffer to 1 if the scene has changed.
 		if (sceneUniforms !== state.activeSceneUniforms) {
 			sceneUniforms.bindUniformBuffer(1);
 		}
+		sceneUniforms.sendChangedUniforms();
 		if (stageUniforms !== state.activeStageUniforms || this.shader !== state.activeShader) {
 			this._bindTextures(stageUniforms, this.shader, state);
 		}
@@ -76,6 +78,7 @@ export class Model extends UniqueId.Object {
 		state.activeSceneUniforms = sceneUniforms;
 		// Bind the model uniform buffer to 2.
 		this._uniforms.bindUniformBuffer(2);
+		this._uniforms.sendChangedUniforms();
 		this._bindTextures(this._uniforms, this.shader, state);
 		// Unbind the unused uniform buffers and texture slots.
 		this._unbindUnusedUniformBuffers(state);
