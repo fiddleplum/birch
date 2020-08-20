@@ -11,12 +11,20 @@ body {
 	margin: 0 auto;
 	max-width: 40em;
 	font-family: "Main Font", serif;
-	background: #333333;
+	background: #333f3f;
 	color: #cccccc;
 }
 
 * {
 	box-sizing: content-box;
+}
+
+body > h1:first-child {
+	margin-top: 1em;
+}
+
+body > *:last-child {
+	margin-bottom: 1em;
 }
 
 h1, h2, h3, p, ul, pre {
@@ -38,4 +46,10 @@ h2 {
 
 pre {
 	margin-left: 1em;
+	tab-size: 2;
+	-moz-tab-size: 2;
+}
+
+pre, code {
+	color: #ccccff;
 }

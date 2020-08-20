@@ -3,14 +3,16 @@
 		<meta charset="utf-8" />
 		<title>Birch Documentation</title>
 		<link href='style.css' rel='stylesheet' type='text/css'>
+		<script src="script.js"></script>
 	</head>
 	<body>
 		<h1>Birch Documentation</h1>
 		<h2>Creation and Destruction of Objects</h2>
-		<p>In Birch, objects are created by the code</p>
-			<pre>const object = system.createObject();</pre>
-		<p>and destroyed by the code</p>
-			<pre>system.destroyObject(object);</pre>
+		<p>In Birch, objects are created by the pattern</p>
+			<pre>const object = system.objects.create();</pre>
+		<p>and destroyed by the pattern</p>
+			<pre>system.objects.destroy(object);</pre>
+		<p>Every object has a <code>destroy</code> function, which is invoked when the object is destroyed by the pattern above.</p>
 		<h2>The Render System</h2>
 		<h3>Mesh</h3>
 		<p>The mesh defines the positions, normals, uvs, and other vertex properties, as well as the primitives such as triangles, lines, or points that make up a mesh.</p>
@@ -22,7 +24,23 @@
 		<pre>mesh.setPrimitiveType('lines');</pre>
 		<pre>mesh.setPrimitiveType('triangles');</pre>
 		<p>The mesh supports multiple vertex arrays, interleaved arrays, and any combination thereof. You can set the format of the vertices by</p>
-
+		<pre>
+			this._mesh.setVertexFormat([[{
+				location: 0, // position
+				type: 'float',
+				dimensions: 3
+			}, {
+				location: 1, // uv
+				type: 'float',
+				dimensions: 2
+			}],
+			[{
+				location: 3, // color
+				type: 'float',
+				dimensions: 4
+			]);
+		</pre>
+		<p>This code would create two vertex arrays with one containing the position and uv, and the other containing the color. This setup could be handy if you were updating the color frequently but not the other components.</p>
 		<h2>Rationales</h2>
 		<h3>Null vs Undefined</h3>
 			<p>This has been a tough question for me. I don't want to intermix null and undefined, and want to be consistent throughout the code base.</p>
