@@ -6,6 +6,7 @@ import { Shader } from './shader';
 import { Stage } from './stage';
 import { Texture } from './texture';
 import { Uniforms } from './uniforms';
+import { FastOrderedSet } from '../utils/fast_ordered_set';
 
 export class Renderer {
 	/** Constructs this. */
@@ -37,7 +38,7 @@ export class Renderer {
 	}
 
 	/** Gets the stage order. */
-	get stageOrder(): Stage[] {
+	get stageOrder(): FastOrderedSet<Stage> {
 		return this._stageOrder;
 	}
 
@@ -61,7 +62,7 @@ export class Renderer {
 		return this._models;
 	}
 
-	/** Gets the stages. */
+	/** Gets the stages. New stages are automatically added to the stage order. */
 	get stages(): Collection<Stage> {
 		return this._stages;
 	}
@@ -79,8 +80,8 @@ export class Renderer {
 	/** Render the stages. */
 	render(): void {
 		// Render the stages in order.
-		for (let i = 0, l = this._stageOrder.length; i < l; i++) {
-			this._stageOrder[i].render(this._canvas.height);
+		for (const stage of this._stageOrder) {
+			stage.render(this._canvas.height);
 		}
 	}
 
@@ -91,7 +92,7 @@ export class Renderer {
 	private _gl: WebGL2RenderingContext;
 
 	/** The order in which the stages are rendered. */
-	private _stageOrder: Stage[] = [];
+	private _stageOrder: FastOrderedSet<Stage> = new FastOrderedSet();
 
 	/** The meshes. */
 	private _meshes: Collection<Mesh> = new Collection(() => {
@@ -123,15 +124,12 @@ export class Renderer {
 
 	/** The stages. */
 	private _stages: Collection<Stage> = new Collection(() => {
-		return new Stage(this._gl);
+		const stage = new Stage(this._gl);
+		this._stageOrder.add(stage);
+		return stage;
 	}, (stage: Stage) => {
 		stage.destroy();
-		// Remove it from the stage order.
-		for (let i = 0, l = this._stageOrder.length; i < l; i++) {
-			if (this._stageOrder[i] === stage) {
-				this._stageOrder.splice(i, 1);
-			}
-		}
+		this._stageOrder.remove(stage);
 	});
 
 	/** The uniforms. */

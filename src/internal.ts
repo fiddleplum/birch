@@ -11,7 +11,7 @@ export * from './utils/matrix44_readonly';
 export * from './utils/num';
 export * from './utils/fast_iterable';
 export * from './utils/fast_map';
-export * from './utils/fast_list';
+export * from './utils/fast_ordered_set';
 export * from './utils/quaternion';
 export * from './utils/quaternion_readonly';
 export * from './utils/rectangle';

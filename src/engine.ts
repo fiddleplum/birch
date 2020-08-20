@@ -1,4 +1,4 @@
-import { FastList, Viewport, World } from './internal';
+import { FastOrderedSet, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
 import { Input } from './input/index';
 import { Downloader } from './downloader';
@@ -41,23 +41,18 @@ export class Engine {
 		return this._downloader;
 	}
 
-	/** Creates a viewport. */
-	createViewport(): Viewport {
-		const viewport = new Viewport(this._renderer, this._viewportsElement);
-		this._viewports.add(viewport);
-		return viewport;
-	}
-
-	/** Destroys a viewport. */
-	destroyViewport(viewport: Viewport): void {
-		if (this._viewports.has(viewport)) {
-			viewport.destroy();
-			this._viewports.remove(viewport);
-		}
+	/** Gets the viewports. New viewports are automatically added to the viewport order. */
+	get viewports(): Collection<Viewport> {
+		return this._viewports;
 	}
 
 	get worlds(): Collection<World.World> {
 		return this._worlds;
+	}
+
+	/** Gets the viewport order. */
+	get viewportOrder(): FastOrderedSet<Viewport> {
+		return this._viewportOrder;
 	}
 
 	/** Stops the engine. */
@@ -67,9 +62,7 @@ export class Engine {
 
 	/** Destroys the engine. */
 	private _destroy(): void {
-		for (const viewport of this._viewports) {
-			viewport.destroy();
-		}
+		this._viewports.clear();
 		this._worlds.clear();
 	}
 
@@ -91,7 +84,7 @@ export class Engine {
 		}
 
 		// Update the bounds of the viewports.
-		for (const viewport of this._viewports) {
+		for (const viewport of this._viewportOrder) {
 			viewport.prepareForRender();
 		}
 
@@ -164,8 +157,18 @@ export class Engine {
 	/** The downloader. */
 	private _downloader: Downloader;
 
+	/** The viewport order. */
+	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();
+
 	/** The viewports. */
-	private _viewports: FastList<Viewport> = new FastList();
+	private _viewports: Collection<Viewport> = new Collection(() => {
+		const viewport = new Viewport(this._renderer, this._viewportsElement);
+		this._viewportOrder.add(viewport);
+		return viewport;
+	}, (viewport: Viewport) => {
+		viewport.destroy();
+		this._viewportOrder.remove(viewport);
+	});
 
 	/** The worlds. */
 	private _worlds: Collection<World.World> = new Collection(() => {

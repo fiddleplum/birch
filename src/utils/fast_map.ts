@@ -1,5 +1,5 @@
 import { FastIterable } from './fast_iterable';
-import { FastList } from './fast_list';
+import { FastOrderedSet } from './fast_ordered_set';
 
 export class FastMap<Key, Value> implements FastIterable<FastMap.Entry<Key, Value>> {
 	/** The constructor. Takes an *iterable*. */
@@ -67,11 +67,11 @@ export class FastMap<Key, Value> implements FastIterable<FastMap.Entry<Key, Valu
 		return this._keyList[Symbol.iterator]();
 	}
 
-	/** The key as a map, for refering to by key. */
+	/** The key as a map, for referring to by key. */
 	private _keyMap: Map<Key, FastMap.Entry<Key, Value>> = new Map();
 
 	/** The ordered list of items. */
-	private _keyList: FastList<FastMap.Entry<Key, Value>> = new FastList();
+	private _keyList: FastOrderedSet<FastMap.Entry<Key, Value>> = new FastOrderedSet();
 }
 
 export namespace FastMap {

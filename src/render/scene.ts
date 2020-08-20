@@ -1,4 +1,4 @@
-import { FastList } from '../utils/fast_list';
+import { FastOrderedSet } from '../utils/fast_ordered_set';
 import { Model } from './model';
 import { UniqueId } from '../utils/unique_id';
 import { Uniforms } from './uniforms';
@@ -25,7 +25,7 @@ export class Scene extends UniqueId.Object {
 	}
 
 	/** Gets the set of models. */
-	get models(): FastList<Model> {
+	get models(): FastOrderedSet<Model> {
 		return this._models;
 	}
 
@@ -78,5 +78,5 @@ export class Scene extends UniqueId.Object {
 	private _uniforms: Uniforms;
 
 	/** The set of models. */
-	private _models: FastList<Model> = new FastList();
+	private _models: FastOrderedSet<Model> = new FastOrderedSet();
 }

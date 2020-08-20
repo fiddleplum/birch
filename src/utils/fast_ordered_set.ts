@@ -1,6 +1,6 @@
 import { FastIterable, FastIterableBase } from './fast_iterable';
 
-export class FastList<Value> extends FastIterableBase<Value> {
+export class FastOrderedSet<Value> extends FastIterableBase<Value> {
 	/** Constructs the FastList. Takes an *iterable*. */
 	constructor(iterable?: Iterable<Value>) {
 		super();
@@ -21,12 +21,12 @@ export class FastList<Value> extends FastIterableBase<Value> {
 		return this._valuesToNodes.has(value);
 	}
 
-	/** Adds a node with the *value* placed before the *before* node or at the end. O(1) */
+	/** Adds a node with the *value* placed before the *before* node or at the end. If the value already exists, it readds it. O(1) */
 	add(value: Value, before?: Value): void {
 		if (this._valuesToNodes.has(value)) {
-			return;
+			this.remove(value);
 		}
-		const newNode = new FastList.Node<Value>(value);
+		const newNode = new FastOrderedSet.Node<Value>(value);
 		if (before !== undefined) {
 			const beforeNode = this._valuesToNodes.get(before);
 			if (beforeNode === undefined) {
@@ -105,26 +105,26 @@ export class FastList<Value> extends FastIterableBase<Value> {
 	}
 
 	/** Creates a new iterator. */
-	protected _createNewIterator(): FastList.Iterator<Value> {
-		return new FastList.Iterator(this._getHead.bind(this));
+	protected _createNewIterator(): FastOrderedSet.Iterator<Value> {
+		return new FastOrderedSet.Iterator(this._getHead.bind(this));
 	}
 
 	/** Gets the head. */
-	private _getHead(): FastList.Node<Value> | undefined {
+	private _getHead(): FastOrderedSet.Node<Value> | undefined {
 		return this._head;
 	}
 
 	/** The head node. */
-	private _head: FastList.Node<Value> | undefined = undefined;
+	private _head: FastOrderedSet.Node<Value> | undefined = undefined;
 
 	/** The tail node. */
-	private _tail: FastList.Node<Value> | undefined = undefined;
+	private _tail: FastOrderedSet.Node<Value> | undefined = undefined;
 
 	/** A mapping from values to nodes for easier access. */
-	private _valuesToNodes = new Map<Value, FastList.Node<Value>>();
+	private _valuesToNodes = new Map<Value, FastOrderedSet.Node<Value>>();
 }
 
-export namespace FastList {
+export namespace FastOrderedSet {
 	export class Iterator<Value> extends FastIterable.Iterator<Value> {
 		private _getHead: () => Node<Value> | undefined;
 
