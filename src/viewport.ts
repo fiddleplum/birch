@@ -89,8 +89,8 @@ export class Viewport {
 		this._stage.bounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
 		// Set the uniforms.
 		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.getComponent(CameraComponent, 0);
-			const frameComponent = this._cameraEntity.getComponent(FrameComponent, 0);
+			const cameraComponent = this._cameraEntity.components.getByType(CameraComponent, 0);
+			const frameComponent = this._cameraEntity.components.getByType(FrameComponent, 0);
 			if (cameraComponent !== undefined && frameComponent !== undefined) {
 				cameraComponent.aspectRatio = this._stage.bounds.size.x / this._stage.bounds.size.y;
 				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);

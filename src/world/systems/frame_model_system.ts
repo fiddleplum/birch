@@ -21,9 +21,9 @@ export class FrameModelSystem extends System {
 
 	processEvent(component: Component, eventType: symbol): void {
 		if (eventType === FrameComponent.Events.PositionChanged || eventType === FrameComponent.Events.OrientationChanged) {
-			const numModelComponents = component.entity.getNumComponentsOfType(ModelComponent);
+			const numModelComponents = component.entity.components.getNumItemsOfType(ModelComponent);
 			for (let i = 0; i < numModelComponents; i++) {
-				// const modelComponent = component.entity.getComponent(ModelComponent, i) as ModelComponent;
+				// const modelComponent = component.entity.components.getByType(ModelComponent, i);
 				// modelComponent.model.uniformsFunction
 			}
 		}

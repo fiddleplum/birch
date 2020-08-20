@@ -1,7 +1,7 @@
-import { FastList } from '../internal';
 import { Engine } from '../internal';
 import { Render } from '../render/index';
 import { Entity, EventQueue } from './internal';
+import { Collection } from '../utils/collection';
 
 export class World {
 	/** Constructor. */
@@ -33,20 +33,16 @@ export class World {
 		return this._eventQueue;
 	}
 
-	/** Adds a new entity. */
-	createEntity(): Entity {
-		const entity = new Entity(this);
-		this._entities.add(entity);
-		return entity;
+	/** Gets the entities. */
+	get entities(): Collection<Entity> {
+		return this._entities;
 	}
 
-	/** Removes an entity. */
-	destroyEntity(entity: Entity): boolean {
-		return this._entities.remove(entity);
-	}
-
-	/** The list of entities this contains. */
-	private _entities: FastList<Entity> = new FastList();
+	/** The entities. */
+	private _entities: Collection<Entity> = new Collection(() => {
+		return new Entity(this);
+	}, () => {
+	});
 
 	/** The render scene for the world. */
 	private _scene: Render.Scene;
