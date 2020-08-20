@@ -1,4 +1,5 @@
 import { UniqueId } from '../utils/unique_id';
+import { Component } from '../world/internal';
 
 /** A mesh. */
 export class Mesh extends UniqueId.Object {
@@ -76,6 +77,18 @@ export class Mesh extends UniqueId.Object {
 	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
 	 * and each sub-array refers to the list of components (in order) of each vertex. */
 	setVertexFormat(vertexFormat: Mesh.Component[][]): void {
+		// I want to turn Mesh.Component into an interface so the user doesn't have to do setVertexFormat([new Birch.Render.Mesh.Component(...)]),
+		// but instead can just do setVertexFormat([{
+		// 	...
+		// }]);
+
+		// But Mesh.Component has a numBytes that it calculates in the constructor.
+		// I want to move it into here.
+		// It's not used anywhere else and not stored.
+		// Since this does a lot of allocation, it's no problem creating an array here.
+		// It should be moved as an array created within the for loop below.
+		// numBytes[], one per Component.
+
 		// Deletes any existing buffers.
 		for (let i = 0; i < this._vertexBuffers.length; i++) {
 			this._gl.deleteBuffer(this._vertexBuffers[i]);
@@ -85,6 +98,7 @@ export class Mesh extends UniqueId.Object {
 		this._gl.bindVertexArray(this._vertexArrayObject);
 
 		// Go through each vertex buffer.
+		const bytesPerComponent: number[] = [];
 		for (let i = 0; i < vertexFormat.length; i++) {
 			const components = vertexFormat[i];
 
@@ -100,7 +114,18 @@ export class Mesh extends UniqueId.Object {
 			let bytesPerVertex = 0;
 			for (let j = 0; j < components.length; j++) {
 				const component = components[j];
-				bytesPerVertex += component.numBytes;
+
+				// Calculate the number of bytes for the component.
+				let bytesPerDimension = 1;
+				switch (component.type) {
+					case 'byte': bytesPerDimension = 1; break;
+					case 'ubyte': bytesPerDimension = 1; break;
+					case 'short': bytesPerDimension = 2; break;
+					case 'ushort': bytesPerDimension = 2; break;
+					case 'float': bytesPerDimension = 4; break;
+				}
+				bytesPerComponent[j] = bytesPerDimension * component.dimensions;
+				bytesPerVertex += bytesPerComponent[j];
 			}
 
 			// Setup the vertex array objectt.
@@ -114,23 +139,23 @@ export class Mesh extends UniqueId.Object {
 				// Get the WebGL type.
 				let glType = this._gl.FLOAT;
 				switch (component.type) {
-					case 'float': glType = this._gl.FLOAT; break;
 					case 'byte': glType = this._gl.BYTE; break;
 					case 'ubyte': glType = this._gl.UNSIGNED_BYTE; break;
 					case 'short': glType = this._gl.SHORT; break;
 					case 'ushort': glType = this._gl.UNSIGNED_SHORT; break;
+					case 'float': glType = this._gl.FLOAT; break;
 				}
 
 				// Assign the currently bound vertex buffer to the attribute location with the given format.
 				this._gl.vertexAttribPointer(component.location, component.dimensions, glType, false, bytesPerVertex, offset);
 
 				// Set whether this component is instanced or not.
-				if (component.instanced) {
+				if (component.instanced === true) {
 					this._gl.vertexAttribDivisor(component.location, 1);
 				}
 
 				// Increase the offset.
-				offset += component.numBytes;
+				offset += bytesPerComponent[j];
 			}
 		}
 	}
@@ -206,42 +231,17 @@ export class Mesh extends UniqueId.Object {
 }
 
 export namespace Mesh {
-	export class Component {
+	export interface Component {
 		/** The WebGL location of the component. */
 		location: number;
 
-		/** The type of component, either 'float', 'byte', 'ubyte' | 'short', 'ushort'. */
-		type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort';
+		/** The type of component, either 'byte', 'ubyte' | 'short', 'ushort' | 'float'. */
+		type: 'byte' | 'ubyte' | 'short' | 'ushort' | 'float';
 
 		/** The number of dimensions of the component. */
 		dimensions: number;
 
 		/** If true, the component is instanced and will be used on a per instance basis. */
-		instanced: boolean;
-
-		/** The number of bytes for the component. */
-		numBytes: number;
-
-		constructor(location: number, type: 'float' | 'byte' | 'ubyte' | 'short' | 'ushort', dimensions: number, instanced: boolean) {
-			// Assign the members.
-			this.location = location;
-			this.type = type;
-			this.dimensions = dimensions;
-			this.instanced = instanced;
-
-			// Calculate the number of bytes for the component.
-			let bytesPerDimension = 1;
-			if (this.type === 'float') {
-				bytesPerDimension = 4;
-			}
-			switch (this.type) {
-				case 'float': bytesPerDimension = 4; break;
-				case 'byte': bytesPerDimension = 1; break;
-				case 'ubyte': bytesPerDimension = 1; break;
-				case 'short': bytesPerDimension = 2; break;
-				case 'ushort': bytesPerDimension = 2; break;
-			}
-			this.numBytes = bytesPerDimension * this.dimensions;
-		}
+		instanced?: boolean;
 	}
 }
