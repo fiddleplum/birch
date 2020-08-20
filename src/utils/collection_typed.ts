@@ -52,7 +52,7 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 	}
 
 	/** Gets the *index* item of the given *type*. Returns undefined if it isn't found. */
-	getByType<Type extends Item>(type: { new (...args: any[]): Type }, index: number): Type | undefined {
+	getByType<Type extends Item>(type: { new (...args: any[]): Type }, index: number = 0): Type | undefined {
 		const itemsOfType = this._typesToItems.get(type);
 		if (itemsOfType === undefined) {
 			return undefined;
