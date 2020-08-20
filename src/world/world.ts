@@ -16,6 +16,9 @@ export class World {
 	/** Destroys this. */
 	destroy(): void {
 		this.engine.renderer.scenes.destroy(this._scene);
+		for (const entry of this._entities) {
+			entry.key.destroy();
+		}
 	}
 
 	/** Gets the engine that contains this. */

@@ -2,6 +2,7 @@ import { FastList, Viewport, World } from './internal';
 import { Renderer } from './render/renderer';
 import { Input } from './input/index';
 import { Downloader } from './downloader';
+import { Collection } from './utils/collection';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -55,19 +56,8 @@ export class Engine {
 		}
 	}
 
-	/** Creates a world. */
-	createWorld(): World.World {
-		const world = new World.World(this);
-		this._worlds.add(world);
-		return world;
-	}
-
-	/** Destroys a world. */
-	destroyWorld(world: World.World): void {
-		if (this._worlds.has(world)) {
-			world.destroy();
-			this._worlds.remove(world);
-		}
+	get worlds(): Collection<World.World> {
+		return this._worlds;
 	}
 
 	/** Stops the engine. */
@@ -80,9 +70,7 @@ export class Engine {
 		for (const viewport of this._viewports) {
 			viewport.destroy();
 		}
-		for (const world of this._worlds) {
-			world.destroy();
-		}
+		this._worlds.clear();
 	}
 
 	/** Runs the main engine loop. */
@@ -180,5 +168,9 @@ export class Engine {
 	private _viewports: FastList<Viewport> = new FastList();
 
 	/** The worlds. */
-	private _worlds: FastList<World.World> = new FastList();
+	private _worlds: Collection<World.World> = new Collection(() => {
+		return new World.World(this);
+	}, (world: World.World) => {
+		world.destroy();
+	});
 }
