@@ -10,8 +10,10 @@ export class CameraComponent extends Component {
 
 	/** Sets the aspect ratio. */
 	set aspectRatio(aspectRatio: number) {
+		if (this._aspectRatio !== aspectRatio) {
+			this._localToNDCDirty = this._ndcToLocalDirty = true;
+		}
 		this._aspectRatio = aspectRatio;
-		this._localToNDCDirty = this._ndcToLocalDirty = true;
 	}
 
 	/** Gets the near clipping distance. */
@@ -21,8 +23,10 @@ export class CameraComponent extends Component {
 
 	/** Sets the near clipping distance. */
 	set near(near) {
+		if (this._near !== near) {
+			this._localToNDCDirty = this._ndcToLocalDirty = true;
+		}
 		this._near = near;
-		this._localToNDCDirty = this._ndcToLocalDirty = true;
 	}
 
 	/** Gets the far clipping distance. */
@@ -32,8 +36,10 @@ export class CameraComponent extends Component {
 
 	/** Sets the far clipping distance. */
 	set far(far) {
+		if (this._far !== far) {
+			this._localToNDCDirty = this._ndcToLocalDirty = true;
+		}
 		this._far = far;
-		this._localToNDCDirty = this._ndcToLocalDirty = true;
 	}
 
 	/** Gets the field of view. */
@@ -43,8 +49,10 @@ export class CameraComponent extends Component {
 
 	/** Sets the field of view. */
 	set fov(fov) {
+		if (this._fov !== fov) {
+			this._localToNDCDirty = this._ndcToLocalDirty = true;
+		}
 		this._fov = fov;
-		this._localToNDCDirty = this._ndcToLocalDirty = true;
 	}
 
 	/** Gets the local to NDC transform. */
