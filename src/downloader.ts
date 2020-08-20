@@ -1,33 +1,32 @@
 export class Downloader {
 	/** Downloads text from the url. */
 	async getText(url: string): Promise<string> {
-		const response = await this._get(url);
-		return response.text();
+		const arrayBuffer = await this._get(url);
+		const textDecoder = new TextDecoder('utf-8');
+		return textDecoder.decode(arrayBuffer);
 	}
 
 	/** Downloads json from the url. */
 	async getJson<T extends Record<string, any>>(url: string): Promise<T> {
-		const response = await this._get(url);
-		return response.json() as Promise<T>;
+		const text = await this.getText(url);
+		return JSON.parse(text);
 	}
 
 	/** Downloads binary data from the url. */
 	async getBinary(url: string): Promise<ArrayBuffer> {
-		return this._get(url).then((response) => {
-			return response.arrayBuffer();
-		});
+		return this._get(url);
 	}
 
 	/** Downloads data from the url and returns the response if successful. */
-	private async _get(url: string): Promise<Response> {
+	private async _get(url: string): Promise<ArrayBuffer> {
 		if (this._downloads.has(url)) {
-			return this._downloads.get(url);
+			return this._downloads.get(url) as Promise<ArrayBuffer>;
 		}
 		else {
 			const promise = fetch(url).then((response: Response) => {
 				this._downloads.delete(url);
 				if (Math.floor(response.status / 100) === 2) { // Any 2xx response
-					return response;
+					return response.arrayBuffer();
 				}
 				else {
 					throw new Error('Download failed: ' + response.status + ' ' + response.statusText);
@@ -39,5 +38,5 @@ export class Downloader {
 	}
 
 	// The set of active downloads.
-	private _downloads: Map<string, Promise<any>> = new Map();
+	private _downloads: Map<string, Promise<ArrayBuffer>> = new Map();
 }
