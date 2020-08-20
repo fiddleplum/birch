@@ -83,8 +83,15 @@ export class Model extends UniqueId.Object {
 		// Unbind the unused uniform buffers and texture slots.
 		this._unbindUnusedUniformBuffers(state);
 		this._unbindUnusedTextures(state);
+		// Activate the shader if it changed.
+		if (state.activeShader !== this.shader && this.shader.isLoaded) {
+			state.activeShader = this.shader;
+			this.shader.activate();
+		}
 		// Render the mesh.
-		this.mesh.render();
+		if (state.activeShader !== undefined) {
+			this.mesh.render();
+		}
 	}
 
 	/** Binds the textures of uniforms and shaders. */

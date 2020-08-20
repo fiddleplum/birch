@@ -65,11 +65,19 @@ export class Shader extends UniqueId.Object {
 		this._initializeUniformBlocks();
 		this._initializeUniforms();
 		this._initializeAttributes();
+		this._programIsValid = true;
+	}
+
+	/** Returns true if the shader has been loaded. */
+	get isLoaded(): boolean {
+		return this._programIsValid;
 	}
 
 	/** Activates the shader for use in rendering. */
 	activate(): void {
-		this._gl.useProgram(this._program);
+		if (this._programIsValid) {
+			this._gl.useProgram(this._program);
+		}
 	}
 
 	/** Gets the uniform location from its name. Throws an error if the name is not found. */
@@ -366,6 +374,9 @@ export class Shader extends UniqueId.Object {
 
 	/** The Gl shader program. */
 	private _program: WebGLProgram;
+
+	/** The flag that returns true if the program is valid. */
+	private _programIsValid: boolean = false;
 }
 
 export namespace Shader {
