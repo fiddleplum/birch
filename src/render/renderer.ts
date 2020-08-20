@@ -36,6 +36,11 @@ export class Renderer {
 		this._scenes.clear();
 	}
 
+	/** Gets the stage order. */
+	get stageOrder(): Stage[] {
+		return this._stageOrder;
+	}
+
 	/** Gets the meshes. */
 	get meshes(): Collection<Mesh> {
 		return this._meshes;
@@ -74,9 +79,8 @@ export class Renderer {
 	/** Render the stages. */
 	render(): void {
 		// Render the stages in order.
-		for (const entry of this._stages) {
-			const stage = entry.key;
-			stage.render(this._canvas.height);
+		for (let i = 0, l = this._stageOrder.length; i < l; i++) {
+			this._stageOrder[i].render(this._canvas.height);
 		}
 	}
 
@@ -85,6 +89,9 @@ export class Renderer {
 
 	/** The WebGL context. */
 	private _gl: WebGL2RenderingContext;
+
+	/** The order in which the stages are rendered. */
+	private _stageOrder: Stage[] = [];
 
 	/** The meshes. */
 	private _meshes: Collection<Mesh> = new Collection(() => {
@@ -119,6 +126,12 @@ export class Renderer {
 		return new Stage(this._gl);
 	}, (stage: Stage) => {
 		stage.destroy();
+		// Remove it from the stage order.
+		for (let i = 0, l = this._stageOrder.length; i < l; i++) {
+			if (this._stageOrder[i] === stage) {
+				this._stageOrder.splice(i, 1);
+			}
+		}
 	});
 
 	/** The uniforms. */

@@ -10,6 +10,7 @@ export class Viewport {
 		this._renderer = renderer;
 		// Create the render stage.
 		this._stage = renderer.stages.create();
+		renderer.stageOrder.push(this._stage);
 		// Create the div element.
 		this._divElement = document.createElement('div');
 		this._divElement.style.position = 'absolute';
