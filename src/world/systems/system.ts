@@ -1,6 +1,6 @@
 import { Component } from '../components/component';
 import { World } from '../internal';
-import { EventQueue } from '../event_queue';
+import { EventQueue, Engine } from '../../internal';
 
 /*
 Each system has its own queue.
@@ -34,6 +34,11 @@ export abstract class System {
 
 	/** Destroys the system. */
 	destroy(): void {
+	}
+
+	/** Gets the engine as a shortcut. */
+	get engine(): Engine {
+		return this.world.engine;
 	}
 
 	/** Gets the world that contains this. */

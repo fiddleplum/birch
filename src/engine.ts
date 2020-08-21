@@ -3,6 +3,7 @@ import { Renderer } from './render/renderer';
 import { Input } from './input/index';
 import { Downloader } from './downloader';
 import { Collection } from './utils/collection';
+import { EventQueue } from './event_queue';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -39,6 +40,11 @@ export class Engine {
 	/** Gets the downloader. */
 	get downloader(): Downloader {
 		return this._downloader;
+	}
+
+	/** Gets the event queue. */
+	get eventQueue(): EventQueue {
+		return this._eventQueue;
 	}
 
 	/** Gets the viewports. New viewports are automatically added to the viewport order. */
@@ -162,6 +168,9 @@ export class Engine {
 
 	/** The downloader. */
 	private _downloader: Downloader;
+
+	/** The event queue. */
+	private _eventQueue: EventQueue = new EventQueue();
 
 	/** The viewport order. */
 	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();

@@ -1,6 +1,6 @@
 import { Engine } from '../internal';
 import { Render } from '../render/index';
-import { Entity, EventQueue, System, FrameModelSystem } from './internal';
+import { Entity, System, FrameModelSystem } from './internal';
 import { Collection } from '../utils/collection';
 import { CollectionTyped } from '../utils/collection_typed';
 
@@ -43,11 +43,6 @@ export class World {
 		return this._scene;
 	}
 
-	/** Gets the event queue. */
-	get eventQueue(): EventQueue {
-		return this._eventQueue;
-	}
-
 	/** Gets the entities. */
 	get entities(): Collection<Entity> {
 		return this._entities;
@@ -66,8 +61,6 @@ export class World {
 
 	/** The render scene for the world. */
 	private _scene: Render.Scene;
-
-	private _eventQueue: EventQueue = new EventQueue();
 
 	/** The engine that contains this. */
 	private _engine: Engine;

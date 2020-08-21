@@ -1,6 +1,6 @@
-import { System } from './systems/system';
-import { FastOrderedSet } from '../utils/fast_ordered_set';
-import { Component } from './components/component';
+import { System } from './world/systems/system';
+import { FastOrderedSet } from './utils/fast_ordered_set';
+import { Component } from './world/components/component';
 
 /** The event queue. Passes events on to registered systems. */
 export class EventQueue {

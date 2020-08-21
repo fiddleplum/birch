@@ -1,5 +1,4 @@
 export * from './entity';
-export * from './event_queue';
 export * from './world';
 
 export * from './components/component';

@@ -1,5 +1,5 @@
-import { Engine } from '../../internal';
-import { Entity, EventQueue } from '../internal';
+import { Engine, EventQueue } from '../../internal';
+import { Entity } from '../internal';
 
 /** The base component in the Component-Entity-System framework from which all other components are subclassed. */
 export abstract class Component {
@@ -9,7 +9,7 @@ export abstract class Component {
 		this._entity = entity;
 
 		// Set the event queue.
-		this._eventQueue = entity.world.eventQueue;
+		this._eventQueue = entity.world.engine.eventQueue;
 	}
 
 	/** Destroys this. */

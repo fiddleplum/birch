@@ -5,14 +5,14 @@ export class FrameModelSystem extends System {
 	constructor(world: World) {
 		super(world);
 
-		this.world.eventQueue.subscribeToEvent(this, FrameComponent.PositionChanged);
-		this.world.eventQueue.subscribeToEvent(this, FrameComponent.OrientationChanged);
+		this.engine.eventQueue.subscribeToEvent(this, FrameComponent.PositionChanged);
+		this.engine.eventQueue.subscribeToEvent(this, FrameComponent.OrientationChanged);
 	}
 
 	/** Destroys the frame-model system. */
 	destroy(): void {
-		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.PositionChanged);
-		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.OrientationChanged);
+		this.engine.eventQueue.unsubscribeFromEvent(this, FrameComponent.PositionChanged);
+		this.engine.eventQueue.unsubscribeFromEvent(this, FrameComponent.OrientationChanged);
 	}
 
 	/** Process any events. */

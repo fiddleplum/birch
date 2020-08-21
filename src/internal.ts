@@ -1,5 +1,6 @@
 export * from './engine';
 export * from './viewport';
+export * from './event_queue';
 
 export * from './render/index';
 
