@@ -16,12 +16,19 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 		// Add it to the collection.
 		this.addItem(newItem, name);
 		// Add it to the types to items mapping.
-		let itemsOfType = this._typesToItems.get(type);
-		if (itemsOfType === undefined) {
-			itemsOfType = [];
-			this._typesToItems.set(type, itemsOfType);
-		}
-		itemsOfType.push(newItem);
+		let ancestorType = type;
+		do {
+			let itemsOfType = this._typesToItems.get(ancestorType);
+			if (itemsOfType === undefined) {
+				itemsOfType = [];
+				this._typesToItems.set(ancestorType, itemsOfType);
+			}
+			itemsOfType.push(newItem);
+			ancestorType = Object.getPrototypeOf(ancestorType);
+			if (ancestorType === Function.prototype) {
+				break;
+			}
+		} while (true);
 		// Return it.
 		return newItem;
 	}
@@ -40,14 +47,20 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 		else {
 			item = nameOrItem as Item;
 		}
-		const type = item.constructor as { new (): Item };
-		const itemsOfType = this._typesToItems.get(type) as Item[];
-		for (let i = 0, l = itemsOfType.length; i < l; i++) {
-			if (itemsOfType[i] === item) {
-				itemsOfType.splice(i, 1);
+		let ancestorType = item.constructor as { new (): Item };
+		do {
+			const itemsOfType = this._typesToItems.get(ancestorType) as Item[];
+			for (let i = 0, l = itemsOfType.length; i < l; i++) {
+				if (itemsOfType[i] === item) {
+					itemsOfType.splice(i, 1);
+					break;
+				}
+			}
+			ancestorType = Object.getPrototypeOf(ancestorType);
+			if (ancestorType === Function.prototype) {
 				break;
 			}
-		}
+		} while (true);
 		return true;
 	}
 
