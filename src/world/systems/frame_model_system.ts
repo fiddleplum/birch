@@ -1,30 +1,28 @@
 import { Component, FrameComponent, ModelComponent, System, World } from '../internal';
 
 export class FrameModelSystem extends System {
-	/** Constructs this. */
+	/** Constructs the frame-model system. */
 	constructor(world: World) {
 		super(world);
 
-		this.world.eventQueue.subscribeToEvent(this, FrameComponent.Events.PositionChanged);
-		this.world.eventQueue.subscribeToEvent(this, FrameComponent.Events.OrientationChanged);
+		this.world.eventQueue.subscribeToEvent(this, FrameComponent.PositionChanged);
+		this.world.eventQueue.subscribeToEvent(this, FrameComponent.OrientationChanged);
 	}
 
-	/** Destroys this. */
+	/** Destroys the frame-model system. */
 	destroy(): void {
-		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.Events.PositionChanged);
-		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.Events.OrientationChanged);
+		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.PositionChanged);
+		this.world.eventQueue.unsubscribeFromEvent(this, FrameComponent.OrientationChanged);
 	}
 
-	update(): void {
-		super.update();
-	}
-
+	/** Process any events. */
 	processEvent(component: Component, eventType: symbol): void {
-		if (eventType === FrameComponent.Events.PositionChanged || eventType === FrameComponent.Events.OrientationChanged) {
+		if (eventType === FrameComponent.PositionChanged || eventType === FrameComponent.OrientationChanged) {
+			const frameComponent = component as FrameComponent;
 			const numModelComponents = component.entity.components.getNumItemsOfType(ModelComponent);
 			for (let i = 0; i < numModelComponents; i++) {
-				// const modelComponent = component.entity.components.getByType(ModelComponent, i);
-				// modelComponent.model.uniformsFunction
+				const modelComponent = component.entity.components.getByType(ModelComponent, i) as ModelComponent;
+				modelComponent.model.uniforms.setUniform('modelMatrix', frameComponent.localToWorld.array);
 			}
 		}
 	}
