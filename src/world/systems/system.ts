@@ -27,9 +27,13 @@ export abstract class System {
 	/** Called when a system receives an event it was listening for. */
 	abstract processEvent(component: Component, eventType: symbol): void;
 
-	/** The constructor. */
+	/** Constructs the system. */
 	constructor(world: World) {
 		this._world = world;
+	}
+
+	/** Destroys the system. */
+	destroy(): void {
 	}
 
 	/** Gets the world that contains this. */
@@ -37,13 +41,13 @@ export abstract class System {
 		return this._world;
 	}
 
-	/** Called once per frame to update the system. */
-	update(): void {
-		for (let i = 0, l = this._events.length; i < l; i++) {
+	/** Processes the events in the queue. */
+	processEventsInQueue(): void {
+		for (let i = 0, l = this._numEvents; i < l; i++) {
 			const event = this._events[i];
 			this.processEvent(event.component as Component, event.type);
 		}
-		this._events = [];
+		this._numEvents = 0;
 	}
 
 	/** Adds an event. Only called by the event system. */

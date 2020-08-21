@@ -15,7 +15,7 @@ export class EventQueue {
 		}
 	}
 
-	/** Adds an event listener. */
+	/** Subscribes a system to an event. */
 	subscribeToEvent(system: System, eventType: symbol): void {
 		let systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
@@ -25,7 +25,7 @@ export class EventQueue {
 		systems.add(system);
 	}
 
-	/** Removes an event listener. Returns true if it existed. */
+	/** Unsubscribes a system from an event. Returns true if it was subscribed before. */
 	unsubscribeFromEvent(system: System, eventType: symbol): boolean {
 		const systems = this._eventSubscribers.get(eventType);
 		if (systems === undefined) {
