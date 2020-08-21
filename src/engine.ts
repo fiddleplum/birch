@@ -83,6 +83,12 @@ export class Engine {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
 
+		// Update the worlds.
+		for (const entry of this._worlds) {
+			const world = entry.key;
+			world.update();
+		}
+
 		// Update the bounds of the viewports.
 		for (const viewport of this._viewportOrder) {
 			viewport.prepareForRender();
