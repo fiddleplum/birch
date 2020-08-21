@@ -61,6 +61,11 @@ export class Uniforms extends UniqueId.Object {
 		}
 	}
 
+	/** Returns true if *this* has the uniform of the given name. */
+	hasUniform(name: string): boolean {
+		return this._samplerNames.includes(name) || this._uniformBlockNames.includes(name);
+	}
+
 	/** Sets the uniform to a value. */
 	setUniform(name: string, value: number | readonly number[] | Texture): void {
 		if (value instanceof Texture) {
