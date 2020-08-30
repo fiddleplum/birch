@@ -1,34 +1,14 @@
-import { FastIterable } from './fast_iterable';
-import { FastOrderedSet } from './fast_ordered_set';
+import { FastMapReadonly } from './fast_map_readonly';
 
-export class FastMap<Key, Value> implements FastIterable<FastMap.Entry<Key, Value>> {
+export class FastMap<Key, Value> extends FastMapReadonly<Key, Value> {
 	/** The constructor. Takes an *iterable*. */
 	constructor(iterable?: Iterable<[Key, Value]>) {
+		super();
+
 		if (iterable !== undefined) {
 			for (const entry of iterable) {
 				this.set(entry[0], entry[1]);
 			}
-		}
-	}
-
-	/** Gets the number of entries in the map. */
-	get size(): number {
-		return this._keyMap.size;
-	}
-
-	/** Returns true if the *key* is in the map. O(1). */
-	has(key: Key): boolean {
-		return this._keyMap.has(key);
-	}
-
-	/** Gets the *value* of the *key*. O(1). */
-	get(key: Key): Value | undefined {
-		const entry = this._keyMap.get(key);
-		if (entry !== undefined) {
-			return entry.value;
-		}
-		else {
-			return undefined;
 		}
 	}
 
@@ -61,17 +41,6 @@ export class FastMap<Key, Value> implements FastIterable<FastMap.Entry<Key, Valu
 		this._keyMap.clear();
 		this._keyList.clear();
 	}
-
-	/** Returns an iterator. */
-	[Symbol.iterator](): FastIterable.Iterator<FastMap.Entry<Key, Value>> {
-		return this._keyList[Symbol.iterator]();
-	}
-
-	/** The key as a map, for referring to by key. */
-	private _keyMap: Map<Key, FastMap.Entry<Key, Value>> = new Map();
-
-	/** The ordered list of items. */
-	private _keyList: FastOrderedSet<FastMap.Entry<Key, Value>> = new FastOrderedSet();
 }
 
 export namespace FastMap {
