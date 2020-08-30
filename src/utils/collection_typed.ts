@@ -1,8 +1,10 @@
 import { CollectionBase } from './collection_base';
 import { FastMap } from './fast_map';
+import { FastOrderedSet } from './fast_ordered_set';
+import { FastOrderedSetReadonly } from './fast_ordered_set_readonly';
 
 /** A typed collection of optionally named items, with user supplied creation and destruction functions. */
-export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
+export class CollectionTyped<Item extends { [key: string]: any }> extends CollectionBase<Item> {
 	/** Constructs *this*. */
 	constructor(createItem: (type: { new (...args: any[]): Item }) => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
 		super(destroyItem);
@@ -21,10 +23,10 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 		do {
 			let itemsOfType = this._typesToItems.get(ancestorType);
 			if (itemsOfType === undefined) {
-				itemsOfType = [];
+				itemsOfType = new FastOrderedSet();
 				this._typesToItems.set(ancestorType, itemsOfType);
 			}
-			itemsOfType.push(newItem);
+			itemsOfType.add(newItem);
 			ancestorType = Object.getPrototypeOf(ancestorType);
 			if (ancestorType === Function.prototype) {
 				break;
@@ -54,13 +56,8 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 		}
 		let ancestorType = item.constructor as { new (): Item };
 		do {
-			const itemsOfType = this._typesToItems.get(ancestorType) as Item[];
-			for (let i = 0, l = itemsOfType.length; i < l; i++) {
-				if (itemsOfType[i] === item) {
-					itemsOfType.splice(i, 1);
-					break;
-				}
-			}
+			const itemsOfType = this._typesToItems.get(ancestorType) as FastOrderedSet<Item>;
+			itemsOfType.remove(item);
 			ancestorType = Object.getPrototypeOf(ancestorType);
 			if (ancestorType === Function.prototype) {
 				break;
@@ -69,25 +66,14 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 		return true;
 	}
 
-	/** Gets the *index* item of the given *type*. Returns undefined if it isn't found. */
-	getByType<Type extends Item>(type: { new (...args: any[]): Type }, index: number = 0): Type | undefined {
-		const itemsOfType = this._typesToItems.get(type);
-		if (itemsOfType === undefined) {
-			return undefined;
-		}
-		if (index < 0 || itemsOfType.length <= index) {
-			return undefined;
-		}
-		return itemsOfType[index] as Type;
+	/** Gets the first item of the given *type*. */
+	getFirstOfType<Type extends Item>(type: { new (...args: any[]): Type }): Type | undefined {
+		return this._typesToItems.get(type)?.getIndex(0) as (Type | undefined);
 	}
 
-	/** Gets the number of items of a given *type*. */
-	getNumItemsOfType<Type extends Item>(type: { new (...args: any[]): Type }): number {
-		const itemsOfType = this._typesToItems.get(type);
-		if (itemsOfType === undefined) {
-			return 0;
-		}
-		return itemsOfType.length;
+	/** Gets the items of the given *type*. Returns undefined if there are none. */
+	getAllOfType<Type extends Item>(type: { new (...args: any[]): Type }): FastOrderedSetReadonly<Type> | undefined {
+		return this._typesToItems.get(type) as FastOrderedSet<Type>;
 	}
 
 	/** The create item function. */
@@ -97,5 +83,5 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 	private _postCreateItem: ((item: Item) => void) | undefined;
 
 	/** The mapping from types to items. */
-	private _typesToItems: FastMap<{ new (): Item }, Item[]> = new FastMap();
+	private _typesToItems: FastMap<{ new (): Item }, FastOrderedSet<Item>> = new FastMap();
 }

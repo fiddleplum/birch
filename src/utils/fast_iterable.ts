@@ -7,6 +7,11 @@ export interface FastIterable<Value> {
 /** A base class ordered containers that have iterators that get reused. */
 export abstract class FastIterableBase<Value> implements FastIterable<Value> {
 	/** Returns an iterator. */
+	get iterator(): FastIterable.Iterator<Value> {
+		return this[Symbol.iterator]();
+	}
+
+	/** Returns an iterator. */
 	[Symbol.iterator](): FastIterable.Iterator<Value> {
 		let iterator: FastIterable.Iterator<Value> | undefined = undefined;
 		// Find an existing iterator that isn't iterating and return it.

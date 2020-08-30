@@ -6,7 +6,21 @@ export class FastOrderedSetReadonly<Value> extends FastIterableBase<Value> {
 		return this._valuesToNodes.size;
 	}
 
-	/** Returns true if the *value* is in the set. (1). */
+	/** Gets the *i*th value. Note that this takes O(i) time. */
+	getIndex(i: number): Value | undefined {
+		let node = this._head;
+		while (i > 1 && node !== undefined) {
+			node = node.next;
+		}
+		if (node !== undefined) {
+			return node.value;
+		}
+		else {
+			return undefined;
+		}
+	}
+
+	/** Returns true if the *value* is in the set. O(1). */
 	has(value: Value): boolean {
 		return this._valuesToNodes.has(value);
 	}
