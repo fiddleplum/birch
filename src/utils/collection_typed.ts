@@ -4,9 +4,10 @@ import { FastMap } from './fast_map';
 /** A typed collection of optionally named items, with user supplied creation and destruction functions. */
 export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 	/** Constructs *this*. */
-	constructor(createItem: (type: { new (...args: any[]): Item }) => Item, destroyItem: (item: Item) => void) {
+	constructor(createItem: (type: { new (...args: any[]): Item }) => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
 		super(destroyItem);
 		this._createItem = createItem;
+		this._postCreateItem = postCreateItem;
 	}
 
 	/** Creates a new item with an optional name. */
@@ -29,6 +30,10 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 				break;
 			}
 		} while (true);
+		// Call the post-create function.
+		if (this._postCreateItem) {
+			this._postCreateItem(newItem);
+		}
 		// Return it.
 		return newItem;
 	}
@@ -87,6 +92,9 @@ export class CollectionTyped<Item extends object> extends CollectionBase<Item> {
 
 	/** The create item function. */
 	private _createItem: (type: { new (): Item }) => Item;
+
+	/** The function called after an item has been created and added to the collection. */
+	private _postCreateItem: ((item: Item) => void) | undefined;
 
 	/** The mapping from types to items. */
 	private _typesToItems: FastMap<{ new (): Item }, Item[]> = new FastMap();
