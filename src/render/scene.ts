@@ -1,7 +1,7 @@
-import { FastOrderedSet } from '../utils/fast_ordered_set';
 import { Model } from './model';
-import { UniqueId } from '../utils/unique_id';
 import { Uniforms } from './uniforms';
+import { FastOrderedSet } from '../utils/fast_ordered_set';
+import { UniqueId } from '../utils/unique_id';
 
 export class Scene extends UniqueId.Object {
 	constructor(gl: WebGL2RenderingContext) {

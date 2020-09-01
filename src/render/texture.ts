@@ -1,5 +1,5 @@
-import { Vector2 } from '../utils/vector2';
 import { UniqueId } from '../utils/unique_id';
+import { Vector2 } from '../utils/vector2';
 
 export class Texture extends UniqueId.Object {
 	constructor(gl: WebGL2RenderingContext) {

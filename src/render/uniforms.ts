@@ -1,6 +1,6 @@
-import { UniqueId } from '../utils/unique_id';
 import { Texture } from './texture';
 import { FastMap } from '../utils/fast_map';
+import { UniqueId } from '../utils/unique_id';
 
 /** A group of uniforms that can be used by a stage, scene, model, or model group. */
 export class Uniforms extends UniqueId.Object {

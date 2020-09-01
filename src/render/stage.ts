@@ -1,5 +1,6 @@
 import { Scene } from './scene';
 import { Texture } from './texture';
+import { Uniforms } from './uniforms';
 import { Rectangle } from '../utils/rectangle';
 import { Vector2 } from '../utils/vector2';
 import { Vector2Readonly } from '../utils/vector2_readonly';
@@ -8,7 +9,6 @@ import { Vector3Readonly } from '../utils/vector3_readonly';
 import { UniqueId } from '../utils/unique_id';
 import { Color } from '../utils/color';
 import { ColorReadonly } from '../utils/color_readonly';
-import { Uniforms } from './uniforms';
 
 /** A render stage. It either renders to the canvas or to textures. */
 export class Stage extends UniqueId.Object {

@@ -1,4 +1,3 @@
-import { Collection } from '../utils/collection';
 import { Mesh } from './mesh';
 import { Model } from './model';
 import { Scene } from './scene';
@@ -6,6 +5,7 @@ import { Shader } from './shader';
 import { Stage } from './stage';
 import { Texture } from './texture';
 import { Uniforms } from './uniforms';
+import { Collection } from '../utils/collection';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
 
 export class Renderer {

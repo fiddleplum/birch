@@ -1,8 +1,8 @@
-import { Shader } from './shader';
-import { Mesh } from './mesh';
 import { UniqueId } from '../utils/unique_id';
+import { Mesh } from './mesh';
+import { Shader } from './shader';
+import { Texture } from './texture';
 import { Uniforms } from './uniforms';
-import { State } from './state';
 
 export class Model extends UniqueId.Object {
 	/** The mesh. */
@@ -32,7 +32,7 @@ export class Model extends UniqueId.Object {
 
 		// If the WebGL state object hasn't been created, create it.
 		if (!Model._state.has(gl)) {
-			Model._state.set(gl, new State());
+			Model._state.set(gl, new RenderState());
 		}
 	}
 
@@ -52,7 +52,7 @@ export class Model extends UniqueId.Object {
 			return;
 		}
 		// Get the state for this WebGL context. Used by other functions to keep track of things.
-		const state = Model._state.get(this._gl) as State;
+		const state = Model._state.get(this._gl) as RenderState;
 		// Initialize the texture units used this frame to 0.
 		for (let i = 0; i < state.textureUnitsUsedThisFrame.length; i++) {
 			state.textureUnitsUsedThisFrame[i] = false;
@@ -95,7 +95,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Binds the textures of uniforms and shaders. */
-	private _bindTextures(uniforms: Uniforms, shader: Shader, state: State): void {
+	private _bindTextures(uniforms: Uniforms, shader: Shader, state: RenderState): void {
 		for (const entry of uniforms.textures) {
 			const texture = entry.value;
 			const textureUnit = shader.getSamplerTextureUnit(entry.key);
@@ -108,7 +108,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Unbinds any unused textures. */
-	private _unbindUnusedTextures(state: State): void {
+	private _unbindUnusedTextures(state: RenderState): void {
 		for (let i = 0; i < state.activeTextures.length; i++) {
 			const activeTexture = state.activeTextures[i];
 			if (activeTexture !== undefined && state.textureUnitsUsedThisFrame[i] === false) {
@@ -119,7 +119,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Unbinds any unused uniform buffers. */
-	private _unbindUnusedUniformBuffers(state: State): void {
+	private _unbindUnusedUniformBuffers(state: RenderState): void {
 		// Start at 3 since 0, 1, and 2 are reserved.
 		for (let i = 3; i < state.activeUniformBuffers.length; i++) {
 			const activeUniformBuffer = state.activeUniformBuffers[i];
@@ -137,7 +137,30 @@ export class Model extends UniqueId.Object {
 	private _uniforms: Uniforms;
 
 	/** The WebGL state, one for each WebGL context. */
-	private static _state: Map<WebGL2RenderingContext, State> = new Map();
+	private static _state: Map<WebGL2RenderingContext, RenderState> = new Map();
+}
+
+export class RenderState {
+	/** The active stage. */
+	activeStageUniforms: Uniforms | undefined = undefined;
+
+	/** The active scene. */
+	activeSceneUniforms: Uniforms | undefined = undefined;
+
+	/** The active shader. */
+	activeShader: Shader | undefined = undefined;
+
+	/** The active uniform buffers in their binding points. */
+	activeUniformBuffers: (Uniforms | undefined)[] = [];
+
+	/** Uniform buffers used this frame. Used to know which of the activeUniformBuffer binding points to unbind. */
+	uniformBufferBindingPointsUsedThisFrame: boolean[] = [];
+
+	/** The active textures in their texture units. */
+	activeTextures: (Texture | undefined)[] = [];
+
+	/** Texture units used this frame. Used to know which of the activeTexture texture units to unbind. */
+	textureUnitsUsedThisFrame: boolean[] = [];
 }
 
 export namespace Model {
@@ -148,5 +171,5 @@ export namespace Model {
 	export enum DepthTest { Never, Always, Less, Greater, Equal, NotEqual, LessOrEqual, GreaterOrEqual }
 
 	/** The function for setting uniforms. */
-	export type UniformsFunction = (shader: Shader) => {} | undefined;
+	export type UniformsFunction = ((shader: Shader) => void) | undefined;
 }

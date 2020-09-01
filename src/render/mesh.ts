@@ -1,5 +1,4 @@
 import { UniqueId } from '../utils/unique_id';
-import { Component } from '../world/internal';
 
 /** A mesh. */
 export class Mesh extends UniqueId.Object {
@@ -77,7 +76,7 @@ export class Mesh extends UniqueId.Object {
 	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
 	 * and each sub-array refers to the list of components (in order) of each vertex. */
 	setVertexFormat(vertexFormat: Mesh.Component[][]): void {
-		// I want to turn Mesh.Component into an interface so the user doesn't have to do setVertexFormat([new Birch.Render.Mesh.Component(...)]),
+		// I want to turn Mesh.Component into an interface so the user doesn't have to do setVertexFormat([new Birch.Mesh.Component(...)]),
 		// but instead can just do setVertexFormat([{
 		// 	...
 		// }]);
