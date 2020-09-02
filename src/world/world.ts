@@ -1,8 +1,4 @@
-import { Engine } from '../internal';
-import { Render } from '../render/index';
-import { Entity, System, FrameModelSystem } from './internal';
-import { Collection } from '../utils/collection';
-import { CollectionTyped } from '../utils/collection_typed';
+import { Collection, Engine, Entity, Render } from '../internal';
 
 export class World {
 	/** Constructor. */
@@ -12,9 +8,6 @@ export class World {
 
 		// Create the render scene.
 		this._scene = this.engine.renderer.scenes.create();
-
-		// Add a frame model system.
-		this._systems.create(FrameModelSystem, 'frameModel');
 	}
 
 	/** Destroys this. */
@@ -27,10 +20,6 @@ export class World {
 
 	/** Updates the world. Called once per frame. */
 	update(): void {
-		for (const entry of this._systems) {
-			const system = entry.key;
-			system.processEventsInQueue();
-		}
 	}
 
 	/** Gets the engine that contains this. */
@@ -48,11 +37,6 @@ export class World {
 		return this._entities;
 	}
 
-	/** Gets the systems. */
-	get systems(): CollectionTyped<System> {
-		return this._systems;
-	}
-
 	/** The entities. */
 	private _entities: Collection<Entity> = new Collection(() => {
 		return new Entity(this);
@@ -64,11 +48,4 @@ export class World {
 
 	/** The engine that contains this. */
 	private _engine: Engine;
-
-	/** The systems. */
-	private _systems = new CollectionTyped<System>((type: { new (world: World): System }) => {
-		return new type(this);
-	}, (system: System) => {
-		system.destroy();
-	});
 }

@@ -1,5 +1,4 @@
-import { Vector3, Vector3Readonly, Quaternion, QuaternionReadonly, Matrix44, Matrix44Readonly } from '../../internal';
-import { Component } from '../internal';
+import { Component, Vector3, Vector3Readonly, Quaternion, QuaternionReadonly, Matrix44, Matrix44Readonly } from '../../internal';
 
 /** The frame component. */
 export class FrameComponent extends Component {

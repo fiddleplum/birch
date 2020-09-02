@@ -11,7 +11,7 @@ export class FastOrderedSet<Value> extends FastOrderedSetReadonly<Value> {
 		}
 	}
 
-	/** Adds a node with the *value* placed before the *before* node or at the end. If the value already exists, it readds it. O(1) */
+	/** Adds a node with the *value* placed before the *before* node or at the end. If the value already exists, it re-adds it. O(1) */
 	add(value: Value, before?: Value): void {
 		if (this._valuesToNodes.has(value)) {
 			this.remove(value);

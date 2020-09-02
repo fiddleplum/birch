@@ -1,5 +1,4 @@
-import { Component, Entity } from '../internal';
-import { Render } from '../../render/index';
+import { Component, Entity, Render } from '../../internal';
 
 /** A simple component that contains an accessible model. */
 export class ModelComponent extends Component {

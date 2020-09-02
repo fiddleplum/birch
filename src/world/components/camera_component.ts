@@ -1,5 +1,4 @@
-import { Matrix44, Matrix44Readonly } from '../../internal';
-import { Component } from '../internal';
+import { Component, Matrix44, Matrix44Readonly } from '../../internal';
 
 /** The camera component. */
 export class CameraComponent extends Component {
@@ -22,7 +21,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the near clipping distance. */
-	set near(near) {
+	set near(near: number) {
 		if (this._near !== near) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 		}
@@ -35,7 +34,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the far clipping distance. */
-	set far(far) {
+	set far(far: number) {
 		if (this._far !== far) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 		}
@@ -48,7 +47,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the field of view. */
-	set fov(fov) {
+	set fov(fov: number) {
 		if (this._fov !== fov) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 		}

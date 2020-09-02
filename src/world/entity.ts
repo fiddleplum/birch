@@ -1,5 +1,4 @@
-import { Component, World } from './internal';
-import { CollectionTyped } from '../utils/collection_typed';
+import { CollectionTyped, Component, World } from '../internal';
 
 export class Entity {
 	/** Constructor. */
@@ -28,15 +27,15 @@ export class Entity {
 
 	/** The list of components this contains. */
 	private _components = new CollectionTyped<Component>((type: { new (entity: Entity): Component }) => {
-		return new type(this);
+		const component = new type(this);
+		return component;
 	}, (component: Component) => {
+		this._world.engine.eventQueue.addEvent(component, Entity.ComponentWillBeDestroyed);
 		component.destroy();
+	}, (component: Component) => {
+		this._world.engine.eventQueue.addEvent(component, Entity.ComponentCreated);
 	});
-}
 
-export namespace Entity {
-	export class Events {
-		static ComponentAdded = Symbol('ComponentAdded');
-		static ComponentWillBeRemoved = Symbol('ComponentWillBeRemoved');
-	}
+	static ComponentCreated = Symbol('ComponentCreated');
+	static ComponentWillBeDestroyed = Symbol('ComponentWillBeDestroyed');
 }

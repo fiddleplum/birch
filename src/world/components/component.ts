@@ -1,10 +1,11 @@
-import { Engine, EventQueue } from '../../internal';
-import { Entity } from '../internal';
+import { Engine, Entity, EventQueue, UniqueId } from '../../internal';
 
 /** The base component in the Component-Entity-System framework from which all other components are subclassed. */
-export abstract class Component {
-	/** Constructs this. */
+export abstract class Component extends UniqueId.Object {
+	/** Constructs the component. */
 	constructor(entity: Entity) {
+		super();
+
 		// Set the entity that contains this.
 		this._entity = entity;
 
@@ -12,7 +13,7 @@ export abstract class Component {
 		this._eventQueue = entity.world.engine.eventQueue;
 	}
 
-	/** Destroys this. */
+	/** Destroys the component. */
 	destroy(): void {
 	}
 

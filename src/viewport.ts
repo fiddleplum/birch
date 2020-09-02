@@ -1,7 +1,5 @@
-import { World, Render, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
-import { RectangleReadonly } from './utils/rectangle_readonly';
-import { ColorReadonly } from './utils/color_readonly';
-import { CameraComponent, FrameComponent } from './world/internal';
+import { CameraComponent, ColorReadonly, Entity, FrameComponent, Render,
+	RectangleReadonly, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
 
 export class Viewport {
 	/** The constructor. Takes a *bounds*. */
@@ -47,12 +45,12 @@ export class Viewport {
 	}
 
 	/** Gets the camera connected to this viewport. */
-	get camera(): World.Entity | undefined {
+	get camera(): Entity | undefined {
 		return this._cameraEntity;
 	}
 
 	/** Sets the camera connected to this viewport. It must have a camera and frame component to work. */
-	set camera(camera: World.Entity | undefined) {
+	set camera(camera: Entity | undefined) {
 		this._cameraEntity = camera;
 	}
 
@@ -122,5 +120,5 @@ export class Viewport {
 	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
-	private _cameraEntity: World.Entity | undefined = undefined;
+	private _cameraEntity: Entity | undefined = undefined;
 }

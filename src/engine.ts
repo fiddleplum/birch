@@ -1,9 +1,4 @@
-import { FastOrderedSet, Viewport, World } from './internal';
-import { Renderer } from './render/renderer';
-import { Input } from './input/index';
-import { Downloader } from './downloader';
-import { Collection } from './utils/collection';
-import { EventQueue } from './event_queue';
+import { Downloader, Input, Render, EventQueue, FastOrderedSet, Viewport, World, Collection, CollectionTyped, System} from './internal';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -11,7 +6,7 @@ export class Engine {
 		this._rootElement = rootElement;
 		this._prepareRootElement();
 		// Create the renderer.
-		this._renderer = new Renderer(this._canvas, true);
+		this._renderer = new Render.Renderer(this._canvas, true);
 		// Create the input system.
 		this._input = new Input.Input();
 		// Create the downloader.
@@ -28,7 +23,7 @@ export class Engine {
 	}
 
 	/** Gets the renderer. */
-	get renderer(): Renderer {
+	get renderer(): Render.Renderer {
 		return this._renderer;
 	}
 
@@ -47,12 +42,18 @@ export class Engine {
 		return this._eventQueue;
 	}
 
-	/** Gets the viewports. New viewports are automatically added to the viewport order. */
+	/** Gets the systems. */
+	get systems(): CollectionTyped<System> {
+		return this._systems;
+	}
+
+	/** Gets the viewports. New viewports are automatically added to the end of the viewport order. */
 	get viewports(): Collection<Viewport> {
 		return this._viewports;
 	}
 
-	get worlds(): Collection<World.World> {
+	/** Gets the worlds. */
+	get worlds(): Collection<World> {
 		return this._worlds;
 	}
 
@@ -87,6 +88,12 @@ export class Engine {
 		}
 		if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
+		}
+
+		// Update the systems.
+		for (const entry of this._systems) {
+			const system = entry.key;
+			system.processEventsInQueue();
 		}
 
 		// Update the worlds.
@@ -161,7 +168,7 @@ export class Engine {
 	private _runBound: () => void;
 
 	/** The renderer. */
-	private _renderer: Renderer;
+	private _renderer: Render.Renderer;
 
 	/** The input system. */
 	private _input: Input.Input;
@@ -175,6 +182,13 @@ export class Engine {
 	/** The viewport order. */
 	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();
 
+	/** The systems. */
+	private _systems = new CollectionTyped<System>((type: { new (engine: Engine): System }) => {
+		return new type(this);
+	}, (system: System) => {
+		system.destroy();
+	});
+
 	/** The viewports. */
 	private _viewports: Collection<Viewport> = new Collection(() => {
 		const viewport = new Viewport(this._renderer, this._viewportsElement);
@@ -186,9 +200,9 @@ export class Engine {
 	});
 
 	/** The worlds. */
-	private _worlds: Collection<World.World> = new Collection(() => {
-		return new World.World(this);
-	}, (world: World.World) => {
+	private _worlds: Collection<World> = new Collection(() => {
+		return new World(this);
+	}, (world: World) => {
 		world.destroy();
 	});
 }
