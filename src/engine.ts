@@ -1,4 +1,4 @@
-import { Downloader, Input, Render, EventQueue, FastOrderedSet, Viewport, World, Collection, CollectionTyped, System} from './internal';
+import { Downloader, Input, Render, FastOrderedSet, Viewport, World, Collection, CollectionTyped, System} from './internal';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -35,11 +35,6 @@ export class Engine {
 	/** Gets the downloader. */
 	get downloader(): Downloader {
 		return this._downloader;
-	}
-
-	/** Gets the event queue. */
-	get eventQueue(): EventQueue {
-		return this._eventQueue;
 	}
 
 	/** Gets the systems. */
@@ -91,10 +86,10 @@ export class Engine {
 		}
 
 		// Update the systems.
-		for (const entry of this._systems) {
-			const system = entry.key;
-			system.processEventsInQueue();
-		}
+		// for (const entry of this._systems) {
+		// 	const system = entry.key;
+		// 	system.processEventsInQueue();
+		// }
 
 		// Update the worlds.
 		for (const entry of this._worlds) {
@@ -175,9 +170,6 @@ export class Engine {
 
 	/** The downloader. */
 	private _downloader: Downloader;
-
-	/** The event queue. */
-	private _eventQueue: EventQueue = new EventQueue();
 
 	/** The viewport order. */
 	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();

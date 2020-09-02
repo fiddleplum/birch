@@ -30,10 +30,20 @@ export class Entity {
 		const component = new type(this);
 		return component;
 	}, (component: Component) => {
-		this._world.engine.eventQueue.addEvent(component, Entity.ComponentWillBeDestroyed);
+		for (const entry of this._world.engine.systems) {
+			const system = entry.key;
+			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component))) {
+				system.processEvent(component, Entity.ComponentWillBeDestroyed);
+			}
+		}
 		component.destroy();
 	}, (component: Component) => {
-		this._world.engine.eventQueue.addEvent(component, Entity.ComponentCreated);
+		for (const entry of this._world.engine.systems) {
+			const system = entry.key;
+			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component))) {
+				system.processEvent(component, Entity.ComponentCreated);
+			}
+		}
 	});
 
 	static ComponentCreated = Symbol('ComponentCreated');

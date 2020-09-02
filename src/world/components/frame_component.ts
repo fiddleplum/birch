@@ -11,7 +11,7 @@ export class FrameComponent extends Component {
 	set position(position: Vector3Readonly) {
 		this._position.copy(position);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
-		this.eventQueue.addEvent(this, FrameComponent.PositionChanged);
+		this.sendEvent(FrameComponent.PositionChanged);
 	}
 
 	/** Gets the orientation. */
@@ -23,7 +23,7 @@ export class FrameComponent extends Component {
 	set orientation(orientation: QuaternionReadonly) {
 		this._orientation.copy(orientation);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
-		this.eventQueue.addEvent(this, FrameComponent.OrientationChanged);
+		this.sendEvent(FrameComponent.OrientationChanged);
 	}
 
 	/** Gets the local to world transform. */

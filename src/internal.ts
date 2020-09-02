@@ -1,7 +1,6 @@
 export * from './engine';
 
 export * from './downloader';
-export * from './event_queue';
 export * from './viewport';
 
 export * from './input/index';

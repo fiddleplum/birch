@@ -9,14 +9,14 @@ export class FrameModelSystem extends System {
 	}
 
 	/** Process any events. */
-	processEvent(component: Component, eventType: symbol): void {
-		if (eventType === Entity.ComponentAdded) {
+	processEvent(component: Component, event: symbol): void {
+		if (event === Entity.ComponentCreated) {
 			this.subscribeToComponent(component);
 		}
-		else if (eventType === Entity.ComponentWillBeRemoved) {
+		else if (event === Entity.ComponentWillBeDestroyed) {
 			this.unsubscribeFromComponent(component);
 		}
-		else if (eventType === FrameComponent.PositionChanged || eventType === FrameComponent.OrientationChanged) {
+		else if (event === FrameComponent.PositionChanged || event === FrameComponent.OrientationChanged) {
 			const frameComponent = component as FrameComponent;
 			const modelComponents = component.entity.components.getAllOfType(ModelComponent);
 			if (modelComponents !== undefined) {

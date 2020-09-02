@@ -18,6 +18,7 @@ export abstract class FastIterableBase<Value> implements FastIterable<Value> {
 		for (let i = 0, l = this._iterators.length; i < l; i++) {
 			if (!this._iterators[i].iterating) {
 				iterator = this._iterators[i];
+				break;
 			}
 		}
 		// Didn't find an existing non-iterating iterator, so create a new one.

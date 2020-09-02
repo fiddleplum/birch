@@ -11,8 +11,9 @@ export class CameraComponent extends Component {
 	set aspectRatio(aspectRatio: number) {
 		if (this._aspectRatio !== aspectRatio) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
+			this._aspectRatio = aspectRatio;
+			this.sendEvent(CameraComponent.aspectRatioChanged);
 		}
-		this._aspectRatio = aspectRatio;
 	}
 
 	/** Gets the near clipping distance. */
@@ -24,8 +25,9 @@ export class CameraComponent extends Component {
 	set near(near: number) {
 		if (this._near !== near) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
+			this._near = near;
+			this.sendEvent(CameraComponent.nearChanged);
 		}
-		this._near = near;
 	}
 
 	/** Gets the far clipping distance. */
@@ -37,8 +39,9 @@ export class CameraComponent extends Component {
 	set far(far: number) {
 		if (this._far !== far) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
+			this._far = far;
+			this.sendEvent(CameraComponent.farChanged);
 		}
-		this._far = far;
 	}
 
 	/** Gets the field of view. */
@@ -50,8 +53,9 @@ export class CameraComponent extends Component {
 	set fov(fov: number) {
 		if (this._fov !== fov) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
+			this._fov = fov;
+			this.sendEvent(CameraComponent.fovChanged);
 		}
-		this._fov = fov;
 	}
 
 	/** Gets the local to NDC transform. */
@@ -127,4 +131,16 @@ export class CameraComponent extends Component {
 
 	/** Whether or not the NDC to local transform is dirty. */
 	private _ndcToLocalDirty: boolean = true;
+
+	/** The event sent when the fov has changed. */
+	static fovChanged = Symbol('FOVChanged');
+
+	/** The event sent when the fov has changed. */
+	static nearChanged = Symbol('NearChanged');
+
+	/** The event sent when the fov has changed. */
+	static farChanged = Symbol('FarChanged');
+
+	/** The event sent when the fov has changed. */
+	static aspectRatioChanged = Symbol('AspectRatioChanged');
 }

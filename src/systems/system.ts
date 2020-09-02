@@ -23,7 +23,7 @@ If an entity has a frame component but not a model component, and the position c
 /** The base class for all systems. */
 export abstract class System {
 	/** Called when a system receives an event it was listening for. */
-	abstract processEvent(component: Component, eventType: symbol): void;
+	abstract processEvent(component: Component, event: symbol): void;
 
 	/** Constructs the system. */
 	constructor(engine: Engine) {
@@ -34,11 +34,7 @@ export abstract class System {
 	destroy(): void {
 		// Unsubscribe from all components.
 		for (const component of this._subscribedComponents) {
-			this.engine.eventQueue.unsubscribeFromComponent(this, component);
-		}
-		// Unsubscribe from all component types.
-		for (const componentType of this._monitoredComponentTypes) {
-			this._engine.eventQueue.unsubscribeFromComponentCreateDestroy(this, componentType);
+			component.unsubscribeFromEvents(this);
 		}
 	}
 
@@ -47,59 +43,59 @@ export abstract class System {
 		return this._engine;
 	}
 
+	/** Gets the monitored component types. */
+	getMonitoredComponentTypes(): (typeof Component)[] {
+		return this._monitoredComponentTypes;
+	}
+
 	/** Monitor the given component types.
 	 *  The system will receive Entity.ComponentCreated and Entity.ComponentWillBeDestroyed events after this call. */
-	monitorComponentTypes(componentTypes: (typeof Component)[]): void {
-		// Clear any previous monitored component types.
-		for (const componentType of this._monitoredComponentTypes) {
-			this._engine.eventQueue.unsubscribeFromCreateDestroy(this, componentType);
-		}
-		// Setup the new component types to be monitored.
+	protected monitorComponentTypes(componentTypes: (typeof Component)[]): void {
+		this._monitoredComponentTypes = [];
 		for (const componentType of componentTypes) {
-			this._engine.eventQueue.subscribeToCreateDestroy(this, componentType);
 			this._monitoredComponentTypes.push(componentType);
 		}
 	}
 
-	// /** Subscribes to a component's events. */
-	// subscribeToComponent(component: Component): void {
-	// 	if (!this._subscribedComponents.has(component)) {
-	// 		this.engine.eventQueue.subscribeToComponentEvent(this, component);
-	// 		this._subscribedComponents.add(component);
-	// 	}
-	// }
-
-	// /** Unsubscribes from a component's events. */
-	// unsubscribeFromComponent(component: Component): void {
-	// 	if (this._subscribedComponents.has(component)) {
-	// 		this.engine.eventQueue.unsubscribeFromComponent(this, component);
-	// 		this._subscribedComponents.delete(component);
-	// 	}
-	// }
-
-	/** Processes the events in the queue. */
-	processEventsInQueue(): void {
-		for (let i = 0, l = this._numEvents; i < l; i++) {
-			const event = this._events[i];
-			this.processEvent(event.component as Component, event.type);
+	/** Subscribes to a component's events. */
+	subscribeToComponent(component: Component): void {
+		if (!this._subscribedComponents.has(component)) {
+			component.subscribeToEvents(this);
+			this._subscribedComponents.add(component);
 		}
-		this._numEvents = 0;
 	}
 
-	/** Adds an event. Only called by the event queue. */
-	addEvent(component: Component, type: symbol): void {
-		// We've hit the maximum number of events, so double the capacity.
-		if (this._numEvents === this._events.length) {
-			for (let i = this._numEvents; i < Math.max(8, this._numEvents * 2); i++) {
-				this._events.push(new Event());
-			}
+	/** Unsubscribes from a component's events. */
+	unsubscribeFromComponent(component: Component): void {
+		if (this._subscribedComponents.has(component)) {
+			component.unsubscribeFromEvents(this);
+			this._subscribedComponents.delete(component);
 		}
-		// Setup the event.
-		const event = this._events[this._numEvents];
-		event.component = component;
-		event.type = type;
-		this._numEvents += 1;
 	}
+
+	// /** Processes the events in the queue. */
+	// processEventsInQueue(): void {
+	// 	for (let i = 0, l = this._numEvents; i < l; i++) {
+	// 		const event = this._events[i];
+	// 		this.processEvent(event.component as Component, event.type);
+	// 	}
+	// 	this._numEvents = 0;
+	// }
+
+	// /** Adds an event. Only called by the event queue. */
+	// addEvent(component: Component, type: symbol): void {
+	// 	// We've hit the maximum number of events, so double the capacity.
+	// 	if (this._numEvents === this._events.length) {
+	// 		for (let i = this._numEvents; i < Math.max(8, this._numEvents * 2); i++) {
+	// 			this._events.push(new Event());
+	// 		}
+	// 	}
+	// 	// Setup the event.
+	// 	const event = this._events[this._numEvents];
+	// 	event.component = component;
+	// 	event.type = type;
+	// 	this._numEvents += 1;
+	// }
 
 	/** The engine. */
 	private _engine: Engine;
@@ -110,18 +106,18 @@ export abstract class System {
 	/** The set of subscribed component types. */
 	private _subscribedComponents: Set<Component> = new Set();
 
-	/** The events in the event queue. The length of the array is the capacity, not the number of events. */
-	private _events: Event[] = [];
+	// /** The events in the event queue. The length of the array is the capacity, not the number of events. */
+	// private _events: Event[] = [];
 
-	/** The number of events in the queue. */
-	private _numEvents: number = 0;
+	// /** The number of events in the queue. */
+	// private _numEvents: number = 0;
 }
 
-/** An event. */
-class Event {
-	/** The component associated with the event. */
-	component: Component | undefined = undefined;
+// /** An event. */
+// class Event {
+// 	/** The component associated with the event. */
+// 	component: Component | undefined = undefined;
 
-	/** The type of event. */
-	type: symbol = Symbol();
-}
+// 	/** The type of event. */
+// 	type: symbol = Symbol();
+// }
