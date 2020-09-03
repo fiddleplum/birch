@@ -32,7 +32,7 @@ export class Entity {
 	}, (component: Component) => {
 		for (const entry of this._world.engine.systems) {
 			const system = entry.key;
-			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component))) {
+			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
 				system.processEvent(component, Entity.ComponentWillBeDestroyed);
 			}
 		}
@@ -40,7 +40,7 @@ export class Entity {
 	}, (component: Component) => {
 		for (const entry of this._world.engine.systems) {
 			const system = entry.key;
-			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component))) {
+			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
 				system.processEvent(component, Entity.ComponentCreated);
 			}
 		}
