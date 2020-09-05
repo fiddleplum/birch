@@ -19,11 +19,11 @@ body {
 	box-sizing: content-box;
 }
 
-body > h1:first-child {
+body>h1:first-child {
 	margin-top: 1em;
 }
 
-body > *:last-child {
+body>*:last-child {
 	margin-bottom: 1em;
 }
 
@@ -32,7 +32,7 @@ h1, h2, h3, p, ul, pre {
 	line-height: 1.5em;
 }
 
-h1:first-child, h2:first-child, h3:first-child, p:first-child, ul:first-child, pre:first-child {
+body *:first-child {
 	margin-top: 0;
 }
 
@@ -44,12 +44,24 @@ h2 {
 	border-bottom: 1px solid;
 }
 
-pre {
+h3 {
+	display: inline-block;
+	border-bottom: 1px solid #aaaaff;
+}
+
+pre, .code {
 	margin-left: 1em;
 	tab-size: 2;
 	-moz-tab-size: 2;
 }
 
-pre, code {
+pre, code, .code {
 	color: #ccccff;
+	white-space: pre;
+	font-family: monospace;
+}
+
+a {
+	color: inherit;
+	text-decoration: underline;
 }

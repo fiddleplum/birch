@@ -76,18 +76,6 @@ export class Mesh extends UniqueId.Object {
 	 * @param vertexFormat - The vertex format. Each element refers to a separate array of vertices,
 	 * and each sub-array refers to the list of components (in order) of each vertex. */
 	setVertexFormat(vertexFormat: Mesh.Component[][]): void {
-		// I want to turn Mesh.Component into an interface so the user doesn't have to do setVertexFormat([new Birch.Mesh.Component(...)]),
-		// but instead can just do setVertexFormat([{
-		// 	...
-		// }]);
-
-		// But Mesh.Component has a numBytes that it calculates in the constructor.
-		// I want to move it into here.
-		// It's not used anywhere else and not stored.
-		// Since this does a lot of allocation, it's no problem creating an array here.
-		// It should be moved as an array created within the for loop below.
-		// numBytes[], one per Component.
-
 		// Deletes any existing buffers.
 		for (let i = 0; i < this._vertexBuffers.length; i++) {
 			this._gl.deleteBuffer(this._vertexBuffers[i]);
