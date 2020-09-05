@@ -53,6 +53,7 @@ pre, .code {
 	margin-left: 1em;
 	tab-size: 2;
 	-moz-tab-size: 2;
+	overflow-x: auto;
 }
 
 pre, code, .code {
