@@ -28,16 +28,22 @@ export class RectangleReadonly {
 		return '{ min: ' + this._min + ', size: ' + this._size + ' }';
 	}
 
+	/** Returns true if every component in *this* equals every component in *a*. */
+	equals(a: RectangleReadonly): boolean {
+		return	this._min.x === a._min.x && this._min.y === a._min.y &&
+				this._size.x === a._size.x && this._size.y === a._size.y;
+	}
+
 	/** Returns true if *this* contains the *point*. */
 	contains(point: Vector2Readonly): boolean {
-		return this._min.x <= point.x && point.x < this._min.x + this._size.x &&
-			this._min.y <= point.y && point.y < this._min.y + this._size.y;
+		return	this._min.x <= point.x && point.x < this._min.x + this._size.x &&
+				this._min.y <= point.y && point.y < this._min.y + this._size.y;
 	}
 
 	/** Returns true if *this* intersects with *a*. */
 	intersects(a: RectangleReadonly): boolean {
-		return this._min.x < a._min.x + a._size.x && a._min.x < this._min.x + this._size.x &&
-			this._min.y < a._min.y + a._size.y && a._min.y < this._min.y + this._size.y;
+		return	this._min.x < a._min.x + a._size.x && a._min.x < this._min.x + this._size.x &&
+				this._min.y < a._min.y + a._size.y && a._min.y < this._min.y + this._size.y;
 	}
 
 	/** Sets *out* to the closest point within *this* to *point*. */
