@@ -62,7 +62,7 @@ export class CameraComponent extends Component {
 	get localToNDC(): Matrix44Readonly {
 		if (this._localToNDCDirty) {
 			const tanHalfFOV = Math.tan(this._fov / 2);
-			if (this._aspectRatio >= 1) {
+			if (this._aspectRatio <= 1) {
 				this._localToNDC.set(0, 0, 1 / (tanHalfFOV * this.aspectRatio));
 				this._localToNDC.set(1, 1, 1 / tanHalfFOV);
 			}
