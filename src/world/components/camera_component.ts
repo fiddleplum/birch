@@ -12,7 +12,7 @@ export class CameraComponent extends Component {
 		if (this._aspectRatio !== aspectRatio) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._aspectRatio = aspectRatio;
-			this.sendEvent(CameraComponent.aspectRatioChanged);
+			this.sendEvent(CameraComponent.AspectRatioChanged);
 		}
 	}
 
@@ -26,7 +26,7 @@ export class CameraComponent extends Component {
 		if (this._near !== near) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._near = near;
-			this.sendEvent(CameraComponent.nearChanged);
+			this.sendEvent(CameraComponent.NearChanged);
 		}
 	}
 
@@ -40,7 +40,7 @@ export class CameraComponent extends Component {
 		if (this._far !== far) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._far = far;
-			this.sendEvent(CameraComponent.farChanged);
+			this.sendEvent(CameraComponent.FarChanged);
 		}
 	}
 
@@ -54,7 +54,7 @@ export class CameraComponent extends Component {
 		if (this._fov !== fov) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._fov = fov;
-			this.sendEvent(CameraComponent.fovChanged);
+			this.sendEvent(CameraComponent.FovChanged);
 		}
 	}
 
@@ -133,14 +133,14 @@ export class CameraComponent extends Component {
 	private _ndcToLocalDirty: boolean = true;
 
 	/** The event sent when the fov has changed. */
-	static fovChanged = Symbol('FOVChanged');
+	static FovChanged = Symbol('FOVChanged');
 
 	/** The event sent when the fov has changed. */
-	static nearChanged = Symbol('NearChanged');
+	static NearChanged = Symbol('NearChanged');
 
 	/** The event sent when the fov has changed. */
-	static farChanged = Symbol('FarChanged');
+	static FarChanged = Symbol('FarChanged');
 
 	/** The event sent when the fov has changed. */
-	static aspectRatioChanged = Symbol('AspectRatioChanged');
+	static AspectRatioChanged = Symbol('AspectRatioChanged');
 }
