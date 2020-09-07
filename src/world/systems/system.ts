@@ -11,7 +11,9 @@ export abstract class System {
 	}
 
 	/** Called when a system receives an event it was listening for. */
-	abstract processEvent(component: Component, event: symbol): void;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	processEvent(component: Component, event: symbol): void {
+	}
 
 	/** An update function that does something every frame. */
 	update(): void {
