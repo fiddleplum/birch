@@ -79,9 +79,15 @@ export class Renderer {
 
 	/** Render the stages. */
 	render(): void {
-		// Render the stages in order.
-		for (const stage of this._stageOrder) {
-			stage.render(this._canvas.height);
+		if (this._stageOrder.size() > 0) {
+			// Render the stages in order.
+			for (const stage of this._stageOrder) {
+				stage.render(this._canvas.height);
+			}
+		}
+		else {
+			this._gl.clearColor(0, 0, 0, 1);
+			this._gl.clear(this._gl.COLOR_BUFFER_BIT);
 		}
 	}
 
