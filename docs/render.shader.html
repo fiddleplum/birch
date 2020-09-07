@@ -1,0 +1,45 @@
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Birch Documentation</title>
+	<link href='style.css' rel='stylesheet' type='text/css'>
+	<script src="script.js"></script>
+</head>
+
+<body>
+	<h1>Birch Documentation</h1>
+	<h2 id="shader">Shader</h2>
+	<h3>Introduction</h3>
+	<p>The shader contains the GLSL code that renders the object.</p>
+	<p>A shader is created and destroyed by:</p>
+	<p class="code">const shader = birch.render.shaders.create();</p>
+	<p class="code">birch.render.shaders.destroy(shader);</p>
+	<h3>Setting up the Shader</h3>
+	<p>There are two ways to setup the shader. The first is via:</p>
+	<p class="code">
+		shader.setCodeAndAttributes(vertexCode, fragmentCode, {
+			position: 0,
+			uv: 1,
+			color: 2 });
+	</p>
+	<p>The vertex and fragment code are simple strings that contain the shader code. The attribute locations are the same ones used in <a href="render.mesh.html">Mesh.setVertexFormat</a>.</p>
+	<p>The other way to setup the shader is by using a Shader.Options object:</p>
+	<p class="code">
+		shader.setFromOptions({
+			attributeLocations: {
+				position: 0,
+				uv: 1,
+				color: 2 },
+			vertex: vertexCode,
+			fragment: fragmentCode });
+	</p>
+	<p>The difference is here that you can put the above in a JSON file like so (using the <a href="downloader.html">Downloader</a>):</p>
+	<p class="code">
+		downloader.getJson<Birch.Render.Shader.Options>('shader.json').then((json) => {
+			shader.setFromOptions(json);
+		});
+	</p>
+</body>
+
+</html>

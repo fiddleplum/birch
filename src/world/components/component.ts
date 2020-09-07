@@ -1,6 +1,8 @@
-import { Engine, Entity, System, UniqueId } from '../../internal';
+import { Engine,  } from '../../internal';
+import { Entity, System } from '../internal';
+import { UniqueId } from '../../utils/unique_id';
 
-/** The base component in the Component-Entity-System framework from which all other components are subclassed. */
+/** The base component from which all other components are subclassed. */
 export abstract class Component extends UniqueId.Object {
 	/** Constructs the component. */
 	constructor(entity: Entity) {
@@ -12,6 +14,7 @@ export abstract class Component extends UniqueId.Object {
 
 	/** Destroys the component. */
 	destroy(): void {
+		this.sendEvent(Component.ComponentDestroyed);
 	}
 
 	/** Gets the engine as a shortcut. */
@@ -50,4 +53,7 @@ export abstract class Component extends UniqueId.Object {
 
 	/** Subscribed systems. */
 	private _subscribedSystems: System[] = [];
+
+	/** Event for when the component is destroyed. */
+	static ComponentDestroyed = Symbol('ComponentDestroyed');
 }

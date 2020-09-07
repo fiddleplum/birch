@@ -1,4 +1,5 @@
-import { CollectionTyped, Component, World } from '../internal';
+import { CollectionTyped } from '../internal';
+import { World, Component } from './internal';
 
 export class Entity {
 	/** Constructor. */
@@ -27,18 +28,11 @@ export class Entity {
 
 	/** The list of components this contains. */
 	private _components = new CollectionTyped<Component>((type: { new (entity: Entity): Component }) => {
-		const component = new type(this);
-		return component;
+		return new type(this);
 	}, (component: Component) => {
-		for (const entry of this._world.engine.systems) {
-			const system = entry.key;
-			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
-				system.processEvent(component, Entity.ComponentWillBeDestroyed);
-			}
-		}
 		component.destroy();
 	}, (component: Component) => {
-		for (const entry of this._world.engine.systems) {
+		for (const entry of this._world.systems) {
 			const system = entry.key;
 			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
 				system.processEvent(component, Entity.ComponentCreated);
@@ -47,5 +41,4 @@ export class Entity {
 	});
 
 	static ComponentCreated = Symbol('ComponentCreated');
-	static ComponentWillBeDestroyed = Symbol('ComponentWillBeDestroyed');
 }

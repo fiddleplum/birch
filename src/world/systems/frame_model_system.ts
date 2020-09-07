@@ -1,9 +1,9 @@
-import { Component, FrameComponent, ModelComponent, Entity, Engine, System } from '../internal';
+import { Component, FrameComponent, ModelComponent, Entity, System } from '../internal';
 
 export class FrameModelSystem extends System {
 	/** Constructs the frame-model system. */
-	constructor(engine: Engine) {
-		super(engine);
+	constructor() {
+		super();
 
 		this.monitorComponentTypes([FrameComponent]);
 	}
@@ -13,7 +13,7 @@ export class FrameModelSystem extends System {
 		if (event === Entity.ComponentCreated) {
 			this.subscribeToComponent(component);
 		}
-		else if (event === Entity.ComponentWillBeDestroyed) {
+		else if (event === Component.ComponentDestroyed) {
 			this.unsubscribeFromComponent(component);
 		}
 		else if (event === FrameComponent.PositionChanged || event === FrameComponent.OrientationChanged) {

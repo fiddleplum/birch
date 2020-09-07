@@ -1,4 +1,5 @@
-import { Collection, Engine, Entity, Render } from '../internal';
+import { Collection, CollectionTyped, Engine, Render } from '../internal';
+import { System, Entity } from './internal';
 
 export class World {
 	/** Constructor. */
@@ -20,6 +21,11 @@ export class World {
 
 	/** Updates the world. Called once per frame. */
 	update(): void {
+		// Update the systems.
+		for (const entry of this._systems) {
+			const system = entry.key;
+			system.update();
+		}
 	}
 
 	/** Gets the engine that contains this. */
@@ -37,10 +43,22 @@ export class World {
 		return this._entities;
 	}
 
+	/** Gets the systems. */
+	get systems(): CollectionTyped<System> {
+		return this._systems;
+	}
+
 	/** The entities. */
 	private _entities: Collection<Entity> = new Collection(() => {
 		return new Entity(this);
 	}, () => {
+	});
+
+	/** The systems. */
+	private _systems = new CollectionTyped<System>((type: { new (world: World): System }) => {
+		return new type(this);
+	}, (system: System) => {
+		system.destroy();
 	});
 
 	/** The render scene for the world. */

@@ -1,9 +1,10 @@
-import { CameraComponent, ColorReadonly, Entity, FrameComponent, Render,
-	RectangleReadonly, Vector2, Vector2Readonly, Vector3, Vector3Readonly } from './internal';
+import { ColorReadonly, Rectangle, RectangleReadonly, Render, Vector2, Vector2Readonly,
+	Vector3, Vector3Readonly, World } from './internal';
 
-export class Viewport {
+export class Viewport extends World.System {
 	/** The constructor. Takes a *bounds*. */
 	constructor(renderer: Render.Renderer, viewportsElement: HTMLDivElement) {
+		super();
 		// Set the viewports element and renderer.
 		this._renderer = renderer;
 		// Create the render stage.
@@ -45,13 +46,38 @@ export class Viewport {
 	}
 
 	/** Gets the camera connected to this viewport. */
-	get camera(): Entity | undefined {
+	get camera(): World.Entity | undefined {
 		return this._cameraEntity;
 	}
 
 	/** Sets the camera connected to this viewport. It must have a camera and frame component to work. */
-	set camera(camera: Entity | undefined) {
+	set camera(camera: World.Entity | undefined) {
+		// Unsubscribe from previous components.
+		if (this._cameraEntity !== undefined) {
+			const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
+			const frameComponent = this._cameraEntity.components.getFirstOfType(World.FrameComponent);
+			if (cameraComponent !== undefined) {
+				this.unsubscribeFromComponent(cameraComponent);
+			}
+			if (frameComponent !== undefined) {
+				this.unsubscribeFromComponent(frameComponent);
+			}
+		}
+		// Set the entity.
 		this._cameraEntity = camera;
+		// Subscribe to new components.
+		if (this._cameraEntity !== undefined) {
+			const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
+			const frameComponent = this._cameraEntity.components.getFirstOfType(World.FrameComponent);
+			if (cameraComponent !== undefined) {
+				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
+				this.subscribeToComponent(cameraComponent);
+			}
+			if (frameComponent !== undefined) {
+				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
+				this.subscribeToComponent(frameComponent);
+			}
+		}
 	}
 
 	/** Gets the aspect ratio as the *width* / *height*. */
@@ -82,18 +108,31 @@ export class Viewport {
 
 	/** Prepares the viewport for a render. */
 	prepareForRender(): void {
-		// Updates the bounds of the viewport to reflect the div.
-		this._stage.bounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
-		// Set the uniforms.
-		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.components.getFirstOfType(CameraComponent);
-			const frameComponent = this._cameraEntity.components.getFirstOfType(FrameComponent);
-			if (cameraComponent !== undefined && frameComponent !== undefined) {
-				cameraComponent.aspectRatio = this._stage.bounds.size.x / this._stage.bounds.size.y;
-				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
-				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
-				this._stage.uniforms.setUniform('renderSize', this._stage.bounds.size.array);
+		divBounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
+		if (!this._stage.bounds.equals(divBounds)) {
+			// Updates the bounds of the viewport to reflect the div.
+			this._stage.bounds.copy(divBounds);
+			// Set the uniforms.
+			if (this._cameraEntity !== undefined) {
+				const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
+				if (cameraComponent !== undefined) {
+					cameraComponent.aspectRatio = divBounds.size.x / divBounds.size.y;
+					this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
+				}
 			}
+		}
+	}
+
+	/** Called when the viewport receives events from the camera entity's camera or frame components. */
+	processEvent(component: World.Component, event: symbol): void {
+		if (event === World.Component.ComponentDestroyed) {
+			this.unsubscribeFromComponent(component);
+		}
+		else if (component instanceof World.CameraComponent) {
+			this._stage.uniforms.setUniform('projectionMatrix', component.localToNDC.array);
+		}
+		else if (component instanceof World.FrameComponent) {
+			this._stage.uniforms.setUniform('viewMatrix', component.worldToLocal.array);
 		}
 	}
 
@@ -120,5 +159,8 @@ export class Viewport {
 	private _stage: Render.Stage;
 
 	/** The camera to be rendered. */
-	private _cameraEntity: Entity | undefined = undefined;
+	private _cameraEntity: World.Entity | undefined = undefined;
 }
+
+// A temporary bounds used for the div element bounds calculation.
+const divBounds = new Rectangle();

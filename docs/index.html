@@ -16,10 +16,13 @@
 	<pre>system.objects.destroy(object);</pre>
 	<p>Every object has a <code>destroy</code> function, which is invoked when the object is destroyed by the pattern above.</p>
 	<h2>Systems</h2>
+	<p>Birch is split into several independent systems, which work together to make it a full game engine.</p>
 	<ul>
 		<li><a href="render.html">Render</a></li>
+		<li><a href="input.html">Input</a></li>
+		<li><a href="world.html">World</a></li>
 	</ul>
-	<h2>Rationales</h2>
+	<h2>Design Rationales</h2>
 	<h3>Null vs Undefined</h3>
 	<p>This has been a tough question for me. I don't want to intermix null and undefined, and want to be consistent throughout the code base.</p>
 	<p>I've decided to use only undefined for these reasons:</p>
@@ -30,6 +33,7 @@
 		<li>Arithmetic works well: 4 + undefined = NaN.</li>
 		<li>typeof a === 'undefined' (not 'object' as with null)</li>
 	</ul>
+	<p>I will still use null in the places that require it, such as with DOM or WebGL functions, but they will be changed into undefines when they can.</p>
 </body>
 
 </html>

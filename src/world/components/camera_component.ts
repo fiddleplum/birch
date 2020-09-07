@@ -1,4 +1,5 @@
-import { Component, Matrix44, Matrix44Readonly } from '../../internal';
+import { Component } from '../internal';
+import { Matrix44, Matrix44Readonly } from '../../internal';
 
 /** The camera component. */
 export class CameraComponent extends Component {

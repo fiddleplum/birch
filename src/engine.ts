@@ -1,4 +1,4 @@
-import { Downloader, Input, Render, FastOrderedSet, Viewport, World, Collection, CollectionTyped, System} from './internal';
+import { Downloader, Input, Render, FastOrderedSet, Viewport, World, Collection } from './internal';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -37,18 +37,13 @@ export class Engine {
 		return this._downloader;
 	}
 
-	/** Gets the systems. */
-	get systems(): CollectionTyped<System> {
-		return this._systems;
-	}
-
 	/** Gets the viewports. New viewports are automatically added to the end of the viewport order. */
 	get viewports(): Collection<Viewport> {
 		return this._viewports;
 	}
 
 	/** Gets the worlds. */
-	get worlds(): Collection<World> {
+	get worlds(): Collection<World.World> {
 		return this._worlds;
 	}
 
@@ -84,12 +79,6 @@ export class Engine {
 		if (canvas.height !== canvas.clientHeight * devicePixelRatio) {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
-
-		// Update the systems.
-		// for (const entry of this._systems) {
-		// 	const system = entry.key;
-		// 	system.processEventsInQueue();
-		// }
 
 		// Update the worlds.
 		for (const entry of this._worlds) {
@@ -174,13 +163,6 @@ export class Engine {
 	/** The viewport order. */
 	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();
 
-	/** The systems. */
-	private _systems = new CollectionTyped<System>((type: { new (engine: Engine): System }) => {
-		return new type(this);
-	}, (system: System) => {
-		system.destroy();
-	});
-
 	/** The viewports. */
 	private _viewports: Collection<Viewport> = new Collection(() => {
 		const viewport = new Viewport(this._renderer, this._viewportsElement);
@@ -192,9 +174,9 @@ export class Engine {
 	});
 
 	/** The worlds. */
-	private _worlds: Collection<World> = new Collection(() => {
-		return new World(this);
-	}, (world: World) => {
+	private _worlds: Collection<World.World> = new Collection(() => {
+		return new World.World(this);
+	}, (world: World.World) => {
 		world.destroy();
 	});
 }
