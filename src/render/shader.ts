@@ -1,5 +1,6 @@
 import { UniqueId } from '../utils/unique_id';
 
+/** A shader. */
 export class Shader extends UniqueId.Object {
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext) {

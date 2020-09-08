@@ -1,12 +1,9 @@
 import { Texture } from './texture';
 import { FastMap } from '../utils/fast_map';
-import { UniqueId } from '../utils/unique_id';
 
 /** A group of uniforms that can be used by a stage, scene, model, or model group. */
-export class Uniforms extends UniqueId.Object {
+export class Uniforms {
 	constructor(gl: WebGL2RenderingContext) {
-		super();
-
 		// Save the WebGL context.
 		this._gl = gl;
 	}
@@ -17,7 +14,6 @@ export class Uniforms extends UniqueId.Object {
 		if (this._buffer !== undefined) {
 			this._gl.deleteBuffer(this._buffer);
 		}
-		super.destroy();
 	}
 
 	/** Gets the textures of the uniforms. */

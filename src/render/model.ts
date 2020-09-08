@@ -39,6 +39,7 @@ export class Model extends UniqueId.Object {
 	/** Destroys this. */
 	destroy(): void {
 		this._uniforms.destroy();
+		super.destroy();
 	}
 
 	/** Gets the uniforms associated with this model. */

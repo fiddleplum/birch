@@ -54,7 +54,7 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 		else {
 			item = nameOrItem as Item;
 		}
-		let ancestorType = item.constructor as { new (): Item };
+		let ancestorType = item.constructor as { new (...args: any[]): Item };
 		do {
 			const itemsOfType = this._typesToItems.get(ancestorType) as FastOrderedSet<Item>;
 			itemsOfType.remove(item);
@@ -77,11 +77,11 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 	}
 
 	/** The create item function. */
-	private _createItem: (type: { new (): Item }) => Item;
+	private _createItem: (type: { new (...args: any[]): Item }) => Item;
 
 	/** The function called after an item has been created and added to the collection. */
 	private _postCreateItem: ((item: Item) => void) | undefined;
 
 	/** The mapping from types to items. */
-	private _typesToItems: FastMap<{ new (): Item }, FastOrderedSet<Item>> = new FastMap();
+	private _typesToItems: FastMap<{ new (...args: any[]): Item }, FastOrderedSet<Item>> = new FastMap();
 }

@@ -33,6 +33,7 @@ export class Viewport extends World.System {
 		this._divElement.remove();
 		// Remove the render stage.
 		this._renderer.stages.destroy(this._stage);
+		super.destroy();
 	}
 
 	/** Gets the div element. */

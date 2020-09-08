@@ -6,12 +6,11 @@ import { Vector2 } from '../utils/vector2';
 import { Vector2Readonly } from '../utils/vector2_readonly';
 import { Vector3 } from '../utils/vector3';
 import { Vector3Readonly } from '../utils/vector3_readonly';
-import { UniqueId } from '../utils/unique_id';
 import { Color } from '../utils/color';
 import { ColorReadonly } from '../utils/color_readonly';
 
 /** A render stage. It either renders to the canvas or to textures. */
-export class Stage extends UniqueId.Object {
+export class Stage {
 	/** The bounds in pixel-space. It determines where in the canvas or textures the stage will be rendered. */
 	bounds: Rectangle = new Rectangle(0, 0, 0, 0);
 
@@ -20,8 +19,6 @@ export class Stage extends UniqueId.Object {
 
 	/** The constructor. */
 	constructor(gl: WebGL2RenderingContext) {
-		super();
-
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -35,7 +32,6 @@ export class Stage extends UniqueId.Object {
 			this._gl.deleteFramebuffer(this._frameBuffer);
 		}
 		this._uniforms.destroy();
-		super.destroy();
 	}
 
 	/** Gets the uniforms associated with this stage. */

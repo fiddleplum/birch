@@ -71,6 +71,11 @@ export abstract class CollectionBase<Item> implements FastIterable<FastMap.Entry
 		return this._namesToItems.get(name);
 	}
 
+	/** Gets the name of the *item*. */
+	getName(item: Item): string | undefined {
+		return this._itemsToNames.get(item);
+	}
+
 	/** Gets the number of items. */
 	numItems(): number {
 		return this._itemsToNames.size;

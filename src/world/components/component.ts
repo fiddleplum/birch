@@ -1,13 +1,10 @@
-import { Engine,  } from '../../internal';
+import { Engine } from '../../internal';
 import { Entity, System } from '../internal';
-import { UniqueId } from '../../utils/unique_id';
 
 /** The base component from which all other components are subclassed. */
-export abstract class Component extends UniqueId.Object {
+export abstract class Component {
 	/** Constructs the component. */
 	constructor(entity: Entity) {
-		super();
-
 		// Set the entity that contains this.
 		this._entity = entity;
 	}

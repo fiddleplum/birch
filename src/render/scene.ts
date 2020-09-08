@@ -1,11 +1,9 @@
 import { Model } from './model';
 import { Uniforms } from './uniforms';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
-import { UniqueId } from '../utils/unique_id';
 
-export class Scene extends UniqueId.Object {
+export class Scene {
 	constructor(gl: WebGL2RenderingContext) {
-		super();
 
 		// Save the WebGL context.
 		this._gl = gl;

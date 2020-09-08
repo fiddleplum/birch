@@ -1,10 +1,7 @@
-import { UniqueId } from '../utils/unique_id';
 import { Vector2 } from '../utils/vector2';
 
-export class Texture extends UniqueId.Object {
+export class Texture {
 	constructor(gl: WebGL2RenderingContext) {
-		super();
-
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -20,7 +17,6 @@ export class Texture extends UniqueId.Object {
 	destroy(): void {
 		// Delete the texture.
 		this._gl.deleteTexture(this._handle);
-		super.destroy();
 	}
 
 	/** Sets the source of the texture. */
