@@ -51,7 +51,8 @@ export class World {
 	/** The entities. */
 	private _entities: Collection<Entity> = new Collection(() => {
 		return new Entity(this);
-	}, () => {
+	}, (entity: Entity) => {
+		entity.destroy();
 	});
 
 	/** The systems. */
