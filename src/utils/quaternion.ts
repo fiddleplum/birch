@@ -65,9 +65,9 @@ export class Quaternion extends QuaternionReadonly {
 		const cosHalfAngle = Math.cos(angle * 0.5);
 		const sinHalfAngle = Math.sin(angle * 0.5);
 		this._m[0] = cosHalfAngle;
-		this._m[1] = sinHalfAngle * Math.cos(axis.x);
-		this._m[2] = sinHalfAngle * Math.cos(axis.y);
-		this._m[3] = sinHalfAngle * Math.cos(axis.z);
+		this._m[1] = sinHalfAngle * axis.x;
+		this._m[2] = sinHalfAngle * axis.y;
+		this._m[3] = sinHalfAngle * axis.z;
 	}
 
 	/** Sets *this* to the quaterion represented by the pitch (*x*), yaw (*y*), and roll (*z*) rotations. The order of application is *x*, *y*, then *z*. */
