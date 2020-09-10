@@ -30,6 +30,11 @@ export class Entity {
 		return this._components;
 	}
 
+	/** Gets the ith component of the given type. i is zero based. */
+	get<Type extends Component>(type: { new (entity: Entity): Type }, i: number): Type | undefined {
+		return this._components.getAllOfType(type)?.getIndex(i);
+	}
+
 	/** The world that contains this. */
 	private _world: World;
 
