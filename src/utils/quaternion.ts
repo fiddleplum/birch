@@ -70,7 +70,7 @@ export class Quaternion extends QuaternionReadonly {
 		this._m[3] = sinHalfAngle * Math.cos(axis.z);
 	}
 
-	/** Sets *this* to the quaterion represented by the roll (*x*), pitch (*y*), and yaw (*z*) rotations. The order of application is *x*, *y*, then *z*. */
+	/** Sets *this* to the quaterion represented by the pitch (*x*), yaw (*y*), and roll (*z*) rotations. The order of application is *x*, *y*, then *z*. */
 	setFromEulerAngles(x: number, y: number, z: number): void {
 		const cx = Math.cos(x * 0.5);
 		const sx = Math.sin(x * 0.5);
@@ -78,10 +78,10 @@ export class Quaternion extends QuaternionReadonly {
 		const sy = Math.sin(y * 0.5);
 		const cz = Math.cos(z * 0.5);
 		const sz = Math.sin(z * 0.5);
-		this._m[0] = cx * cy * cz + sx * sy * sz;
-		this._m[1] = cx * cy * sz - sx * sy * cz;
-		this._m[2] = cx * sy * cz + sx * cy * sz;
-		this._m[3] = sx * cy * cz - cx * sy * sz;
+		this._m[0] = cz * cy * cx + sz * sy * sx;
+		this._m[1] = cz * cy * sx - sz * sy * cx;
+		this._m[2] = cz * sy * cx + sz * cy * sx;
+		this._m[3] = sz * cy * cx - cz * sy * sx;
 	}
 
 	/** Sets *this* to the quaternion represented by a rotation from *a* to *b*, which should be normalized. */
