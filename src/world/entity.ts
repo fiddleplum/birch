@@ -3,9 +3,16 @@ import { World, Component } from './internal';
 
 export class Entity {
 	/** Constructor. */
-	constructor(world: World) {
+	constructor(world: World, name: string | undefined) {
 		// Set the world that contains this.
 		this._world = world;
+		// Set the name.
+		this._name = name;
+	}
+
+	/** Gets the name. */
+	get name(): string | undefined {
+		return this._name;
 	}
 
 	/** Destroys this. */
@@ -25,6 +32,9 @@ export class Entity {
 
 	/** The world that contains this. */
 	private _world: World;
+
+	/** The name. */
+	private _name: string | undefined;
 
 	/** The list of components this contains. */
 	private _components = new CollectionTyped<Component>((type: { new (entity: Entity): Component }) => {

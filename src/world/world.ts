@@ -49,8 +49,8 @@ export class World {
 	}
 
 	/** The entities. */
-	private _entities: Collection<Entity> = new Collection(() => {
-		return new Entity(this);
+	private _entities: Collection<Entity> = new Collection((name: string | undefined) => {
+		return new Entity(this, name);
 	}, (entity: Entity) => {
 		entity.destroy();
 	});

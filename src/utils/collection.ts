@@ -3,7 +3,7 @@ import { CollectionBase } from './collection_base';
 /** A collection of optionally named items, with user supplied creation and destruction functions. */
 export class Collection<Item> extends CollectionBase<Item> {
 	/** Constructs *this*. */
-	constructor(createItem: () => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
+	constructor(createItem: (name: string | undefined) => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
 		super(destroyItem);
 		this._createItem = createItem;
 		this._postCreateItem = postCreateItem;
@@ -12,7 +12,7 @@ export class Collection<Item> extends CollectionBase<Item> {
 	/** Creates a new item with an optional name. */
 	create(name?: string): Item {
 		// Create the new item.
-		const newItem = this._createItem();
+		const newItem = this._createItem(name);
 		// Add it to the collection.
 		this.addItem(newItem, name);
 		// Call the post-create function.
@@ -24,7 +24,7 @@ export class Collection<Item> extends CollectionBase<Item> {
 	}
 
 	/** The create item function. */
-	private _createItem: () => Item;
+	private _createItem: (name: string | undefined) => Item;
 
 	/** The function called after an item has been created and added to the collection. */
 	private _postCreateItem: ((item: Item) => void) | undefined;

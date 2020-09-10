@@ -6,7 +6,7 @@ import { FastOrderedSetReadonly } from './fast_ordered_set_readonly';
 /** A typed collection of optionally named items, with user supplied creation and destruction functions. */
 export class CollectionTyped<Item extends { [key: string]: any }> extends CollectionBase<Item> {
 	/** Constructs *this*. */
-	constructor(createItem: (type: { new (...args: any[]): Item }) => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
+	constructor(createItem: (type: { new (...args: any[]): Item }, name: string | undefined) => Item, destroyItem: (item: Item) => void, postCreateItem?: (item: Item) => void) {
 		super(destroyItem);
 		this._createItem = createItem;
 		this._postCreateItem = postCreateItem;
@@ -15,7 +15,7 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 	/** Creates a new item with an optional name. */
 	create<Type extends Item>(type: new (...args: any[]) => Type, name?: string): Type {
 		// Create the new item.
-		const newItem = this._createItem(type) as Type;
+		const newItem = this._createItem(type, name) as Type;
 		// Add it to the collection.
 		this.addItem(newItem, name);
 		// Add it to the types to items mapping.
@@ -77,7 +77,7 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 	}
 
 	/** The create item function. */
-	private _createItem: (type: { new (...args: any[]): Item }) => Item;
+	private _createItem: (type: { new (...args: any[]): Item }, name: string | undefined) => Item;
 
 	/** The function called after an item has been created and added to the collection. */
 	private _postCreateItem: ((item: Item) => void) | undefined;
