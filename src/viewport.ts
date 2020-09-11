@@ -1,10 +1,11 @@
-import { ColorReadonly, Rectangle, RectangleReadonly, Render, Vector2, Vector2Readonly,
+import { ColorReadonly, EventSink, Rectangle, RectangleReadonly, Render, Vector2, Vector2Readonly,
 	Vector3, Vector3Readonly, World } from './internal';
 
-export class Viewport extends World.System {
+export class Viewport extends EventSink {
 	/** The constructor. Takes a *bounds*. */
 	constructor(renderer: Render.Renderer, viewportsElement: HTMLDivElement) {
 		super();
+
 		// Set the viewports element and renderer.
 		this._renderer = renderer;
 		// Create the render stage.
@@ -33,6 +34,7 @@ export class Viewport extends World.System {
 		this._divElement.remove();
 		// Remove the render stage.
 		this._renderer.stages.destroy(this._stage);
+		// Call super.
 		super.destroy();
 	}
 
@@ -55,28 +57,28 @@ export class Viewport extends World.System {
 	set camera(camera: World.Entity | undefined) {
 		// Unsubscribe from previous components.
 		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
-			const frameComponent = this._cameraEntity.components.getFirstOfType(World.FrameComponent);
+			const cameraComponent = this._cameraEntity.get(World.CameraComponent);
+			const frameComponent = this._cameraEntity.get(World.FrameComponent);
 			if (cameraComponent !== undefined) {
-				this.unsubscribeFromComponent(cameraComponent);
+				this.unsubscribeFromEvents(cameraComponent);
 			}
 			if (frameComponent !== undefined) {
-				this.unsubscribeFromComponent(frameComponent);
+				this.unsubscribeFromEvents(frameComponent);
 			}
 		}
 		// Set the entity.
 		this._cameraEntity = camera;
 		// Subscribe to new components.
 		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
-			const frameComponent = this._cameraEntity.components.getFirstOfType(World.FrameComponent);
+			const cameraComponent = this._cameraEntity.get(World.CameraComponent);
+			const frameComponent = this._cameraEntity.get(World.FrameComponent);
 			if (cameraComponent !== undefined) {
 				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
-				this.subscribeToComponent(cameraComponent);
+				this.subscribeToEvents(cameraComponent);
 			}
 			if (frameComponent !== undefined) {
 				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
-				this.subscribeToComponent(frameComponent);
+				this.subscribeToEvents(frameComponent);
 			}
 		}
 	}
@@ -127,7 +129,7 @@ export class Viewport extends World.System {
 	/** Called when the viewport receives events from the camera entity's camera or frame components. */
 	processEvent(component: World.Component, event: symbol): void {
 		if (event === World.Component.ComponentDestroyed) {
-			this.unsubscribeFromComponent(component);
+			this.unsubscribeFromEvents(component);
 		}
 		else if (component instanceof World.CameraComponent) {
 			this._stage.uniforms.setUniform('projectionMatrix', component.localToNDC.array);

@@ -1,9 +1,9 @@
-import { Component, FrameComponent, ModelComponent, Entity, System } from '../internal';
+import { Component, FrameComponent, ModelComponent, Entity, System, World } from '../internal';
 
 export class FrameModelSystem extends System {
 	/** Constructs the frame-model system. */
-	constructor() {
-		super();
+	constructor(world: World) {
+		super(world);
 
 		this.monitorComponentTypes([FrameComponent]);
 	}
@@ -11,14 +11,14 @@ export class FrameModelSystem extends System {
 	/** Process any events. */
 	processEvent(component: Component, event: symbol): void {
 		if (event === Entity.ComponentCreated) {
-			this.subscribeToComponent(component);
+			this.subscribeToEvents(component);
 		}
 		else if (event === Component.ComponentDestroyed) {
-			this.unsubscribeFromComponent(component);
+			this.unsubscribeFromEvents(component);
 		}
-		else if (event === FrameComponent.PositionChanged || event === FrameComponent.OrientationChanged) {
+		else {
 			const frameComponent = component as FrameComponent;
-			const modelComponents = component.entity.components.getAllOfType(ModelComponent);
+			const modelComponents = component.entity.getAll(ModelComponent);
 			if (modelComponents !== undefined) {
 				for (const modelComponent of modelComponents) {
 					modelComponent.model.uniforms.setUniform('modelMatrix', frameComponent.localToWorld.array);

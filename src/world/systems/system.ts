@@ -1,18 +1,23 @@
-import { Component } from '../internal';
+import { EventSink } from '../../internal';
+import { Component, World } from '../internal';
 
 /** The base class for all systems. */
-export abstract class System {
-	/** Destroys the system. */
-	destroy(): void {
-		// Unsubscribe from all components.
-		for (const component of this._subscribedComponents) {
-			component.unsubscribeFromEvents(this);
-		}
+export abstract class System extends EventSink {
+	constructor(world: World) {
+		super();
+
+		// Set the world.
+		this._world = world;
 	}
 
-	/** Called when a system receives an event it was listening for. */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	processEvent(component: Component, event: symbol): void {
+	/** Destroys the system. */
+	destroy(): void {
+		super.destroy();
+	}
+
+	/** Gets the world. */
+	get world(): World {
+		return this._world;
 	}
 
 	/** An update function that does something every frame. */
@@ -33,25 +38,9 @@ export abstract class System {
 		}
 	}
 
-	/** Subscribes to a component's events. */
-	protected subscribeToComponent(component: Component): void {
-		if (!this._subscribedComponents.has(component)) {
-			component.subscribeToEvents(this);
-			this._subscribedComponents.add(component);
-		}
-	}
-
-	/** Unsubscribes from a component's events. */
-	protected unsubscribeFromComponent(component: Component): void {
-		if (this._subscribedComponents.has(component)) {
-			component.unsubscribeFromEvents(this);
-			this._subscribedComponents.delete(component);
-		}
-	}
+	/** The world. */
+	private _world: World;
 
 	/** The list of monitored component types. */
 	private _monitoredComponentTypes: (typeof Component)[] = [];
-
-	/** The set of subscribed component types. */
-	private _subscribedComponents: Set<Component> = new Set();
 }

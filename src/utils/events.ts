@@ -52,10 +52,12 @@ export abstract class EventSink {
 	}
 
 	/** Called when an event sink receives an event to which it was subscribed. */
-	abstract processEvent(eventSource: EventSource, event: symbol): void;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	processEvent(eventSource: EventSource, event: symbol): void {
+	}
 
 	/** Subscribes to an EventSource's events. */
-	protected subscribeToEventSource(eventSource: EventSource, event?: symbol): void {
+	protected subscribeToEvents(eventSource: EventSource, event?: symbol): void {
 		if (!this._subscribedEventSources.has(eventSource)) {
 			eventSource.__subscribeToEvents(this, event);
 			this._subscribedEventSources.add(eventSource);
@@ -63,7 +65,7 @@ export abstract class EventSink {
 	}
 
 	/** Unsubscribes from an EventSource's events. */
-	protected unsubscribeFromEventSource(eventSource: EventSource, event?: symbol): void {
+	protected unsubscribeFromEvents(eventSource: EventSource, event?: symbol): void {
 		if (this._subscribedEventSources.has(eventSource)) {
 			eventSource.__unsubscribeFromEvents(this, event);
 			this._subscribedEventSources.delete(eventSource);

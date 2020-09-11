@@ -1,9 +1,12 @@
 import { CollectionTyped } from '../internal';
 import { World, Component } from './internal';
+import { UniqueId } from '../utils/unique_id';
+import { FastOrderedSetReadonly } from '../utils/fast_ordered_set_readonly';
 
-export class Entity {
+export class Entity extends UniqueId.Object {
 	/** Constructor. */
 	constructor(world: World, name: string | undefined) {
+		super();
 		// Set the world that contains this.
 		this._world = world;
 		// Set the name.
@@ -30,9 +33,14 @@ export class Entity {
 		return this._components;
 	}
 
-	/** Gets the ith component of the given type. i is zero based. */
-	get<Type extends Component>(type: { new (entity: Entity): Type }, i: number): Type | undefined {
+	/** Gets the ith component of the given type. i is zero based and defaults to zero. */
+	get<Type extends Component>(type: { new (entity: Entity): Type }, i: number = 0): Type | undefined {
 		return this._components.getAllOfType(type)?.getIndex(i);
+	}
+
+	/** Gets all components of the given type. */
+	getAll<Type extends Component>(type: { new (entity: Entity): Type }): FastOrderedSetReadonly<Type> | undefined {
+		return this._components.getAllOfType(type);
 	}
 
 	/** The world that contains this. */

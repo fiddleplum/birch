@@ -4,6 +4,7 @@ export * from './utils/collection_base';
 export * from './utils/collection_typed';
 export * from './utils/color';
 export * from './utils/color_readonly';
+export * from './utils/events';
 export * from './utils/fast_iterable';
 export * from './utils/fast_map';
 export * from './utils/fast_ordered_set';
