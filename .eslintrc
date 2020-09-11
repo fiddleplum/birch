@@ -4,12 +4,8 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"env": {
-		"browser": true
-	},
 	"plugins": [
-	  "@typescript-eslint",
-	  "no-null"
+	  "@typescript-eslint"
 	],
 	"extends": [
 	  "eslint:recommended",
@@ -25,11 +21,10 @@
 			"maxBOF": 0
 		}],
 		"no-constant-condition": "off",
-		"no-null/no-null": "off",
 		"no-tabs": "off",
 		"no-trailing-spaces": "error",
 		"no-unused-vars": "off",
-		"operator-linebreak": ["error", "after"],
+		"operator-linebreak": ["error", "before"],
 		"quotes": ["error", "single", { "allowTemplateLiterals": true }],
 		"semi": ["error", "always"],
 		"space-before-function-paren": ["error", {
@@ -47,11 +42,5 @@
 		"@typescript-eslint/no-use-before-define": "off",
 		"@typescript-eslint/no-unused-vars": "warn",
 		"@typescript-eslint/strict-boolean-expressions": ["error"]
-	},
-	"overrides": [{
-		"files": ["*.js"],
-		"rules": {
-			"@typescript-eslint/explicit-function-return-type": ["off"]
-		}
-	}]
+	}
   }
