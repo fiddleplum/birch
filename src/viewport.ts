@@ -119,7 +119,7 @@ export class Viewport extends EventSink {
 			if (this._cameraEntity !== undefined) {
 				const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
 				if (cameraComponent !== undefined) {
-					cameraComponent.aspectRatio = divBounds.size.x / divBounds.size.y;
+					cameraComponent.setAspectRatio(divBounds.size.x / divBounds.size.y);
 					this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
 				}
 			}

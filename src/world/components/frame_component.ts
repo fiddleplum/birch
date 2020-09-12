@@ -10,7 +10,7 @@ export class FrameComponent extends Component {
 	}
 
 	/** Sets the position. */
-	set position(position: Vector3Readonly) {
+	setPosition(position: Vector3Readonly): void {
 		this._position.copy(position);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
 		this.sendEvent(FrameComponent.PositionChanged);
@@ -22,7 +22,7 @@ export class FrameComponent extends Component {
 	}
 
 	/** Sets the orientation. */
-	set orientation(orientation: QuaternionReadonly) {
+	setOrientation(orientation: QuaternionReadonly): void {
 		this._orientation.copy(orientation);
 		this._localToWorldDirty = this._worldToLocalDirty = true;
 		this.sendEvent(FrameComponent.OrientationChanged);

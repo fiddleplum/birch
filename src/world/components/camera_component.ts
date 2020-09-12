@@ -9,7 +9,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the aspect ratio. */
-	set aspectRatio(aspectRatio: number) {
+	setAspectRatio(aspectRatio: number): void {
 		if (this._aspectRatio !== aspectRatio) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._aspectRatio = aspectRatio;
@@ -23,7 +23,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the near clipping distance. */
-	set near(near: number) {
+	setNear(near: number): void {
 		if (this._near !== near) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._near = near;
@@ -37,7 +37,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the far clipping distance. */
-	set far(far: number) {
+	setFar(far: number): void {
 		if (this._far !== far) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._far = far;
@@ -51,7 +51,7 @@ export class CameraComponent extends Component {
 	}
 
 	/** Sets the field of view. */
-	set fov(fov: number) {
+	setFov(fov: number): void {
 		if (this._fov !== fov) {
 			this._localToNDCDirty = this._ndcToLocalDirty = true;
 			this._fov = fov;
