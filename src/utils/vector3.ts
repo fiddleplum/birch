@@ -4,33 +4,18 @@ import { Num } from './num';
 
 /** A three-dimensional vector. */
 export class Vector3 extends Vector3Readonly {
-	/** Gets the *x* component. */
-	get x(): number {
-		return super.x;
-	}
-
 	/** Sets the *x* component. */
-	set x(x: number) {
+	setX(x: number): void {
 		this._m[0] = x;
 	}
 
-	/** Gets the *y* component. */
-	get y(): number {
-		return super.y;
-	}
-
 	/** Sets the *y* component. */
-	set y(y: number) {
+	setY(y: number): void {
 		this._m[1] = y;
 	}
 
-	/** Gets the *z* component. */
-	get z(): number {
-		return super.z;
-	}
-
 	/** Sets the *z* component. */
-	set z(z: number) {
+	setZ(z: number): void {
 		this._m[2] = z;
 	}
 

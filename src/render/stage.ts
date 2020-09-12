@@ -147,15 +147,15 @@ export class Stage {
 
 	/** Converts a normal-space position to a pixel-space position. It ignores the z component. */
 	convertNormalSpaceToPixelSpacePosition(pixelPosition: Vector2, normalPosition: Vector3Readonly): void {
-		pixelPosition.x = this.bounds.min.x + this.bounds.size.x * (normalPosition.x + 1) / 2;
-		pixelPosition.y = this.bounds.min.y + this.bounds.size.y * (1 - normalPosition.y) / 2;
+		pixelPosition.setX(this.bounds.min.x + this.bounds.size.x * (normalPosition.x + 1) / 2);
+		pixelPosition.setY(this.bounds.min.y + this.bounds.size.y * (1 - normalPosition.y) / 2);
 	}
 
 	/** Converts a pixel-space position to a normal-space position. The z component is set to -1. */
 	convertPixelSpaceToNormalSpacePosition(normalPosition: Vector3, pixelPosition: Vector2Readonly): void {
-		normalPosition.x = 2 * (pixelPosition.x - this.bounds.min.x) / this.bounds.size.x - 1;
-		normalPosition.y = 1 - 2 * (pixelPosition.y - this.bounds.min.y) / this.bounds.size.y;
-		normalPosition.z = -1;
+		normalPosition.setX(2 * (pixelPosition.x - this.bounds.min.x) / this.bounds.size.x - 1);
+		normalPosition.setY(1 - 2 * (pixelPosition.y - this.bounds.min.y) / this.bounds.size.y);
+		normalPosition.setZ(-1);
 	}
 
 	/**  The WebGL context. */
