@@ -61,4 +61,14 @@ export class Rectangle extends RectangleReadonly {
 		this._size.x = Math.min(a.min.x + a.size.x, b.min.x + b.size.x) - this._min.x;
 		this._size.y = Math.min(a.min.y + a.size.y, b.min.y + b.size.y) - this._min.y;
 	}
+
+	// Temporaries to use.
+	static temp0 = new Rectangle();
+	static temp1 = new Rectangle();
+	static temp2 = new Rectangle();
+	static temp3 = new Rectangle();
+	static temp4 = new Rectangle();
+	static temp5 = new Rectangle();
+	static temp6 = new Rectangle();
+	static temp7 = new Rectangle();
 }

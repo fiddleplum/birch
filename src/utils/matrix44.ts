@@ -59,4 +59,14 @@ export class Matrix44 extends Matrix44Readonly {
 		this._m[14] = 0;
 		this._m[15] = 1;
 	}
+
+	// Temporaries to use.
+	static temp0 = new Matrix44();
+	static temp1 = new Matrix44();
+	static temp2 = new Matrix44();
+	static temp3 = new Matrix44();
+	static temp4 = new Matrix44();
+	static temp5 = new Matrix44();
+	static temp6 = new Matrix44();
+	static temp7 = new Matrix44();
 }

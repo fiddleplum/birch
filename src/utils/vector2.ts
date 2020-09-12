@@ -119,4 +119,14 @@ export class Vector2 extends Vector2Readonly {
 		this._m[0] = -a.y;
 		this._m[1] = ax;
 	}
+
+	// Temporaries to use.
+	static temp0 = new Vector2();
+	static temp1 = new Vector2();
+	static temp2 = new Vector2();
+	static temp3 = new Vector2();
+	static temp4 = new Vector2();
+	static temp5 = new Vector2();
+	static temp6 = new Vector2();
+	static temp7 = new Vector2();
 }

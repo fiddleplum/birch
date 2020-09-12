@@ -122,4 +122,14 @@ export class Color extends ColorReadonly {
 		this._m[2] = Num.lerp(c.b, d.b, u);
 		this._m[3] = Num.lerp(c.a, d.a, u);
 	}
+
+	// Temporaries to use.
+	static temp0 = new Color();
+	static temp1 = new Color();
+	static temp2 = new Color();
+	static temp3 = new Color();
+	static temp4 = new Color();
+	static temp5 = new Color();
+	static temp6 = new Color();
+	static temp7 = new Color();
 }

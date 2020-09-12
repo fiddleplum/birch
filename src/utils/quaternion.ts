@@ -88,14 +88,14 @@ export class Quaternion extends QuaternionReadonly {
 	setFromVectorRotation(a: Vector3Readonly, b: Vector3Readonly): void {
 		this._m[0] = 1 + a.dot(b);
 		if (this._m[0] !== 0) {
-			Quaternion.tempVector3.cross(a, b);
+			Quaternion._tempVector3.cross(a, b);
 		}
 		else {
-			Quaternion.tempVector3.perp(a);
+			Quaternion._tempVector3.perp(a);
 		}
-		this._m[1] = Quaternion.tempVector3.x;
-		this._m[2] = Quaternion.tempVector3.y;
-		this._m[3] = Quaternion.tempVector3.z;
+		this._m[1] = Quaternion._tempVector3.x;
+		this._m[2] = Quaternion._tempVector3.y;
+		this._m[3] = Quaternion._tempVector3.z;
 		this.normalize(this);
 	}
 
@@ -127,5 +127,16 @@ export class Quaternion extends QuaternionReadonly {
 		}
 	}
 
-	static tempVector3 = new Vector3();
+	/** An internal temp vector for Quaternion. */
+	private static _tempVector3 = new Vector3();
+
+	// Temporaries to use.
+	static temp0 = new Quaternion();
+	static temp1 = new Quaternion();
+	static temp2 = new Quaternion();
+	static temp3 = new Quaternion();
+	static temp4 = new Quaternion();
+	static temp5 = new Quaternion();
+	static temp6 = new Quaternion();
+	static temp7 = new Quaternion();
 }
