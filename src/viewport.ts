@@ -54,7 +54,7 @@ export class Viewport extends EventSink {
 	}
 
 	/** Sets the camera connected to this viewport. It must have a camera and frame component to work. */
-	set camera(camera: World.Entity | undefined) {
+	setCamera(camera: World.Entity | undefined): void {
 		// Unsubscribe from previous components.
 		if (this._cameraEntity !== undefined) {
 			const cameraComponent = this._cameraEntity.get(World.CameraComponent);
@@ -89,7 +89,7 @@ export class Viewport extends EventSink {
 	}
 
 	/** Sets the clear color. It does not clear if it is undefined. */
-	set clearColor(color: ColorReadonly | undefined) {
+	setClearColor(color: ColorReadonly | undefined): void {
 		this._stage.setClearColor(color);
 	}
 
@@ -99,7 +99,7 @@ export class Viewport extends EventSink {
 	}
 
 	/** Sets whether or not the viewport is enabled. */
-	set enabled(enabled: boolean) {
+	setEnabled(enabled: boolean): void {
 		this._enabled = enabled;
 		this._divElement.style.display = this._enabled ? '' : 'none';
 	}
