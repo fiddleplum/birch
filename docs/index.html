@@ -34,6 +34,22 @@
 		<li>typeof a === 'undefined' (not 'object' as with null)</li>
 	</ul>
 	<p>I will still use null in the places that require it, such as with DOM or WebGL functions, but they will be changed into undefines when they can.</p>
+	<h3>Getters and Setters</h3>
+	<p>There have been a lot of issues with getters and setters. Here are some of them.</p>
+	<h4>Inheritance Issues</h4>
+	<p>If a base class has a getter only (for example, Vector3Readonly.x), and subclass has the setter only (for example Vector3.x), then the getter in the base class becomes invisible. I consider this a defect in TypeScript.</p>
+	<p>It is because TypeScript, in its type definition files, considers getters and setters to be the same as attributes. And the subclass setter overwrites the entire attribute of the base class, removing its getter.</p>
+	<p>The solution to this is to add a forwarding getter in the subclass, but it is an annoying workaround.</p>
+	<h4>Getters and Setters Must Be the Same Type</h4>
+	<p>In Rectangle, I wanted to have a getter and setter for the min property. But I wanted the getter to return a Vector2 and the setter to take a Vector2Readonly. This should theoretically work, since Vector2 is a subclass of Vector2Readonly, but it unfortunately doesn't work.</p>
+	<p>As above, Typescript incorrectly considers getters and setters as properties and not functions, so the getter and the setter must have the same type exactly. I have found no workaround for this.</p>
+	<h4>Setters and Readonly Variables</h4>
+	<p>If we combine getters and setters with the idea of Readonly variables, things get more complicated.</p>
+	<p>Let's say we have <code>frame.position</code>. The frame is a component and the position is a Vector3. When the position is modified other things need to happen, so it needs to be either a function or a setter. We have a position getter which returns a Vector3Readonly so that the user can't accidentally modify the position, bypassing the other things that need to happen. There are a few options on how to implement this.</p>
+	<p>If we use a setter, the user would have to do something like <code>frame.position = new Vector3(...)</code> to set the position. They might be tempted to do <code>frame.position.set(...)</code>, but this would cause an error because it uses the position getter, which returns the Vector3Readonly which doesn't have the set function.</p>
+	<h4>Conclusion</h4>
+	<p>Because of the issues with getters and setters above, I've come to the following conclusion on how to set things up. There will be getters, but all things that would be setters will be just setX functions instead.</p>
+	<p>Having only getters and no setters means all of the issues go away. There are no TypeScript language issues, and users will have a consistent paradigm on how to getter properties in a simple way, and know that setX functions imply that more may be happening than just setting the value of the variable. It also removes any temptations to do <code>frame.posiion.set(...)</code>, and the new code of <code>frame.setPosition(...)</code> isn't any more verbose.</p>
 </body>
 
 </html>
