@@ -41,11 +41,19 @@ export class Shader extends UniqueId.Object {
 		else {
 			fragmentCode = options.fragment;
 		}
-		this.setCodeAndAttributes(vertexCode, fragmentCode, options.attributeLocations);
+
+		let blending = Shader.Blending.None;
+		if (options.blending === 'add') {
+			blending = Shader.Blending.Add;
+		}
+		else if (options.blending === 'mix') {
+			blending = Shader.Blending.Mix;
+		}
+		this.setCodeAndAttributes(vertexCode, fragmentCode, options.attributeLocations, blending);
 	}
 
 	/** Sets the vertex and fragment code for the shader and bind the attribute locations. */
-	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: { [key: string]: number }): void {
+	setCodeAndAttributes(vertexCode: string, fragmentCode: string, attributeLocations: { [key: string]: number }, blending: Shader.Blending): void {
 		let vertexObject: WebGLShader | undefined = undefined;
 		let fragmentObject: WebGLShader | undefined = undefined;
 		try {
@@ -63,6 +71,7 @@ export class Shader extends UniqueId.Object {
 				this._gl.deleteShader(fragmentObject);
 			}
 		}
+		this.blending = blending;
 		this._initializeUniformBlocks();
 		this._initializeUniforms();
 		this._initializeAttributes();
@@ -78,6 +87,15 @@ export class Shader extends UniqueId.Object {
 	activate(): void {
 		if (this._programIsValid) {
 			this._gl.useProgram(this._program);
+			if (this.blending === Shader.Blending.Add) {
+				this._gl.blendFunc(this._gl.SRC_ALPHA, this._gl.ONE);
+			}
+			else if (this.blending === Shader.Blending.Mix) {
+				this._gl.blendFunc(this._gl.SRC_ALPHA, this._gl.ONE_MINUS_SRC_ALPHA);
+			}
+			else if (this.blending === Shader.Blending.None) {
+				this._gl.blendFunc(this._gl.ONE, this._gl.ZERO);
+			}
 		}
 	}
 
@@ -378,9 +396,21 @@ export class Shader extends UniqueId.Object {
 
 	/** The flag that returns true if the program is valid. */
 	private _programIsValid: boolean = false;
+
+	/** The blending mode. */
+	blending: Shader.Blending = Shader.Blending.None;
+
+	/** The depth test. */
+	depthTest: Shader.DepthTest = Shader.DepthTest.LessOrEqual;
 }
 
 export namespace Shader {
+	/** The different blending modes. */
+	export enum Blending { None, Mix, Add }
+
+	/** The depth test modes. */
+	export enum DepthTest { Never, Always, Less, Greater, Equal, NotEqual, LessOrEqual, GreaterOrEqual }
+
 	export class Options {
 		/** The vertex shader code. */
 		vertex: string | string[] = '';
@@ -390,5 +420,8 @@ export namespace Shader {
 
 		/** Attribute locations. */
 		attributeLocations: { [key: string]: number } = {};
+
+		/** Blending. */
+		blending: string = 'none';
 	}
 }

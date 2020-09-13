@@ -14,11 +14,14 @@ export class Renderer {
 		// Save the canvas.
 		this._canvas = canvas;
 		// Create the WebGL context.
-		const gl = this._canvas.getContext('webgl2', { antialias: antialias });
+		const gl = this._canvas.getContext('webgl2', { antialias: antialias, alpha: false });
 		if (gl === null) {
 			throw new Error('Could not get a WebGL 2.0 context. Your browser may not support WebGL 2.0.');
 		}
 		this._gl = gl;
+
+		// Setup blending.
+		this._gl.enable(this._gl.BLEND);
 	}
 
 	/** Destroys this. */

@@ -1,4 +1,5 @@
 import { Model } from './model';
+import { Shader } from './shader';
 import { Uniforms } from './uniforms';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
 
@@ -46,13 +47,13 @@ export class Scene {
 		if (b.shader === undefined || b.mesh === undefined) {
 			return false;
 		}
-		if (a.blending === Model.Blending.None && b.blending !== Model.Blending.None) {
+		if (a.shader.blending === Shader.Blending.None && b.shader.blending !== Shader.Blending.None) {
 			return true;
 		}
-		if (a.blending !== Model.Blending.None && b.blending === Model.Blending.None) {
+		if (a.shader.blending !== Shader.Blending.None && b.shader.blending === Shader.Blending.None) {
 			return false;
 		}
-		if (a.blending === Model.Blending.None) { // Sort by shader and textures.
+		if (a.shader.blending === Shader.Blending.None) { // Sort by shader and textures.
 			if (a.shader !== b.shader) {
 				return a.shader.id < b.shader.id;
 			}

@@ -14,12 +14,6 @@ export class Model extends UniqueId.Object {
 	/** The depth used for sorting. */
 	depth: number = 0;
 
-	/** The blending mode. */
-	blending: Model.Blending = Model.Blending.None;
-
-	/** The depth test. */
-	depthTest: Model.DepthTest = Model.DepthTest.LessOrEqual;
-
 	/** Constructor. */
 	constructor(gl: WebGL2RenderingContext) {
 		super();
@@ -165,12 +159,6 @@ export class RenderState {
 }
 
 export namespace Model {
-	/** The different blending modes. */
-	export enum Blending { None, Alpha, Additive }
-
-	/** The depth test modes. */
-	export enum DepthTest { Never, Always, Less, Greater, Equal, NotEqual, LessOrEqual, GreaterOrEqual }
-
 	/** The function for setting uniforms. */
 	export type UniformsFunction = ((shader: Shader) => void) | undefined;
 }
