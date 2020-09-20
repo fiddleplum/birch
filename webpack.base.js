@@ -1,7 +1,9 @@
 module.exports = {
 	entry: './src/index.ts',
 	output: {
-		filename: 'script.js'
+		filename: 'script.js',
+		library: 'Birch',
+		libraryExport: 'Birch'
 	},
 	resolve: {
 		extensions: ['.ts', '.js']
