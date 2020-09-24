@@ -73,7 +73,7 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 
 	/** Gets the items of the given *type*. Returns undefined if there are none. */
 	getAllOfType<Type extends Item>(type: { new (...args: any[]): Type }): FastOrderedSetReadonly<Type> | undefined {
-		return this._typesToItems.get(type) as FastOrderedSet<Type>;
+		return this._typesToItems.get(type) as (FastOrderedSet<Type> | undefined);
 	}
 
 	/** The create item function. */
