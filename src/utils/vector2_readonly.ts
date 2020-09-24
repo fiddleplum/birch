@@ -65,4 +65,11 @@ export class Vector2Readonly {
 	cross(a: Vector2Readonly): number {
 		return this._m[0] * a._m[1] - this._m[1] * a._m[0];
 	}
+
+	/** Gets the distance between *this* and *a*. */
+	distance(a: Vector2Readonly): number {
+		const x = this.x - a.x;
+		const y = this.y - a.y;
+		return Math.sqrt(x * x + y * y);
+	}
 }

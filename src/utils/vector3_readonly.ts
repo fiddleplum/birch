@@ -71,4 +71,12 @@ export class Vector3Readonly {
 	dot(a: Vector3Readonly): number {
 		return this._m[0] * a._m[0] + this._m[1] * a._m[1] + this._m[2] * a._m[2];
 	}
+
+	/** Gets the distance between *this* and *a*. */
+	distance(a: Vector3Readonly): number {
+		const x = this.x - a.x;
+		const y = this.y - a.y;
+		const z = this.z - a.z;
+		return Math.sqrt(x * x + y * y + z * z);
+	}
 }
