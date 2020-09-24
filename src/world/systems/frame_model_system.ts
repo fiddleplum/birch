@@ -1,4 +1,4 @@
-import { Component, FrameComponent, ModelComponent, Entity, System, World } from '../internal';
+import { Component, FrameComponent, ModelComponent, System, World } from '../internal';
 
 export class FrameModelSystem extends System {
 	/** Constructs the frame-model system. */
@@ -10,14 +10,14 @@ export class FrameModelSystem extends System {
 
 	/** Process any events. */
 	processEvent(component: Component, event: symbol): void {
-		if (event === Entity.ComponentCreated) {
+		if (event === Component.ComponentCreated) {
 			this.subscribeToEvents(component);
 			this._updateModels(component as FrameComponent);
 		}
 		else if (event === Component.ComponentDestroyed) {
 			this.unsubscribeFromEvents(component);
 		}
-		else {
+		else { // Some event from a frame component.
 			this._updateModels(component as FrameComponent);
 		}
 	}

@@ -2,7 +2,7 @@ import { Engine, EventSource } from '../../internal';
 import { Entity } from '../internal';
 
 /** The base component from which all other components are subclassed. */
-export abstract class Component extends EventSource {
+export class Component extends EventSource {
 	/** Constructs the component. */
 	constructor(entity: Entity) {
 		super();
@@ -28,6 +28,9 @@ export abstract class Component extends EventSource {
 
 	/** The entity that contains this. */
 	private _entity: Entity;
+
+	/** Event for when the component is created. */
+	static ComponentCreated = Symbol('ComponentCreated');
 
 	/** Event for when the component is destroyed. */
 	static ComponentDestroyed = Symbol('ComponentDestroyed');

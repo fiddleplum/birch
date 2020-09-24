@@ -58,10 +58,8 @@ export class Entity extends UniqueId.Object {
 		for (const entry of this._world.systems) {
 			const system = entry.key;
 			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
-				system.processEvent(component, Entity.ComponentCreated);
+				system.processEvent(component, Component.ComponentCreated);
 			}
 		}
 	});
-
-	static ComponentCreated = Symbol('ComponentCreated');
 }
