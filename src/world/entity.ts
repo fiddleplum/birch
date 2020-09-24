@@ -27,10 +27,14 @@ export class Entity extends UniqueId.Object {
 	get world(): World {
 		return this._world;
 	}
-
 	/** Gets the components. */
 	get components(): CollectionTyped<Component> {
 		return this._components;
+	}
+
+	/** Returns true if the entity has at least one component of the given type. */
+	has(type: typeof Component): boolean {
+		return this._components.getFirstOfType(type) !== undefined;
 	}
 
 	/** Gets the ith component of the given type. i is zero based and defaults to zero. */

@@ -48,6 +48,11 @@ export class World {
 		return this._systems;
 	}
 
+	/** Gets the ith component of the given type. i is zero based and defaults to zero. */
+	getSystem<Type extends System>(type: { new (world: World): Type }, i: number = 0): Type | undefined {
+		return this._systems.getAllOfType(type)?.getIndex(i);
+	}
+
 	/** The entities. */
 	private _entities: Collection<Entity> = new Collection((name: string | undefined) => {
 		return new Entity(this, name);
