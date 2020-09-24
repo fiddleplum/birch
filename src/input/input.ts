@@ -41,6 +41,13 @@ export class Input {
 		return this._controllers.size;
 	}
 
+	/** Updates the input system. */
+	update(): void {
+		for (const entry of this._controllers) {
+			entry.value.update();
+		}
+	}
+
 	/** The 'gamepadconnected' event handler. */
 	private _gamepadConnected(event: GamepadEvent): void {
 		this._controllers.set(event.gamepad.index, new Controller(event.gamepad));
