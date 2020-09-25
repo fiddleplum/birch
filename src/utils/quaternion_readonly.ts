@@ -31,6 +31,11 @@ export class QuaternionReadonly {
 		return this._m[3];
 	}
 
+	/** Gets the angle of the rotation that this represents. */
+	get angle(): number {
+		return Math.acos(this._m[0]) * 2;
+	}
+
 	/** Gets *this* as a string. */
 	toString(): string {
 		return '[' + this._m[0] + ', ' + this._m[1] + ', ' + this._m[2] + ', ' + this._m[3] + ']';
@@ -49,6 +54,11 @@ export class QuaternionReadonly {
 	/** Gets the norm of *this*. */
 	norm(): number {
 		return Math.sqrt(this.dot(this));
+	}
+
+	/** Returns the angle in radians between *this* and quaternion *a*. */
+	angleBetween(a: QuaternionReadonly): number {
+		return Math.acos(this._m[0] * a._m[0] + this._m[1] * a._m[1] + this._m[2] * a._m[2] + this._m[3] * a._m[3]) * 2.0;
 	}
 
 	/** Gets the underlying array. */

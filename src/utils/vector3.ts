@@ -82,6 +82,13 @@ export class Vector3 extends Vector3Readonly {
 		this._m[2] = a.z / b.z;
 	}
 
+	/** Sets *this* to *a* * *aMult* + *b* * *bMult*. */
+	addMult(a: Vector3Readonly, aMult: number, b: Vector3Readonly, bMult: number): void {
+		this._m[0] = a.x * aMult + b.x * bMult;
+		this._m[1] = a.y * aMult + b.y * bMult;
+		this._m[2] = a.z * aMult + b.z * bMult;
+	}
+
 	/** Sets *this* to *a* normalized. */
 	normalize(a: Vector3Readonly): void {
 		const n = a.norm;

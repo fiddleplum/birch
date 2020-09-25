@@ -67,6 +67,12 @@ export class Vector2 extends Vector2Readonly {
 		this._m[1] = a.y / b.y;
 	}
 
+	/** Sets *this* to *a* * *aMult* + *b* * *bMult*. */
+	addMult(a: Vector2Readonly, aMult: number, b: Vector2Readonly, bMult: number): void {
+		this._m[0] = a.x * aMult + b.x * bMult;
+		this._m[1] = a.y * aMult + b.y * bMult;
+	}
+
 	/** Sets *this* to *a* normalized. */
 	normalize(a: Vector2Readonly): void {
 		const n = a.norm;
