@@ -49,8 +49,18 @@ export class World {
 	}
 
 	/** Gets the ith component of the given type. i is zero based and defaults to zero. */
-	getSystem<Type extends System>(type: { new (world: World): Type }, i: number = 0): Type | undefined {
-		return this._systems.getAllOfType(type)?.getIndex(i);
+	getEntity(name: string): Entity | undefined {
+		return this._entities.get(name);
+	}
+
+	/** Gets the ith component of the given type. i is zero based and defaults to zero. */
+	getSystem<Type extends System>(typeOrName: { new (world: World): Type } | string, i: number = 0): Type | undefined {
+		if (typeof typeOrName === 'string') {
+			return this._systems.get(typeOrName) as (Type | undefined);
+		}
+		else {
+			return this._systems.getAllOfType(typeOrName)?.getIndex(i);
+		}
 	}
 
 	/** The entities. */

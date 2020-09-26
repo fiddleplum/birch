@@ -40,7 +40,7 @@ export class Entity extends UniqueId.Object {
 	/** Gets the ith component of the given type. i is zero based and defaults to zero. */
 	get<Type extends Component>(typeOrName: { new (entity: Entity): Type } | string, i: number = 0): Type | undefined {
 		if (typeof typeOrName === 'string') {
-			return this._components.get(typeOrName) as Type;
+			return this._components.get(typeOrName) as Type | undefined;
 		}
 		else {
 			return this._components.getAllOfType(typeOrName)?.getIndex(i);
