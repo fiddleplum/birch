@@ -22,13 +22,9 @@ export class Input {
 		this._controllerConnectedCallback = callback;
 	}
 
-	/** Gets the controller at the given index. */
-	getController(index: number): Controller {
-		const controller = this._controllers.get(index);
-		if (controller === undefined) {
-			throw new Error('Controller ' + index + ' not found.');
-		}
-		return controller;
+	/** Gets the controller at the given index, or undefined if the controller isn't found. */
+	getController(index: number): Controller | undefined {
+		return this._controllers.get(index);
 	}
 
 	/** Gets the index of the controller with the highest index. If there are no controllers, returns NaN. */

@@ -37,6 +37,10 @@ export class Controller {
 
 	/** Updates the controller, sending button events to any listeners. */
 	update(): void {
+		const gamepad = navigator.getGamepads()[this._gamepad.index];
+		if (this._gamepad !== gamepad) {
+			this._gamepad = gamepad!;
+		}
 		for (let buttonIndex = 0; buttonIndex < this._gamepad.buttons.length; buttonIndex++) {
 			if (this._buttons[buttonIndex] !== this._gamepad.buttons[buttonIndex].value) {
 				this._buttons[buttonIndex] = this._gamepad.buttons[buttonIndex].value;
