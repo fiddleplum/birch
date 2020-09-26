@@ -5,17 +5,27 @@ export class FrameModelSystem extends System {
 	constructor(world: World) {
 		super(world);
 
-		this.monitorComponentTypes([FrameComponent]);
+		this.monitorComponentTypes([FrameComponent, ModelComponent]);
 	}
 
 	/** Process any events. */
 	processEvent(component: Component, event: symbol): void {
 		if (event === Entity.ComponentCreated) {
-			this.subscribeToEvents(component);
-			this._updateModels(component as FrameComponent);
+			if (component instanceof FrameComponent) {
+				this.subscribeToEvents(component);
+				this._updateModels(component as FrameComponent);
+			}
+			else { // It must be a model component.
+				const frameComponent = component.entity.get(FrameComponent);
+				if (frameComponent !== undefined) {
+					this._updateModel(frameComponent, component as ModelComponent);
+				}
+			}
 		}
 		else if (event === Entity.ComponentWillBeDestroyed) {
-			this.unsubscribeFromEvents(component);
+			if (component instanceof FrameComponent) {
+				this.unsubscribeFromEvents(component);
+			}
 		}
 		else { // Some event from a frame component.
 			this._updateModels(component as FrameComponent);
@@ -27,8 +37,13 @@ export class FrameModelSystem extends System {
 		const modelComponents = frameComponent.entity.getAll(ModelComponent);
 		if (modelComponents !== undefined) {
 			for (const modelComponent of modelComponents) {
-				modelComponent.model.uniforms.setUniform('modelMatrix', frameComponent.localToWorld.array);
+				this._updateModel(frameComponent, modelComponent);
 			}
 		}
+	}
+
+	/** Updates the model with the given frame. */
+	private _updateModel(frameComponent: FrameComponent, modelComponent: ModelComponent): void {
+		modelComponent.model.uniforms.setUniform('modelMatrix', frameComponent.localToWorld.array);
 	}
 }
