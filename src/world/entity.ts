@@ -57,13 +57,25 @@ export class Entity extends UniqueId.Object {
 	private _components = new CollectionTyped<Component>((type: { new (entity: Entity): Component }) => {
 		return new type(this);
 	}, (component: Component) => {
+		for (const entry of this._world.systems) {
+			const system = entry.key;
+			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
+				system.processEvent(component, Entity.ComponentWillBeDestroyed);
+			}
+		}
 		component.destroy();
 	}, (component: Component) => {
 		for (const entry of this._world.systems) {
 			const system = entry.key;
 			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
-				system.processEvent(component, Component.ComponentCreated);
+				system.processEvent(component, Entity.ComponentCreated);
 			}
 		}
 	});
+
+	/** Event for when the component is created. */
+	static ComponentCreated = Symbol('ComponentCreated');
+
+	/** Event for when the component is destroyed. */
+	static ComponentWillBeDestroyed = Symbol('ComponentWillBeDestroyed');
 }

@@ -128,7 +128,7 @@ export class Viewport extends EventSink {
 
 	/** Called when the viewport receives events from the camera entity's camera or frame components. */
 	processEvent(component: World.Component, event: symbol): void {
-		if (event === World.Component.ComponentDestroyed) {
+		if (event === World.Entity.ComponentWillBeDestroyed) {
 			this.unsubscribeFromEvents(component);
 		}
 		else if (component instanceof World.CameraComponent) {

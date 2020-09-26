@@ -13,12 +13,6 @@ export class Component extends EventSource {
 
 	/** Destroys the component. */
 	destroy(): void {
-		this.sendEvent(Component.ComponentDestroyed);
-	}
-
-	/** Gets the engine as a shortcut. */
-	get engine(): Engine {
-		return this._entity.world.engine;
 	}
 
 	/** Gets the entity that contains this. */
@@ -26,12 +20,11 @@ export class Component extends EventSource {
 		return this._entity;
 	}
 
+	/** Gets the engine as a shortcut. */
+	get engine(): Engine {
+		return this._entity.world.engine;
+	}
+
 	/** The entity that contains this. */
 	private _entity: Entity;
-
-	/** Event for when the component is created. */
-	static ComponentCreated = Symbol('ComponentCreated');
-
-	/** Event for when the component is destroyed. */
-	static ComponentDestroyed = Symbol('ComponentDestroyed');
 }
