@@ -11,9 +11,11 @@ export class FrameComponent extends Component {
 
 	/** Sets the position. */
 	setPosition(position: Vector3Readonly): void {
-		this._position.copy(position);
-		this._localToWorldDirty = this._worldToLocalDirty = true;
-		this.sendEvent(FrameComponent.PositionChanged);
+		if (!this._position.equals(position)) {
+			this._position.copy(position);
+			this._localToWorldDirty = this._worldToLocalDirty = true;
+			this.sendEvent(FrameComponent.PositionChanged);
+		}
 	}
 
 	/** Gets the orientation. */
@@ -23,9 +25,11 @@ export class FrameComponent extends Component {
 
 	/** Sets the orientation. */
 	setOrientation(orientation: QuaternionReadonly): void {
-		this._orientation.copy(orientation);
-		this._localToWorldDirty = this._worldToLocalDirty = true;
-		this.sendEvent(FrameComponent.OrientationChanged);
+		if (!this._orientation.equals(orientation)) {
+			this._orientation.copy(orientation);
+			this._localToWorldDirty = this._worldToLocalDirty = true;
+			this.sendEvent(FrameComponent.OrientationChanged);
+		}
 	}
 
 	/** Gets the local to world transform. */
