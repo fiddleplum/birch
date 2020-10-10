@@ -42,10 +42,6 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 
 	/** Destroys an item. Takes the item or its name. */
 	destroy(nameOrItem: string | Item | undefined): boolean {
-		const hasItem = super.destroy(nameOrItem);
-		if (!hasItem) {
-			return false;
-		}
 		// Get the item, if from a name.
 		let item: Item;
 		if (typeof nameOrItem === 'string') {
@@ -54,6 +50,12 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 		else {
 			item = nameOrItem as Item;
 		}
+		// Destroy the item.
+		const hasItem = super.destroy(nameOrItem);
+		if (!hasItem) {
+			return false;
+		}
+		// Remove all of its ancestors from the typesToItems list.
 		let ancestorType = item.constructor as { new (...args: any[]): Item };
 		do {
 			const itemsOfType = this._typesToItems.get(ancestorType) as FastOrderedSet<Item>;
