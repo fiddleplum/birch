@@ -10,25 +10,25 @@ export class FrameModelSystem extends System {
 
 	/** Process any events. */
 	processEvent(component: Component, event: symbol): void {
-		if (event === Entity.ComponentCreated) {
-			if (component instanceof FrameComponent) {
+		if (component instanceof FrameComponent) {
+			if (event === Entity.ComponentCreated) {
 				this.subscribeToEvents(component);
-				this._updateModels(component as FrameComponent);
+				this._updateModels(component);
 			}
-			else { // It must be a model component.
-				const frameComponent = component.entity.get(FrameComponent);
-				if (frameComponent !== undefined) {
-					this._updateModel(frameComponent, component as ModelComponent);
-				}
-			}
-		}
-		else if (event === Entity.ComponentWillBeDestroyed) {
-			if (component instanceof FrameComponent) {
+			else if (event === Entity.ComponentWillBeDestroyed) {
 				this.unsubscribeFromEvents(component);
 			}
+			else {
+				this._updateModels(component);
+			}
 		}
-		else { // Some event from a frame component.
-			this._updateModels(component as FrameComponent);
+		else if (component instanceof ModelComponent) {
+			if (event === Entity.ComponentCreated) {
+				const frameComponent = component.entity.get(FrameComponent);
+				if (frameComponent !== undefined) {
+					this._updateModel(frameComponent, component);
+				}
+			}
 		}
 	}
 

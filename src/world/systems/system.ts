@@ -20,6 +20,10 @@ export abstract class System extends EventSink {
 		return this._world;
 	}
 
+	// get queries(): FastOrderedSet<Query> {
+	// 	return this._queries;
+	// }
+
 	/** An update function that does something every frame. */
 	update(): void {
 	}
@@ -40,6 +44,9 @@ export abstract class System extends EventSink {
 
 	/** The world. */
 	private _world: World;
+
+	// /** The queries. */
+	// private _queries: FastOrderedSet<Query> = new FastOrderedSet();
 
 	/** The list of monitored component types. */
 	private _monitoredComponentTypes: (typeof Component)[] = [];

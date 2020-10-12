@@ -1,5 +1,6 @@
 export * from './entity';
 export * from './world';
+// export * from './query';
 
 export * from './components/component';
 export * from './systems/system';

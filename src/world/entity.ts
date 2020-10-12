@@ -67,6 +67,9 @@ export class Entity extends UniqueId.Object {
 			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
 				system.processEvent(component, Entity.ComponentWillBeDestroyed);
 			}
+			// for (const query of entry.key.queries) {
+			// 	query.entityComponentListChanged(component, false);
+			// }
 		}
 		component.destroy();
 	}, (component: Component) => {
@@ -75,6 +78,9 @@ export class Entity extends UniqueId.Object {
 			if (system.getMonitoredComponentTypes().includes(Object.getPrototypeOf(component).constructor)) {
 				system.processEvent(component, Entity.ComponentCreated);
 			}
+			// for (const query of entry.key.queries) {
+			// 	query.entityComponentListChanged(component, true);
+			// }
 		}
 	});
 
