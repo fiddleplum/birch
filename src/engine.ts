@@ -5,15 +5,20 @@ export class Engine {
 		// Set and prepare the root element.
 		this._rootElement = rootElement;
 		this._prepareRootElement();
+
 		// Create the renderer.
 		this._renderer = new Render.Renderer(this._canvas, true);
+
 		// Create the input system.
 		this._input = new Input.Input();
+
 		// Create the downloader.
 		this._downloader = new Downloader();
+
 		// Run the engine.
 		this._running = true;
-		this._runBound = this._run.bind(this);
+		this._run = this._run.bind(this);
+		this._lastTime = Date.now();
 		this._run();
 	}
 
@@ -52,6 +57,11 @@ export class Engine {
 		return this._viewportOrder;
 	}
 
+	/** Gets the time elapsed since the last frame. */
+	get deltaTime(): number {
+		return this._deltaTime;
+	}
+
 	/** Stops the engine. */
 	stop(): void {
 		this._running = false;
@@ -70,6 +80,11 @@ export class Engine {
 			this._destroy();
 			return;
 		}
+
+		// Get the time elapsed since the last frame.
+		const timeNow = Date.now();
+		this._deltaTime = (timeNow - this._lastTime) / 1000.0;
+		this._lastTime = timeNow;
 
 		// Check the canvas size and resize if needed.
 		const canvas = this._canvas;
@@ -98,7 +113,7 @@ export class Engine {
 		this._renderer.render();
 
 		// Ask the browser for another frame.
-		requestAnimationFrame(this._runBound);
+		requestAnimationFrame(this._run);
 	}
 
 	/** Prepares the root element, adding styles and child elements. */
@@ -151,8 +166,11 @@ export class Engine {
 	/** A flag that says whether or not the engine is running. */
 	private _running: boolean = false;
 
-	/** A this-bound function of the run method, used by requestAnimationFrame. */
-	private _runBound: () => void;
+	/** The time last frame. */
+	private _lastTime: number = Date.now();
+
+	/** The time elapsed since the last frame. */
+	private _deltaTime: number = 0;
 
 	/** The renderer. */
 	private _renderer: Render.Renderer;
