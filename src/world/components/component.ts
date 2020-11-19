@@ -13,6 +13,7 @@ export class Component extends EventSource {
 
 	/** Destroys the component. */
 	destroy(): void {
+		super.destroy();
 	}
 
 	/** Gets the entity that contains this. */

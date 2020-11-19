@@ -1,11 +1,9 @@
-import { ColorReadonly, EventSink, Rectangle, RectangleReadonly, Render, Vector2, Vector2Readonly,
-	Vector3, Vector3Readonly, World } from './internal';
+import { ColorReadonly, Rectangle, RectangleReadonly, Render, Vector2, Vector2Readonly,
+	Vector3, Vector3Readonly } from './internal';
 
-export class Viewport extends EventSink {
+export class Viewport {
 	/** The constructor. Takes a *bounds*. */
 	constructor(renderer: Render.Renderer, viewportsElement: HTMLDivElement) {
-		super();
-
 		// Set the viewports element and renderer.
 		this._renderer = renderer;
 		// Create the render stage.
@@ -34,8 +32,6 @@ export class Viewport extends EventSink {
 		this._divElement.remove();
 		// Remove the render stage.
 		this._renderer.stages.destroy(this._stage);
-		// Call super.
-		super.destroy();
 	}
 
 	/** Gets the div element. */
@@ -46,41 +42,6 @@ export class Viewport extends EventSink {
 	/** Gets the stage created by this viewport. */
 	get stage(): Render.Stage {
 		return this._stage;
-	}
-
-	/** Gets the camera connected to this viewport. */
-	get camera(): World.Entity | undefined {
-		return this._cameraEntity;
-	}
-
-	/** Sets the camera connected to this viewport. It must have a camera and frame component to work. */
-	setCamera(camera: World.Entity | undefined): void {
-		// Unsubscribe from previous components.
-		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.get(World.CameraComponent);
-			const frameComponent = this._cameraEntity.get(World.FrameComponent);
-			if (cameraComponent !== undefined) {
-				this.unsubscribeFromEvents(cameraComponent);
-			}
-			if (frameComponent !== undefined) {
-				this.unsubscribeFromEvents(frameComponent);
-			}
-		}
-		// Set the entity.
-		this._cameraEntity = camera;
-		// Subscribe to new components.
-		if (this._cameraEntity !== undefined) {
-			const cameraComponent = this._cameraEntity.get(World.CameraComponent);
-			const frameComponent = this._cameraEntity.get(World.FrameComponent);
-			if (cameraComponent !== undefined) {
-				this._stage.uniforms.setUniform('projectionMatrix', cameraComponent.localToNDC.array);
-				this.subscribeToEvents(cameraComponent);
-			}
-			if (frameComponent !== undefined) {
-				this._stage.uniforms.setUniform('viewMatrix', frameComponent.worldToLocal.array);
-				this.subscribeToEvents(frameComponent);
-			}
-		}
 	}
 
 	/** Gets the aspect ratio as the *width* / *height*. */
@@ -109,33 +70,23 @@ export class Viewport extends EventSink {
 		return this._stage.bounds;
 	}
 
+	/** Sets the bounds changed callback. */
+	set boundsChangedCallback(boundsChangedCallback: ((viewport: Viewport) => void) | undefined) {
+		this._boundsChangedCallback = boundsChangedCallback;
+	}
+
 	/** Prepares the viewport for a render. */
 	prepareForRender(): void {
 		divBounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
 		if (!this._stage.bounds.equals(divBounds)) {
 			// Updates the bounds of the viewport to reflect the div.
 			this._stage.bounds.copy(divBounds);
-			// Set the uniforms.
-			if (this._cameraEntity !== undefined) {
-				const cameraComponent = this._cameraEntity.components.getFirstOfType(World.CameraComponent);
-				if (cameraComponent !== undefined) {
-					cameraComponent.setAspectRatio(divBounds.size.x / divBounds.size.y);
-					this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
-				}
+			// Set the uniform.
+			this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
+			// Call the callback.
+			if (this._boundsChangedCallback !== undefined) {
+				this._boundsChangedCallback(this);
 			}
-		}
-	}
-
-	/** Called when the viewport receives events from the camera entity's camera or frame components. */
-	processEvent(component: World.Component, event: symbol): void {
-		if (event === World.Entity.ComponentWillBeDestroyed) {
-			this.unsubscribeFromEvents(component);
-		}
-		else if (component instanceof World.CameraComponent) {
-			this._stage.uniforms.setUniform('projectionMatrix', component.localToNDC.array);
-		}
-		else if (component instanceof World.FrameComponent) {
-			this._stage.uniforms.setUniform('viewMatrix', component.worldToLocal.array);
 		}
 	}
 
@@ -161,8 +112,8 @@ export class Viewport extends EventSink {
 	/** The render stage. */
 	private _stage: Render.Stage;
 
-	/** The camera to be rendered. */
-	private _cameraEntity: World.Entity | undefined = undefined;
+	/** The bounds changed callback. */
+	private _boundsChangedCallback: ((viewport: Viewport) => void) | undefined;
 }
 
 // A temporary bounds used for the div element bounds calculation.

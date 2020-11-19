@@ -1,5 +1,10 @@
 /** A base class that produces events. */
 export abstract class EventSource {
+	/** Destroys the event source. */
+	destroy(): void {
+		this.sendEvent(EventSource.Destroyed);
+	}
+
 	/** Subscribes an event sink to a event source's events.
 	 *  If event is undefined, it subscribes to all events. */
 	__subscribeToEvents(eventSink: EventSink, event?: symbol): void {
@@ -22,13 +27,17 @@ export abstract class EventSource {
 	protected sendEvent(event: symbol): void {
 		for (const subscription of this._subscriptions) {
 			if (subscription.event === undefined || subscription.event === event) {
-				subscription.eventSink.processEvent(this, event);
+				subscription.eventSink.processEventBase(this, event);
 			}
 		}
 	}
 
 	/** Subscribed event sinks. */
 	private _subscriptions: Subscription[] = [];
+
+	/** The event sent when the event source has been destroyed.
+	 *  The event source has already been unsubscribed. */
+	static Destroyed = Symbol('Destroyed');
 }
 
 /** A subscription in an event source. */
@@ -52,9 +61,15 @@ export abstract class EventSink {
 	}
 
 	/** Called when an event sink receives an event to which it was subscribed. */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	processEvent(eventSource: EventSource, event: symbol): void {
+	processEventBase(eventSource: EventSource, event: symbol): void {
+		if (event === EventSource.Destroyed) {
+			this._subscribedEventSources.delete(eventSource);
+		}
+		this.processEvent(eventSource, event);
 	}
+
+	/** Called when an event sink receives an event to which it was subscribed. */
+	abstract processEvent(eventSource: EventSource, event: symbol): void;
 
 	/** Subscribes to an EventSource's events. */
 	protected subscribeToEvents(eventSource: EventSource, event?: symbol): void {

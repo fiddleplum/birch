@@ -15,9 +15,6 @@ export class FrameModelSystem extends System {
 				this.subscribeToEvents(component);
 				this._updateModels(component);
 			}
-			else if (event === Entity.ComponentWillBeDestroyed) {
-				this.unsubscribeFromEvents(component);
-			}
 			else {
 				this._updateModels(component);
 			}
