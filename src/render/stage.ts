@@ -1,6 +1,6 @@
 import { Scene } from './scene';
 import { Texture } from './texture';
-import { Uniforms } from './uniforms';
+import { UniformGroup } from './uniform_group';
 import { Rectangle } from '../utils/rectangle';
 import { Vector2 } from '../utils/vector2';
 import { Vector2Readonly } from '../utils/vector2_readonly';
@@ -23,7 +23,7 @@ export class Stage {
 		this._gl = gl;
 
 		// Create the uniform block.
-		this._uniforms = new Uniforms(this._gl);
+		this._uniforms = new UniformGroup(this._gl);
 	}
 
 	/** Destroys the stage. */
@@ -35,7 +35,7 @@ export class Stage {
 	}
 
 	/** Gets the uniforms associated with this stage. */
-	get uniforms(): Uniforms {
+	get uniforms(): UniformGroup {
 		return this._uniforms;
 	}
 
@@ -162,7 +162,7 @@ export class Stage {
 	private _gl: WebGL2RenderingContext;
 
 	/** The stage-specific uniform block. */
-	private _uniforms: Uniforms;
+	private _uniforms: UniformGroup;
 
 	/** The frame buffer. */
 	private _frameBuffer: WebGLFramebuffer | undefined = undefined;

@@ -4,7 +4,7 @@ import { Scene } from './scene';
 import { Shader } from './shader';
 import { Stage } from './stage';
 import { Texture } from './texture';
-import { Uniforms } from './uniforms';
+import { UniformGroup } from './uniform_group';
 import { Collection } from '../utils/collection';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
 
@@ -71,7 +71,7 @@ export class Renderer {
 	}
 
 	/** Gets the uniforms. */
-	get uniforms(): Collection<Uniforms> {
+	get uniforms(): Collection<UniformGroup> {
 		return this._uniforms;
 	}
 
@@ -142,9 +142,9 @@ export class Renderer {
 	});
 
 	/** The uniforms. */
-	private _uniforms: Collection<Uniforms> = new Collection(() => {
-		return new Uniforms(this._gl);
-	}, (uniforms: Uniforms) => {
+	private _uniforms: Collection<UniformGroup> = new Collection(() => {
+		return new UniformGroup(this._gl);
+	}, (uniforms: UniformGroup) => {
 		uniforms.destroy();
 	});
 

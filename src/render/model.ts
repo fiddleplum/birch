@@ -2,7 +2,7 @@ import { UniqueId } from '../utils/unique_id';
 import { Mesh } from './mesh';
 import { Shader } from './shader';
 import { Texture } from './texture';
-import { Uniforms } from './uniforms';
+import { UniformGroup } from './uniform_group';
 
 export class Model extends UniqueId.Object {
 	/** The mesh. */
@@ -22,7 +22,7 @@ export class Model extends UniqueId.Object {
 		this._gl = gl;
 
 		// Create the uniform block.
-		this._uniforms = new Uniforms(this._gl);
+		this._uniforms = new UniformGroup(this._gl);
 
 		// If the WebGL state object hasn't been created, create it.
 		if (!Model._state.has(gl)) {
@@ -37,12 +37,12 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Gets the uniforms associated with this model. */
-	get uniforms(): Uniforms {
+	get uniforms(): UniformGroup {
 		return this._uniforms;
 	}
 
 	/** Renders the model. */
-	render(stageUniforms: Uniforms, sceneUniforms: Uniforms): void {
+	render(stageUniforms: UniformGroup, sceneUniforms: UniformGroup): void {
 		if (this.shader === undefined || this.mesh === undefined) {
 			return;
 		}
@@ -90,7 +90,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Binds the textures of uniforms and shaders. */
-	private _bindTextures(uniforms: Uniforms, shader: Shader, state: RenderState): void {
+	private _bindTextures(uniforms: UniformGroup, shader: Shader, state: RenderState): void {
 		for (const entry of uniforms.textures) {
 			const texture = entry.value;
 			const textureUnit = shader.getSamplerTextureUnit(entry.key);
@@ -129,7 +129,7 @@ export class Model extends UniqueId.Object {
 	private _gl: WebGL2RenderingContext;
 
 	/** The scene-specific uniform block. */
-	private _uniforms: Uniforms;
+	private _uniforms: UniformGroup;
 
 	/** The WebGL state, one for each WebGL context. */
 	private static _state: Map<WebGL2RenderingContext, RenderState> = new Map();
@@ -137,16 +137,16 @@ export class Model extends UniqueId.Object {
 
 export class RenderState {
 	/** The active stage. */
-	activeStageUniforms: Uniforms | undefined = undefined;
+	activeStageUniforms: UniformGroup | undefined = undefined;
 
 	/** The active scene. */
-	activeSceneUniforms: Uniforms | undefined = undefined;
+	activeSceneUniforms: UniformGroup | undefined = undefined;
 
 	/** The active shader. */
 	activeShader: Shader | undefined = undefined;
 
 	/** The active uniform buffers in their binding points. */
-	activeUniformBuffers: (Uniforms | undefined)[] = [];
+	activeUniformBuffers: (UniformGroup | undefined)[] = [];
 
 	/** Uniform buffers used this frame. Used to know which of the activeUniformBuffer binding points to unbind. */
 	uniformBufferBindingPointsUsedThisFrame: boolean[] = [];

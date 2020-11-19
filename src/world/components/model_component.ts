@@ -30,7 +30,7 @@ export class ModelComponent extends Component {
 	}
 
 	/** Gets the uniforms of the model. */
-	get uniforms(): Render.Uniforms {
+	get uniforms(): Render.UniformGroup {
 		return this._model.uniforms;
 	}
 

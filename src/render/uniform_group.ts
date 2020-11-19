@@ -2,7 +2,7 @@ import { Texture } from './texture';
 import { FastMap } from '../utils/fast_map';
 
 /** A group of uniforms that can be used by a stage, scene, model, or model group. */
-export class Uniforms {
+export class UniformGroup {
 	constructor(gl: WebGL2RenderingContext) {
 		// Save the WebGL context.
 		this._gl = gl;
@@ -22,7 +22,7 @@ export class Uniforms {
 	}
 
 	/** Sets the uniforms. */
-	setUniformTypes(uniforms: Uniforms.Uniform[]): void {
+	setUniformTypes(uniforms: UniformGroup.Uniform[]): void {
 		// Clean up any previous uniforms.
 		this._uniformBlockNames = [];
 		this._samplerNames = [];
@@ -31,7 +31,7 @@ export class Uniforms {
 		// Setup the uniform names and types.
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
-			if (uniform.type === Uniforms.Type.sampler2D) {
+			if (uniform.type === UniformGroup.Type.sampler2D) {
 				this._samplerNames.push(uniform.name);
 			}
 			else {
@@ -39,7 +39,7 @@ export class Uniforms {
 				this._uniformBlockInfos.set(uniform.name, {
 					type: uniform.type,
 					offset: 0,
-					numComponents: Uniforms.NumComponents.get(uniform.type) as number
+					numComponents: UniformGroup.NumComponents.get(uniform.type) as number
 				});
 			}
 		}
@@ -77,13 +77,13 @@ export class Uniforms {
 				throw new Error(`The uniform ${name} does not exist.`);
 			}
 			const type = uniformBlockInfo.type;
-			if (type === Uniforms.Type.float || type === Uniforms.Type.int) {
+			if (type === UniformGroup.Type.float || type === UniformGroup.Type.int) {
 				// Make sure the type and the data match.
 				if (typeof value !== 'number') {
-					throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a number.`);
+					throw new Error(`The uniform ${name} has type ${UniformGroup.Type[type]}, but the value is not a number.`);
 				}
 				// Set the data. Assuming hardware is little-endian.
-				if (type === Uniforms.Type.float) {
+				if (type === UniformGroup.Type.float) {
 					this._dataView.setFloat32(uniformBlockInfo.offset, value, true);
 				}
 				else {
@@ -93,10 +93,10 @@ export class Uniforms {
 			else { // A number array such as vec4 or mat4x4.
 				// Make sure the type and the data match.
 				if (!Array.isArray(value) || value.length !== uniformBlockInfo.numComponents) {
-					throw new Error(`The uniform ${name} has type ${Uniforms.Type[type]}, but the value is not a array of length ${uniformBlockInfo.numComponents}.`);
+					throw new Error(`The uniform ${name} has type ${UniformGroup.Type[type]}, but the value is not a array of length ${uniformBlockInfo.numComponents}.`);
 				}
 				// Set the data. Assuming hardware is little-endian.
-				if (type === Uniforms.Type.vec2 || type === Uniforms.Type.vec3 || type === Uniforms.Type.vec4 || type === Uniforms.Type.mat4x4) {
+				if (type === UniformGroup.Type.vec2 || type === UniformGroup.Type.vec3 || type === UniformGroup.Type.vec4 || type === UniformGroup.Type.mat4x4) {
 					for(let i = 0, l = value.length; i < l; i++) {
 						this._dataView.setFloat32(uniformBlockInfo.offset + i * 4, value[i], true);
 					}
@@ -141,7 +141,7 @@ export class Uniforms {
 			for (let i = 0; i < this._uniformBlockNames.length; i++) {
 				const name = this._uniformBlockNames[i];
 				const uniformBlockInfo = this._uniformBlockInfos.get(name) as UniformInfo;
-				glsl += `\t${Uniforms.Type[uniformBlockInfo.type]} ${name};\n`;
+				glsl += `\t${UniformGroup.Type[uniformBlockInfo.type]} ${name};\n`;
 			}
 			glsl += `};\n`;
 		}
@@ -237,12 +237,12 @@ export class Uniforms {
 }
 
 class UniformInfo {
-	type: Uniforms.Type = 0;
+	type: UniformGroup.Type = 0;
 	offset: number = 0;
 	numComponents: number = 0;
 }
 
-export namespace Uniforms {
+export namespace UniformGroup {
 	/** The types of supported shader uniforms. */
 	export enum Type {
 		int,
@@ -257,17 +257,17 @@ export namespace Uniforms {
 		sampler2D
 	}
 
-	export const NumComponents: Map<Uniforms.Type, number> = new Map([
-		[Uniforms.Type.int, 1],
-		[Uniforms.Type.float, 1],
-		[Uniforms.Type.ivec2, 2],
-		[Uniforms.Type.ivec3, 3],
-		[Uniforms.Type.ivec4, 4],
-		[Uniforms.Type.vec2, 2],
-		[Uniforms.Type.vec3, 3],
-		[Uniforms.Type.vec4, 4],
-		[Uniforms.Type.mat4x4, 16],
-		[Uniforms.Type.sampler2D, 1]
+	export const NumComponents: Map<UniformGroup.Type, number> = new Map([
+		[UniformGroup.Type.int, 1],
+		[UniformGroup.Type.float, 1],
+		[UniformGroup.Type.ivec2, 2],
+		[UniformGroup.Type.ivec3, 3],
+		[UniformGroup.Type.ivec4, 4],
+		[UniformGroup.Type.vec2, 2],
+		[UniformGroup.Type.vec3, 3],
+		[UniformGroup.Type.vec4, 4],
+		[UniformGroup.Type.mat4x4, 16],
+		[UniformGroup.Type.sampler2D, 1]
 	]);
 
 	/** The basic interface for declaring a uniform. */

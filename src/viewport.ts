@@ -18,13 +18,13 @@ export class Viewport extends EventSink {
 		// Creates a uniform block.
 		this._stage.uniforms.setUniformTypes([{
 			name: 'viewMatrix',
-			type: Render.Uniforms.Type.mat4x4
+			type: Render.UniformGroup.Type.mat4x4
 		}, {
 			name: 'projectionMatrix',
-			type: Render.Uniforms.Type.mat4x4
+			type: Render.UniformGroup.Type.mat4x4
 		}, {
 			name: 'renderSize',
-			type: Render.Uniforms.Type.vec2
+			type: Render.UniformGroup.Type.vec2
 		}]);
 	}
 

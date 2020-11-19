@@ -1,6 +1,6 @@
 import { Model } from './model';
 import { Shader } from './shader';
-import { Uniforms } from './uniforms';
+import { UniformGroup } from './uniform_group';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
 
 export class Scene {
@@ -10,7 +10,7 @@ export class Scene {
 		this._gl = gl;
 
 		// Create the uniform block.
-		this._uniforms = new Uniforms(this._gl);
+		this._uniforms = new UniformGroup(this._gl);
 	}
 
 	/** Destroys this. */
@@ -19,7 +19,7 @@ export class Scene {
 	}
 
 	/** Gets the uniforms associated with this scene. */
-	get uniforms(): Uniforms {
+	get uniforms(): UniformGroup {
 		return this._uniforms;
 	}
 
@@ -29,7 +29,7 @@ export class Scene {
 	}
 
 	/** Renders the scene. */
-	render(stageUniforms: Uniforms): void {
+	render(stageUniforms: UniformGroup): void {
 		// Sort the models to be optimal in terms of state changes and blending.
 		this._models.sort(Scene._isModelLess);
 
@@ -74,7 +74,7 @@ export class Scene {
 	private _gl: WebGL2RenderingContext;
 
 	/** The scene-specific uniform block. */
-	private _uniforms: Uniforms;
+	private _uniforms: UniformGroup;
 
 	/** The set of models. */
 	private _models: FastOrderedSet<Model> = new FastOrderedSet();
