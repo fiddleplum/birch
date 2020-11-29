@@ -1,8 +1,17 @@
-import { Component } from '../internal';
+import { Component, Entity } from '../internal';
 import { Matrix44, Matrix44Readonly } from '../../internal';
+import { Transforms } from '../../utils/tranforms';
 
 /** The camera component. */
 export class CameraComponent extends Component {
+	constructor(entity: Entity) {
+		super(entity);
+
+		// Initialize the transforms.
+		Transforms.localToNDCPerspective(this._localToNDC, this._fov, this._aspectRatio, this._near, this._far, false);
+		Transforms.ndcToLocalPerspective(this._ndcToLocal, this._fov, this._aspectRatio, this._near, this._far, false);
+	}
+
 	/** Gets the aspect ratio. */
 	get aspectRatio(): number {
 		return this._aspectRatio;
@@ -62,18 +71,7 @@ export class CameraComponent extends Component {
 	/** Gets the local to NDC transform. */
 	get localToNDC(): Matrix44Readonly {
 		if (this._localToNDCDirty) {
-			const tanHalfFOV = Math.tan(this._fov / 2);
-			if (this._aspectRatio <= 1) {
-				this._localToNDC.set(0, 0, 1 / (tanHalfFOV * this.aspectRatio));
-				this._localToNDC.set(1, 1, 1 / tanHalfFOV);
-			}
-			else {
-				this._localToNDC.set(0, 0, 1 / tanHalfFOV);
-				this._localToNDC.set(1, 1, this.aspectRatio / tanHalfFOV);
-			}
-			const nmf = this._near - this._far;
-			this._localToNDC.set(2, 2, (this._near + this._far) / nmf);
-			this._localToNDC.set(2, 3, (2 * this._near * this._far) / nmf);
+			Transforms.localToNDCPerspective(this._localToNDC, this._fov, this._aspectRatio, this._near, this._far, true);
 			this._localToNDCDirty = false;
 		}
 		return this._localToNDC;
@@ -82,18 +80,7 @@ export class CameraComponent extends Component {
 	/** Gets the NDC to local transform. */
 	get ndcToLocal(): Matrix44Readonly {
 		if (this._ndcToLocalDirty) {
-			const tanHalfFOV = Math.tan(this._fov / 2);
-			if (this._aspectRatio >= 1) {
-				this._ndcToLocal.set(0, 0, tanHalfFOV * this.aspectRatio);
-				this._ndcToLocal.set(1, 1, tanHalfFOV);
-			}
-			else {
-				this._ndcToLocal.set(0, 0, tanHalfFOV);
-				this._ndcToLocal.set(1, 1, tanHalfFOV / this.aspectRatio);
-			}
-			const nf2 = 2 * this._near * this._far;
-			this._ndcToLocal.set(3, 2, (this._near - this._far) / nf2);
-			this._ndcToLocal.set(3, 3, (this._near + this._far) / nf2);
+			Transforms.ndcToLocalPerspective(this._ndcToLocal, this._fov, this._aspectRatio, this._near, this._far, true);
 			this._ndcToLocalDirty = false;
 		}
 		return this._ndcToLocal;
@@ -112,23 +99,13 @@ export class CameraComponent extends Component {
 	private _fov: number = 90;
 
 	/** The local to NDC transform. */
-	private _localToNDC: Matrix44 = new Matrix44(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 0, 1,
-		0, 0, -1, 0
-	);
+	private _localToNDC: Matrix44 = new Matrix44();
 
 	/** Whether or not the local to NDC transform is dirty. */
 	private _localToNDCDirty: boolean = true;
 
 	/** The NDC to local transform. */
-	private _ndcToLocal: Matrix44 = new Matrix44(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 0, -1,
-		0, 0, 1, 0
-	);
+	private _ndcToLocal: Matrix44 = new Matrix44();
 
 	/** Whether or not the NDC to local transform is dirty. */
 	private _ndcToLocalDirty: boolean = true;

@@ -37,7 +37,7 @@ export class Matrix44Readonly {
 		return this._m[column * 4 + row];
 	}
 
-	/** Gets the underlying array. */
+	/** Gets the underlying array, which is column-major. */
 	get array(): readonly number[] {
 		return this._m;
 	}

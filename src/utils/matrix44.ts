@@ -3,6 +3,14 @@ import { QuaternionReadonly } from './quaternion_readonly';
 
 /** A 4-by-4 matrix. */
 export class Matrix44 extends Matrix44Readonly {
+	/** Copies *a* to *this*. */
+	copy(a: Matrix44Readonly): void {
+		const array = a.array;
+		for (let i = 0; i < 16; i++) {
+			this._m[i] = array[i];
+		}
+	}
+
 	/** Sets the component at the *row* and *column*. */
 	set(row: number, column: number, value: number): void {
 		this._m[column * 4 + row] = value;
@@ -29,35 +37,6 @@ export class Matrix44 extends Matrix44Readonly {
 		this._m[13] = m13;
 		this._m[14] = m23;
 		this._m[15] = m33;
-	}
-
-	/** Sets *this* from the quaternion *a*. */
-	setFromQuat(a: QuaternionReadonly): void {
-		const ii = a.x * a.x;
-		const ij = a.x * a.y;
-		const ik = a.x * a.z;
-		const ir = a.x * a.w;
-		const jj = a.y * a.y;
-		const jk = a.y * a.z;
-		const jr = a.y * a.w;
-		const kk = a.z * a.z;
-		const kr = a.z * a.w;
-		this._m[0] = 1 - 2 * (jj + kk);
-		this._m[1] = 2 * (ij + kr);
-		this._m[2] = 2 * (ik - jr);
-		this._m[3] = 0;
-		this._m[4] = 2 * (ij - kr);
-		this._m[5] = 1 - 2 * (ii + kk);
-		this._m[6] = 2 * (jk + ir);
-		this._m[7] = 0;
-		this._m[8] = 2 * (ik + jr);
-		this._m[9] = 2 * (jk - ir);
-		this._m[10] = 1 - 2 * (ii + jj);
-		this._m[11] = 0;
-		this._m[12] = 0;
-		this._m[13] = 0;
-		this._m[14] = 0;
-		this._m[15] = 1;
 	}
 
 	// Temporaries to use.

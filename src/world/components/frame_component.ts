@@ -1,6 +1,6 @@
 import { Component } from '../internal';
 import { Vector3, Vector3Readonly, Quaternion, QuaternionReadonly,
-	Matrix44, Matrix44Readonly } from '../../internal';
+	Matrix44, Matrix44Readonly, Transforms } from '../../internal';
 
 /** The frame component. */
 export class FrameComponent extends Component {
@@ -35,10 +35,7 @@ export class FrameComponent extends Component {
 	/** Gets the local to world transform. */
 	get localToWorld(): Matrix44Readonly {
 		if (this._localToWorldDirty) {
-			this._localToWorld.setFromQuat(this._orientation);
-			this._localToWorld.set(0, 3, this._position.x);
-			this._localToWorld.set(1, 3, this._position.y);
-			this._localToWorld.set(2, 3, this._position.z);
+			Transforms.localToWorld(this._localToWorld, this._position, this._orientation);
 			this._localToWorldDirty = false;
 		}
 		return this._localToWorld;
@@ -47,21 +44,7 @@ export class FrameComponent extends Component {
 	/** Gets the world to local transform. */
 	get worldToLocal(): Matrix44Readonly {
 		if (this._worldToLocalDirty) {
-			const w2l = this._worldToLocal; // Shorter variable name for brevity.
-			let t: number;
-			w2l.setFromQuat(this._orientation);
-			t = w2l.get(1, 0);
-			w2l.set(1, 0, w2l.get(0, 1));
-			w2l.set(0, 1, t);
-			t = w2l.get(2, 0);
-			w2l.set(2, 0, w2l.get(0, 2));
-			w2l.set(0, 2, t);
-			t = w2l.get(1, 2);
-			w2l.set(1, 2, w2l.get(2, 1));
-			w2l.set(2, 1, t);
-			w2l.set(0, 3, - this._position.x * w2l.get(0, 0) - this._position.y * w2l.get(0, 1) - this._position.z * w2l.get(0, 2));
-			w2l.set(1, 3, - this._position.x * w2l.get(1, 0) - this._position.y * w2l.get(1, 1) - this._position.z * w2l.get(1, 2));
-			w2l.set(2, 3, - this._position.x * w2l.get(2, 0) - this._position.y * w2l.get(2, 1) - this._position.z * w2l.get(2, 2));
+			Transforms.worldToLocal(this._worldToLocal, this._position, this._orientation);
 			this._worldToLocalDirty = false;
 		}
 		return this._worldToLocal;

@@ -18,6 +18,7 @@ export * from './utils/rectangle_readonly';
 export * from './utils/sort';
 export * from './utils/sorted_keyed_array';
 export * from './utils/sorted_list';
+export * from './utils/tranforms';
 export * from './utils/unique_id';
 export * from './utils/vector2';
 export * from './utils/vector2_readonly';
