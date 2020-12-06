@@ -75,8 +75,8 @@ export class Viewport {
 		this._boundsChangedCallback = boundsChangedCallback;
 	}
 
-	/** Prepares the viewport for a render. */
-	prepareForRender(): void {
+	/** Updates the bounds. Called by the engine. */
+	updateBounds(): void {
 		divBounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
 		if (!this._stage.bounds.equals(divBounds)) {
 			// Updates the bounds of the viewport to reflect the div.

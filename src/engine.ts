@@ -1,4 +1,4 @@
-import { Downloader, Input, Render, FastOrderedSet, Viewport, World, Collection } from './internal';
+import { Downloader, Input, Render, FastOrderedSet, Viewport, Collection } from './internal';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -47,11 +47,6 @@ export class Engine {
 		return this._viewports;
 	}
 
-	/** Gets the worlds. */
-	get worlds(): Collection<World.World> {
-		return this._worlds;
-	}
-
 	/** Gets the viewport order. */
 	get viewportOrder(): FastOrderedSet<Viewport> {
 		return this._viewportOrder;
@@ -67,10 +62,24 @@ export class Engine {
 		this._running = false;
 	}
 
+	/** Adds an update callback. */
+	addUpdateCallback(callback: (deltaTime: number) => void): void {
+		this._updateCallbacks.push(callback);
+	}
+
+	/** Removes an updated callback. */
+	removeUpdateCallback(callback: (deltaTime: number) => void): void {
+		for (let i = 0; i < this._updateCallbacks.length; i++) {
+			if (this._updateCallbacks[i] === callback) {
+				this._updateCallbacks.splice(i, 1);
+				break;
+			}
+		}
+	}
+
 	/** Destroys the engine. */
 	private _destroy(): void {
 		this._viewports.clear();
-		this._worlds.clear();
 	}
 
 	/** Runs the main engine loop. */
@@ -95,18 +104,17 @@ export class Engine {
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 		}
 
+		// Update the bounds of the viewports.
+		for (const viewport of this._viewportOrder) {
+			viewport.updateBounds();
+		}
+
 		// Update the inputs.
 		this._input.update();
 
-		// Update the worlds.
-		for (const entry of this._worlds) {
-			const world = entry.key;
-			world.update();
-		}
-
-		// Update the bounds of the viewports.
-		for (const viewport of this._viewportOrder) {
-			viewport.prepareForRender();
+		// Call the update callbacks.
+		for (let i = 0; i < this._updateCallbacks.length; i++) {
+			this._updateCallbacks[i](this.deltaTime);
 		}
 
 		// Render all of the stages.
@@ -128,7 +136,6 @@ export class Engine {
 		}
 		// Make it have no user interaction so child elements can specify the user interaction directly.
 		this._rootElement.style.userSelect = 'none';
-		this._rootElement.style.webkitUserSelect = 'none';
 		this._rootElement.style.touchAction = 'none';
 		// Add a canvas.
 		this._canvas = document.createElement('canvas');
@@ -184,6 +191,9 @@ export class Engine {
 	/** The viewport order. */
 	private _viewportOrder: FastOrderedSet<Viewport> = new FastOrderedSet();
 
+	/** The update callbacks. */
+	private _updateCallbacks: ((deltaTime: number) => void)[] = [];
+
 	/** The viewports. */
 	private _viewports: Collection<Viewport> = new Collection(() => {
 		const viewport = new Viewport(this._renderer, this._viewportsElement);
@@ -192,12 +202,5 @@ export class Engine {
 	}, (viewport: Viewport) => {
 		viewport.destroy();
 		this._viewportOrder.remove(viewport);
-	});
-
-	/** The worlds. */
-	private _worlds: Collection<World.World> = new Collection(() => {
-		return new World.World(this);
-	}, (world: World.World) => {
-		world.destroy();
 	});
 }
