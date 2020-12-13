@@ -22,6 +22,13 @@ export class Engine {
 		this._run();
 	}
 
+	/** Destroys the engine. */
+	destroy(): void {
+		this._input.destroy();
+		this._renderer.destroy();
+		this._rootElement.innerHTML = '';
+	}
+
 	/** Gets the root element. */
 	get rootElement(): HTMLDivElement {
 		return this._rootElement;
