@@ -8,7 +8,9 @@ export class Pool<Type extends { [key: string]: any }> {
 	/** Get an object from the pool. */
 	get(): Type {
 		if (this._numFreeIndices > 0) {
-			const object = this._objects[this._freeIndices[this._numFreeIndices - 1]];
+			const index = this._freeIndices[this._numFreeIndices - 1];
+			const object = this._objects[index];
+			this._objectsToIndices.set(object, index);
 			this._numFreeIndices -= 1;
 			return object;
 		}
