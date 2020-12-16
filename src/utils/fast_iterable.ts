@@ -4,7 +4,7 @@ export interface FastIterable<Value> {
 	[Symbol.iterator](): FastIterable.Iterator<Value>;
 }
 
-/** A base class ordered containers that have iterators that get reused. */
+/** A base class for ordered containers that have iterators that get reused. */
 export abstract class FastIterableBase<Value> implements FastIterable<Value> {
 	/** Returns an iterator. */
 	get iterator(): FastIterable.Iterator<Value> {
@@ -73,7 +73,7 @@ export namespace FastIterable {
 			return this;
 		}
 
-		/** Close up what's necessary for the iterator. */
+		/** Close up the iterator. */
 		return(): Iterator<Value> {
 			this.iterating = false;
 			this.done = true;
