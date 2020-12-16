@@ -13,17 +13,18 @@ export class Viewport {
 		this._divElement.style.position = 'absolute';
 		this._divElement.style.overflow = 'hidden';
 		viewportsElement.appendChild(this._divElement);
-		// Creates a uniform block.
-		this._stage.uniforms.setUniformTypes([{
-			name: 'viewMatrix',
-			type: Render.UniformGroup.Type.mat4x4
-		}, {
-			name: 'projectionMatrix',
-			type: Render.UniformGroup.Type.mat4x4
-		}, {
-			name: 'renderSize',
-			type: Render.UniformGroup.Type.vec2
-		}]);
+		// NOTE: This should be put into a 3D-specific area.
+		// // Creates a uniform block.
+		// this._stage.uniforms.setUniformTypes([{
+		// 	name: 'viewMatrix',
+		// 	type: Render.UniformGroup.Type.mat4x4
+		// }, {
+		// 	name: 'projectionMatrix',
+		// 	type: Render.UniformGroup.Type.mat4x4
+		// }, {
+		// 	name: 'renderSize',
+		// 	type: Render.UniformGroup.Type.vec2
+		// }]);
 	}
 
 	/** Destroys the viewport. */
@@ -81,8 +82,8 @@ export class Viewport {
 		if (!this._stage.bounds.equals(divBounds)) {
 			// Updates the bounds of the viewport to reflect the div.
 			this._stage.bounds.copy(divBounds);
-			// Set the uniform.
-			this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
+			// // Set the uniform.
+			// this._stage.uniforms.setUniform('renderSize', divBounds.size.array);
 			// Call the callback.
 			if (this._boundsChangedCallback !== undefined) {
 				this._boundsChangedCallback(this);
