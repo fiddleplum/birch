@@ -9,8 +9,9 @@ export class FastOrderedSetReadonly<Value> extends FastIterableBase<Value> {
 	/** Gets the *i*th value. Note that this takes O(i) time. */
 	getIndex(i: number): Value | undefined {
 		let node = this._head;
-		while (i > 1 && node !== undefined) {
+		while (i >= 1 && node !== undefined) {
 			node = node.next;
+			i--;
 		}
 		if (node !== undefined) {
 			return node.value;
