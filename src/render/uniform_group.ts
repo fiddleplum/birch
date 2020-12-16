@@ -32,16 +32,21 @@ export class UniformGroup {
 		// Setup the uniform names and types.
 		for (let i = 0; i < uniforms.length; i++) {
 			const uniform = uniforms[i];
+			// If a texture,
 			if (uniform.type === UniformGroup.Type.sampler2D) {
 				this._samplerNames.push(uniform.name);
+				this._uniformValues.set(uniform.name, undefined);
 			}
+			// Else a number or number[] (uniform block type),
 			else {
+				const numComponents = UniformGroup.NumComponents.get(uniform.type) as number;
 				this._uniformBlockNames.push(uniform.name);
 				this._uniformBlockInfos.set(uniform.name, {
 					type: uniform.type,
 					offset: 0,
-					numComponents: UniformGroup.NumComponents.get(uniform.type) as number
+					numComponents: numComponents
 				});
+				this._uniformValues.set(uniform.name, Array(numComponents).fill(0));
 			}
 		}
 		// If there are any uniform block types,
@@ -109,7 +114,10 @@ export class UniformGroup {
 						this._dataView.setInt32(uniformBlockInfo.offset + i * 4, value[i], true);
 					}
 				}
-				this._uniformValues.set(name, value.slice());
+				const uniformValue = this._uniformValues.get(name) as number[];
+				for (let i = 0; i < uniformBlockInfo.numComponents; i++) {
+					uniformValue[i] = value[i];
+				}
 			}
 			this._dataNeedsSend = true;
 		}
@@ -231,7 +239,7 @@ export class UniformGroup {
 	private _data: ArrayBuffer = new ArrayBuffer(0);
 
 	/** The values of the uniforms. */
-	private _uniformValues: Map<string, number | readonly number[] | Texture> = new Map();
+	private _uniformValues: Map<string, number | readonly number[] | Texture | undefined> = new Map();
 
 	/** A mapping from samplers to textures. */
 	private _textures: FastMap<string, Texture> = new FastMap();
