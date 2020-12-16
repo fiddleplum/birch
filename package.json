@@ -8,7 +8,6 @@
 		"update": "yarn install --no-default-rc",
 		"build": "webpack --config webpack.dev.js",
 		"build-production": "webpack --config webpack.prod.js",
-		"start": "webpack-dev-server --config webpack.dev.js --content-base src/",
 		"docs": "typedoc --options docs/typedoc.json"
 	},
 	"repository": {
