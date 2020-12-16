@@ -1,5 +1,5 @@
 import { Matrix44Readonly } from './matrix44_readonly';
-import { QuaternionReadonly } from './quaternion_readonly';
+import Pool from './pool';
 
 /** A 4-by-4 matrix. */
 export class Matrix44 extends Matrix44Readonly {
@@ -39,13 +39,6 @@ export class Matrix44 extends Matrix44Readonly {
 		this._m[15] = m33;
 	}
 
-	// Temporaries to use.
-	static temp0 = new Matrix44();
-	static temp1 = new Matrix44();
-	static temp2 = new Matrix44();
-	static temp3 = new Matrix44();
-	static temp4 = new Matrix44();
-	static temp5 = new Matrix44();
-	static temp6 = new Matrix44();
-	static temp7 = new Matrix44();
+	/** Pool for temporary matrices. */
+	static pool = new Pool(Matrix44);
 }

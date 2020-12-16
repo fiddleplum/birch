@@ -1,5 +1,6 @@
 import { ColorReadonly } from './color_readonly';
 import { Num } from './num';
+import Pool from './pool';
 
 /** An RGBA color. */
 export class Color extends ColorReadonly {
@@ -103,13 +104,6 @@ export class Color extends ColorReadonly {
 		this._m[3] = Num.lerp(c.a, d.a, u);
 	}
 
-	// Temporaries to use.
-	static temp0 = new Color();
-	static temp1 = new Color();
-	static temp2 = new Color();
-	static temp3 = new Color();
-	static temp4 = new Color();
-	static temp5 = new Color();
-	static temp6 = new Color();
-	static temp7 = new Color();
+	/** Pool for temporary colors. */
+	static pool = new Pool(Color);
 }

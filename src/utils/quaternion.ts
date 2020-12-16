@@ -1,6 +1,7 @@
 import { QuaternionReadonly } from './quaternion_readonly';
 import { Vector3Readonly } from './vector3_readonly';
 import { Vector3 } from './vector3';
+import Pool from './pool';
 
 /** A quaternion. */
 export class Quaternion extends QuaternionReadonly {
@@ -220,13 +221,6 @@ export class Quaternion extends QuaternionReadonly {
 	/** An internal temp vector for Quaternion. */
 	private static _tempVector3 = new Vector3();
 
-	// Temporaries to use.
-	static temp0 = new Quaternion();
-	static temp1 = new Quaternion();
-	static temp2 = new Quaternion();
-	static temp3 = new Quaternion();
-	static temp4 = new Quaternion();
-	static temp5 = new Quaternion();
-	static temp6 = new Quaternion();
-	static temp7 = new Quaternion();
+	/** Pool for temporary quaternions. */
+	static pool = new Pool(Quaternion);
 }

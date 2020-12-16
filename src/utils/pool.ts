@@ -1,7 +1,7 @@
 /** Pool for keeping garbage production down. */
-export class Pool<Type extends { new(): Type; }> {
+export class Pool<Type extends { [key: string]: any }> {
 	/** Constructor. */
-	constructor(type: Type) {
+	constructor(type: new (...args: any[]) => Type) {
 		this._type = type;
 	}
 
@@ -38,7 +38,7 @@ export class Pool<Type extends { new(): Type; }> {
 	}
 
 	/** The type of object that will be constructed. */
-	private _type: Type;
+	private _type: new (...args: any[]) => Type;
 
 	/** The list of objects, free and used. */
 	private _objects: Type[] = [];

@@ -1,6 +1,7 @@
 import { QuaternionReadonly } from './quaternion_readonly';
 import { Vector3Readonly } from './vector3_readonly';
 import { Num } from './num';
+import Pool from './pool';
 
 /** A three-dimensional vector. */
 export class Vector3 extends Vector3Readonly {
@@ -161,13 +162,6 @@ export class Vector3 extends Vector3Readonly {
 		this._m[k] = 2 * (q[1 + i] * q[1 + k] - q[1 + j] * q[0]);
 	}
 
-	// Temporaries to use.
-	static temp0 = new Vector3();
-	static temp1 = new Vector3();
-	static temp2 = new Vector3();
-	static temp3 = new Vector3();
-	static temp4 = new Vector3();
-	static temp5 = new Vector3();
-	static temp6 = new Vector3();
-	static temp7 = new Vector3();
+	/** Pool for temporary vectors. */
+	static pool = new Pool(Vector3);
 }

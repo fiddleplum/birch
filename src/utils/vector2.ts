@@ -1,5 +1,6 @@
 import { Vector2Readonly } from './vector2_readonly';
 import { Num } from './num';
+import Pool from './pool';
 
 /** A two-dimensional vector. */
 export class Vector2 extends Vector2Readonly {
@@ -116,13 +117,6 @@ export class Vector2 extends Vector2Readonly {
 		this._m[1] = ax;
 	}
 
-	// Temporaries to use.
-	static temp0 = new Vector2();
-	static temp1 = new Vector2();
-	static temp2 = new Vector2();
-	static temp3 = new Vector2();
-	static temp4 = new Vector2();
-	static temp5 = new Vector2();
-	static temp6 = new Vector2();
-	static temp7 = new Vector2();
+	/** Pool for temporary vectors. */
+	static pool = new Pool(Vector2);
 }
