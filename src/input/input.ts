@@ -46,13 +46,15 @@ export class Input {
 
 	/** The 'gamepadconnected' event handler. */
 	private _gamepadConnected(event: GamepadEvent): void {
-		this._controllers.set(event.gamepad.index, new Controller(event.gamepad));
-		if (this._highestIndex < event.gamepad.index) {
-			this._highestIndex = event.gamepad.index;
-		}
-		// Call the callback.
-		if (this._controllerConnectedCallback !== undefined) {
-			this._controllerConnectedCallback(event.gamepad.index, true);
+		if (!this._controllers.has(event.gamepad.index)) {
+			this._controllers.set(event.gamepad.index, new Controller(event.gamepad));
+			if (this._highestIndex < event.gamepad.index) {
+				this._highestIndex = event.gamepad.index;
+			}
+			// Call the callback.
+			if (this._controllerConnectedCallback !== undefined) {
+				this._controllerConnectedCallback(event.gamepad.index, true);
+			}
 		}
 	}
 
