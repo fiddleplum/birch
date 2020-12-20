@@ -86,8 +86,8 @@ export class FastOrderedSet<Value> extends FastOrderedSetReadonly<Value> {
 			let m = n.prev;
 			while (m !== undefined && isLess(n.value, m.value)) {
 				const t = m.value;
-				m.value = n.value;
-				n.value = t;
+				m.value = m.next!.value;
+				m.next!.value = t;
 				m = m.prev;
 			}
 			n = n.next;

@@ -51,8 +51,8 @@ export class Sort {
 			let m = n - 1;
 			while (m >= 0 && isLess(array[n], array[m])) {
 				const t = array[m];
-				array[m] = array[n];
-				array[n] = t;
+				array[m] = array[m + 1];
+				array[m + 1] = t;
 				m--;
 			}
 			n++;
