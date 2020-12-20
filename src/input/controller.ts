@@ -41,7 +41,7 @@ export class Controller {
 		if (gamepad === null) {
 			return;
 		}
-		if (this._gamepad !== gamepad) {
+		if (this._gamepad !== gamepad && gamepad !== undefined) {
 			this._gamepad = gamepad!;
 		}
 		for (let buttonIndex = 0; buttonIndex < this._gamepad.buttons.length; buttonIndex++) {
