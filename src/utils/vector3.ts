@@ -100,6 +100,16 @@ export class Vector3 extends Vector3Readonly {
 		}
 	}
 
+	/** Sets *this* to have norm *a* in the same direction. If *this* is already 0, it does nothing. */
+	setNorm(a: number): void {
+		const invNorm = 1 / this.norm;
+		if (isFinite(invNorm)) {
+			this._m[0] *= a * invNorm;
+			this._m[1] *= a * invNorm;
+			this._m[2] *= a * invNorm;
+		}
+	}
+
 	/** Sets *this* to *a*, clamped between *min* and *max*. */
 	clamp(a: Vector3Readonly, min: number, max: number): void {
 		this._m[0] = Num.clamp(a.x, min, max);
