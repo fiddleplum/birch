@@ -36,9 +36,14 @@ export class Vector2Readonly {
 		return this._m[1];
 	}
 
+	/** Gets the square norm of *this*. */
+	get normSq(): number {
+		return this.dot(this);
+	}
+
 	/** Gets the norm of *this*. */
 	get norm(): number {
-		return Math.sqrt(this.dot(this));
+		return Math.sqrt(this.normSq);
 	}
 
 	/** Gets the underlying array. */
