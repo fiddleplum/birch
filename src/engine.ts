@@ -1,4 +1,5 @@
 import { Downloader, Input, Render, FastOrderedSet, Viewport, Collection } from './internal';
+import { SoundSystem } from './sound/sound_system';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -11,6 +12,9 @@ export class Engine {
 
 		// Create the input system.
 		this._input = new Input.Input();
+
+		// Create the sound system.
+		this._soundSystem = new SoundSystem();
 
 		// Create the downloader.
 		this._downloader = new Downloader();
@@ -25,6 +29,7 @@ export class Engine {
 	/** Destroys the engine. */
 	destroy(): void {
 		this._input.destroy();
+		this._soundSystem.destroy();
 		this._renderer.destroy();
 		this._rootElement.innerHTML = '';
 	}
@@ -42,6 +47,11 @@ export class Engine {
 	/** Gets the input system. */
 	get input(): Input.Input {
 		return this._input;
+	}
+
+	/** Gets the sound system. */
+	get soundSystem(): SoundSystem {
+		return this._soundSystem;
 	}
 
 	/** Gets the downloader. */
@@ -191,6 +201,9 @@ export class Engine {
 
 	/** The input system. */
 	private _input: Input.Input;
+
+	/** The sound system. */
+	private _soundSystem: SoundSystem;
 
 	/** The downloader. */
 	private _downloader: Downloader;
