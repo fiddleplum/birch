@@ -88,6 +88,8 @@ export class FastOrderedSet<Value> extends FastOrderedSetReadonly<Value> {
 				const t = m.value;
 				m.value = m.next!.value;
 				m.next!.value = t;
+				this._valuesToNodes.set(m.value, m);
+				this._valuesToNodes.set(m.next!.value, m.next!);
 				m = m.prev;
 			}
 			n = n.next;
