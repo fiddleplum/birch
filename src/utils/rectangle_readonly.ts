@@ -47,8 +47,28 @@ export class RectangleReadonly {
 	}
 
 	/** Sets *out* to the closest point within *this* to *point*. */
-	closest(out: Vector2, point: Vector2Readonly): void {
-		out.setX(Num.clamp(point.x, this._min.x, this._min.x + this._size.x));
-		out.setY(Num.clamp(point.y, this._min.y, this._min.y + this._size.y));
+	closest(out: Vector2, point: Vector2Readonly, includeInside: boolean): void {
+		const maxX = this._min.x + this._size.x;
+		const maxY = this._min.y + this._size.y;
+		if (!includeInside && point.x > this._min.x && point.x < maxX && point.y > this._min.y && point.y < maxY) {
+			const centerX = this._min.x + 0.5 * this._size.x;
+			const centerY = this._min.y + 0.5 * this._size.y;
+			if (point.x < centerX && point.x < -Math.abs(centerY - point.y)) {
+				out.set(point.x + (point.x - this._min.x), point.y);
+			}
+			else if (point.x > centerX && point.x > Math.abs(centerY - point.y)) {
+				out.set(point.x - (this._min.x + 1 - point.x), point.y);
+			}
+			else if (point.y < centerY && point.y < -Math.abs(centerX - point.x)) {
+				out.set(point.x, point.y + (point.y - this._min.y));
+			}
+			else {
+				out.set(point.x, point.y - (this._min.y + 1 - point.y));
+			}
+		}
+		else {
+			out.setX(Num.clamp(point.x, this._min.x, maxX));
+			out.setY(Num.clamp(point.y, this._min.y, maxY));
+		}
 	}
 }
