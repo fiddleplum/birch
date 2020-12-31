@@ -131,6 +131,11 @@ export class Texture {
 		return this._loadedPromise;
 	}
 
+	/** Gets a string describing the texture. */
+	toString(): string {
+		return this._source + ' ' + Texture.Format[this._format] + ' ' + this._size;
+	}
+
 	private _setGLTexture(source: TexImageSource | Uint8Array | Uint16Array | Uint32Array | undefined): void {
 		const glInternalFormat = this._formatToGLInternalFormat(this._format);
 		const glFormat = this._formatToGLFormat(this._format);

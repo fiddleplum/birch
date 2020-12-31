@@ -163,6 +163,31 @@ export class UniformGroup {
 		return glsl;
 	}
 
+	/** Gets a string describing the uniform group. */
+	toString(): string {
+		let s = '{';
+		for (const entry of this._uniformValues) {
+			if (s !== '{') {
+				s += ', ';
+			}
+			s += entry[0] + ': ';
+			if (Array.isArray(entry[1])) {
+				s += '[';
+				for (let i = 0; i < entry[1].length; i++) {
+					if (i !== 0) {
+						s += ', ';
+					}
+					s += entry[1][i] + '';
+				}
+				s += ']';
+			}
+			else {
+				s += entry[1] + '';
+			}
+		}
+		return s;
+	}
+
 	/** Calculates the uniform block offsets by creating a temporary shader and then querying the uniform offsets of that shader. */
 	private _calcUniformBlockOffsets(): void {
 		// Create the vertex shader object.

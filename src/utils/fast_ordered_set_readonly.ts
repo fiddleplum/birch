@@ -26,6 +26,20 @@ export class FastOrderedSetReadonly<Value> extends FastIterableBase<Value> {
 		return this._valuesToNodes.has(value);
 	}
 
+	/** Gets the list of all values. They must be string-able. */
+	toString(): string {
+		let s = '[';
+		let n = this._head;
+		while (n !== undefined) {
+			if (s !== '[') {
+				s += ', ';
+			}
+			s += n.value;
+			n = n.next;
+		}
+		return s + ']';
+	}
+
 	/** Creates a new iterator. */
 	protected _createNewIterator(): FastOrderedSetReadonly.Iterator<Value> {
 		return new FastOrderedSetReadonly.Iterator(this._getHead.bind(this));
