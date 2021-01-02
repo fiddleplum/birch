@@ -9,6 +9,18 @@ export class Input {
 
 		window.addEventListener('gamepadconnected', this._gamepadConnectedBound);
 		window.addEventListener('gamepaddisconnected', this._gamepadDisconnectedBound);
+
+		// Find any gamepads already connected before this.
+		const gamepads = navigator.getGamepads();
+		for (let i = 0; i < gamepads.length; i++) {
+			const gamepad = gamepads[i];
+			if (gamepad !== null) {
+				this._controllers.set(gamepad.index, new Controller(gamepad));
+				if (this._highestIndex < gamepad.index) {
+					this._highestIndex = gamepad.index;
+				}
+			}
+		}
 	}
 
 	/** Destroys the input system. */
@@ -20,6 +32,10 @@ export class Input {
 	/** Set the callback for when a controller is connected or disconnected. */
 	setControllerConnectedCallback(callback: (index: number, connected: boolean) => void): void {
 		this._controllerConnectedCallback = callback;
+		// Call the callback with the controllers already connected.
+		for (const entry of this._controllers) {
+			this._controllerConnectedCallback(entry.key, true);
+		}
 	}
 
 	/** Gets the controller at the given index, or undefined if the controller isn't found. */
