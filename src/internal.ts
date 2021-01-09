@@ -32,6 +32,6 @@ export * from './input/index';
 export * from './render/index';
 export * from './world/index';
 
-export * from './viewport';
-
 export * from './engine';
+export * from './sound';
+export * from './viewport';

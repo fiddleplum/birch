@@ -1,5 +1,6 @@
 import { Downloader, Input, Render, FastOrderedSet, Viewport, Collection } from './internal';
-import { SoundSystem } from './sound/sound_system';
+import { Sound } from './sound';
+import { Cache } from './utils/cache';
 
 export class Engine {
 	constructor(rootElement: HTMLDivElement) {
@@ -13,8 +14,8 @@ export class Engine {
 		// Create the input system.
 		this._input = new Input.Input();
 
-		// Create the sound system.
-		this._soundSystem = new SoundSystem();
+		// Create the audio context.
+		this._audioContext = new AudioContext();
 
 		// Create the downloader.
 		this._downloader = new Downloader();
@@ -29,7 +30,7 @@ export class Engine {
 	/** Destroys the engine. */
 	destroy(): void {
 		this._input.destroy();
-		this._soundSystem.destroy();
+		this._audioContext.close();
 		this._renderer.destroy();
 		this._rootElement.innerHTML = '';
 	}
@@ -49,9 +50,9 @@ export class Engine {
 		return this._input;
 	}
 
-	/** Gets the sound system. */
-	get soundSystem(): SoundSystem {
-		return this._soundSystem;
+	/** Gets the sound cache. */
+	get sounds(): Cache<Sound> {
+		return this._sounds;
 	}
 
 	/** Gets the downloader. */
@@ -202,8 +203,8 @@ export class Engine {
 	/** The input system. */
 	private _input: Input.Input;
 
-	/** The sound system. */
-	private _soundSystem: SoundSystem;
+	/** The audio context. */
+	private _audioContext: AudioContext;
 
 	/** The downloader. */
 	private _downloader: Downloader;
@@ -223,4 +224,9 @@ export class Engine {
 		viewport.destroy();
 		this._viewportOrder.remove(viewport);
 	});
+
+	/** The sound cache. */
+	private _sounds = new Cache<Sound>((name: string) => new Sound(name, this._audioContext),
+		(_object: Sound) => {},
+		(object: Sound) => object.url);
 }

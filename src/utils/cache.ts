@@ -15,21 +15,34 @@ export class Cache<Type> {
 		}
 	}
 
-	/** Gets the named object. */
+	/** Sets the name to url function. The name is translated to a url before being passed to the createObject function. */
+	setNameToUrlFunction(nameToUrlFunction: (name: string) => string): void {
+		this._nameToUrlFunction = nameToUrlFunction;
+	}
+
+	/** Gets the named object. The object must already be loaded or it throws an error. */
 	get(name: string): Type {
+		const entry = this._objects.get(name);
+		if (entry === undefined) {
+			throw new Error(`There is no object with the name ${name} in the cache.`);
+		}
+		return entry.object;
+	}
+
+	/** Loads the named object. If it's already loaded, it increases its use count. */
+	load(name: string): void {
 		let entry = this._objects.get(name);
 		if (entry === undefined) {
 			entry = {
-				object: this._createObject(name),
+				object: this._createObject(this._nameToUrlFunction ? this._nameToUrlFunction(name) : name),
 				useCount: 0
 			};
 		}
 		entry.useCount += 1;
-		return entry.object;
 	}
 
-	/** Releases the named object. */
-	release(nameOrObject: string | Type): void {
+	/** Unloads the named object. If it was loaded more than once, it decreases its use count. If it is already unloaded, it does nothing. */
+	unload(nameOrObject: string | Type): void {
 		let name: string;
 		if (typeof nameOrObject === 'string') {
 			name = nameOrObject;
@@ -74,4 +87,7 @@ export class Cache<Type> {
 
 	/** The function that maps the object to a name. */
 	private _objectToName: (object: Type) => string;
+
+	/** The function that maps names to urls. */
+	private _nameToUrlFunction: ((name: string) => string) | undefined;
 }
