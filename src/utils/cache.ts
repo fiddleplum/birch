@@ -1,96 +1,77 @@
-// import { Ordered2 } from './ordered';
-// import { FastMap } from './ordered_map';
-// import { Sort } from './sort';
+/** A cache is a set of named objects with use counts that are automatically created and destroyed. */
+export class Cache<Type> {
+	/** The constructor. */
+	constructor(createObject: (name: string) => Type, destroyObject: (object: Type) => void, objectToName: (object: Type) => string) {
+		this._createObject = createObject;
+		this._destroyObject = destroyObject;
+		this._objectToName = objectToName;
+	}
 
-// export class Cache<Key, Value> implements Ordered2<Value | undefined> {
-// 	/** The constructor. */
-// 	constructor(valueConstructor: (key: Key) => Value, valueDestructor: (value: Value) => void) {
-// 		// Set the value constructor and destructor.
-// 		this._valueConstructor = valueConstructor;
-// 		this._valueDestructor = valueDestructor;
-// 	}
+	/** The destructor. */
+	destroy(): void {
+		// Destroy any objects still in use.
+		for (const mapEntry of this._objects) {
+			this._destroyObject(mapEntry[1].object);
+		}
+	}
 
-// 	/** Gets the value named by the *key*. If not found, it creates a new value. */
-// 	get(key: Key): Value {
-// 		const entry = this._keysToCountedValues.get(key);
-// 		if (entry === undefined) {
-// 			const value = this._valueConstructor(key);
-// 			this._keysToCountedValues.set(key, new CountedValue(value));
-// 			this._valuesToKeys.set(value, key);
-// 			return value;
-// 		}
-// 		else {
-// 			entry.count += 1;
-// 			return entry.value;
-// 		}
-// 	}
+	/** Gets the named object. */
+	get(name: string): Type {
+		let entry = this._objects.get(name);
+		if (entry === undefined) {
+			entry = {
+				object: this._createObject(name),
+				useCount: 0
+			};
+		}
+		entry.useCount += 1;
+		return entry.object;
+	}
 
-// 	/** Releases the *value*. */
-// 	release(value: Value): void {
-// 		const key = this._valuesToKeys.get(value);
-// 		if (key !== undefined) {
-// 			const countedValue = this._keysToCountedValues.get(key) as CountedValue<Value>;
-// 			countedValue.count -= 1;
-// 			if (countedValue.count === 0) {
-// 				this._valueDestructor(countedValue.value);
-// 				this._keysToCountedValues.remove(key);
-// 				this._valuesToKeys.delete(value);
-// 			}
-// 		}
-// 	}
+	/** Releases the named object. */
+	release(nameOrObject: string | Type): void {
+		let name: string;
+		if (typeof nameOrObject === 'string') {
+			name = nameOrObject;
+		}
+		else {
+			name = this._objectToName(nameOrObject);
+		}
+		const entry = this._objects.get(name);
+		if (entry === undefined) {
+			return;
+		}
+		entry.useCount -= 1;
+		if (entry.useCount === 0) {
+			this._destroyObject(entry.object);
+			this._objects.delete(name);
+		}
+	}
 
-// 	/** Clears all values. */
-// 	clear(): void {
-// 		for (let i = 0, l = this._keysToCountedValues.size; i < l; i++) {
-// 			const entry = this._keysToCountedValues.getAt(i);
-// 			if (entry !== undefined) {
-// 				if (entry.value.count !== 0) {
-// 					throw new Error('Cache being removed while values still in use: ' + entry.key);
-// 				}
-// 				this._valueDestructor(entry.value.value);
-// 			}
-// 		}
-// 		this._keysToCountedValues.clear();
-// 		this._valuesToKeys.clear();
-// 	}
+	/** Returns true if the cache has the named object. */
+	has(name: string): boolean {
+		return this._objects.get(name) !== undefined;
+	}
 
-// 	/** Gets the value at the *index*. */
-// 	getAt(index: number): Value | undefined {
-// 		const entry = this._keysToCountedValues.getAt(index);
-// 		if (entry !== undefined) {
-// 			return entry.value.value;
-// 		}
-// 		return undefined;
-// 	}
+	/** Returns the use count of the named object. */
+	useCount(name: string): number {
+		const entry = this._objects.get(name);
+		if (entry !== undefined) {
+			return entry.useCount;
+		}
+		else {
+			return 0;
+		}
+	}
 
-// 	/** Gets the number of values. */
-// 	get size(): number {
-// 		return this._keysToCountedValues.size;
-// 	}
+	private _objects: Map<string, { object: Type, useCount: number }> = new Map();
 
-// 	/** Sorts the values for iteration. */
-// 	sort(sort: Sort.sortFunction<FastMap.Entry<Key, CountedValue<Value>> | undefined>, compare: Sort.compareFunction<FastMap.Entry<Key, CountedValue<Value>>>): void {
-// 		this._keysToCountedValues.sort(sort, compare);
-// 	}
+	/** The create object function. */
+	private _createObject: (name: string) => Type;
 
-// 	/** The keys to values map, with counts. */
-// 	private _keysToCountedValues = new FastMap<Key, CountedValue<Value>>();
+	/** The destroy object function. */
+	private _destroyObject: (object: Type) => void;
 
-// 	/** The values to keys map. */
-// 	private _valuesToKeys = new Map<Value, Key>();
-
-// 	/** The function that creates new values. */
-// 	private _valueConstructor: (key: Key) => Value;
-
-// 	/** The function that destroys values. */
-// 	private _valueDestructor: (value: Value) => void;
-// }
-
-// /** A class that contains a generic value and its count. */
-// class CountedValue<Value> {
-// 	value: Value;
-// 	count = 1;
-// 	constructor(value: Value) {
-// 		this.value = value;
-// 	}
-// }
+	/** The function that maps the object to a name. */
+	private _objectToName: (object: Type) => string;
+}

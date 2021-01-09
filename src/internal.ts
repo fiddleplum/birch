@@ -1,4 +1,5 @@
 export * from './utils/array_sort';
+export * from './utils/cache';
 export * from './utils/collection';
 export * from './utils/collection_base';
 export * from './utils/collection_typed';
@@ -11,6 +12,7 @@ export * from './utils/fast_ordered_set';
 export * from './utils/matrix44';
 export * from './utils/matrix44_readonly';
 export * from './utils/num';
+export * from './utils/pool';
 export * from './utils/quaternion';
 export * from './utils/quaternion_readonly';
 export * from './utils/rectangle';
