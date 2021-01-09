@@ -32,6 +32,10 @@ export class Texture {
 			const image = new Image();
 			this._loadedPromise = new Promise<void>((resolve, reject) => {
 				image.onload = (): void => {
+					// The texture has already been destroyed before it was loaded, so do nothing.
+					if (!this._gl.isTexture(this._handle)) {
+						return;
+					}
 					const isJpeg: boolean = source.search(/\.jpe?g($|\?)/i) > 0;
 					this._format = Texture.Format.RGBA;
 					if (isJpeg) {
