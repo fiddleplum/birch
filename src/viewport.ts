@@ -78,7 +78,7 @@ export class Viewport {
 
 	/** Updates the bounds. Called by the engine. */
 	updateBounds(): void {
-		divBounds.set(this._divElement.clientLeft, this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight);
+		divBounds.set(this._divElement.offsetLeft + this._divElement.clientLeft, this._divElement.offsetTop + this._divElement.clientTop, this._divElement.clientWidth * devicePixelRatio, this._divElement.clientHeight * devicePixelRatio);
 		if (!this._stage.bounds.equals(divBounds)) {
 			// Updates the bounds of the viewport to reflect the div.
 			this._stage.bounds.copy(divBounds);

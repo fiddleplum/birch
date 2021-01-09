@@ -24,6 +24,9 @@ export class Stage {
 
 		// Create the uniform block.
 		this._uniforms = new UniformGroup(this._gl);
+
+		// Enable the scissor test.
+		this._gl.enable(this._gl.SCISSOR_TEST);
 	}
 
 	/** Destroys the stage. */
@@ -120,6 +123,7 @@ export class Stage {
 
 		// Setup the viewport.
 		this._gl.viewport(this.bounds.min.x, renderHeight - (this.bounds.min.y + this.bounds.size.y), this.bounds.size.x, this.bounds.size.y);
+		this._gl.scissor(this.bounds.min.x, renderHeight - (this.bounds.min.y + this.bounds.size.y), this.bounds.size.x, this.bounds.size.y);
 
 		// Clear the buffer, if needed.
 		let clearBitMask = 0;
