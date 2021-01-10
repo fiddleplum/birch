@@ -1,9 +1,6 @@
 export class Sound {
 	/** The constructor. */
-	constructor(name: string, audioContext: AudioContext) {
-		// Save the name.
-		this._name = name;
-
+	constructor(audioContext: AudioContext) {
 		// Save the audio context.
 		this._audioContext = audioContext;
 
@@ -18,11 +15,6 @@ export class Sound {
 		this._sourceNode.disconnect(this._audioContext.destination);
 	}
 
-	/** Gets the name. */
-	get name(): string {
-		return this._name;
-	}
-
 	/** Gets the url. */
 	get url(): string {
 		return this._elem.src;
@@ -32,12 +24,13 @@ export class Sound {
 	setUrl(url: string): Promise<void> {
 		return new Promise((resolve, rejected) => {
 			this._elem.src = url;
-			this._elem.onload = (): void => {
+			this._elem.addEventListener('canplaythrough', (): void => {
 				resolve();
-			};
-			this._elem.onerror = (): void => {
+			}, true);
+			this._elem.addEventListener('error', (): void => {
 				rejected();
-			};
+			}, true);
+			this._elem.load();
 		});
 	}
 
@@ -45,9 +38,6 @@ export class Sound {
 	play(): void {
 		this._elem.play();
 	}
-
-	/** The name of the texture. */
-	private _name: string;
 
 	/** The audio context. */
 	private _audioContext: AudioContext;

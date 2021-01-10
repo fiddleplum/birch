@@ -119,14 +119,10 @@ export class Renderer {
 	});
 
 	/** The texture cache. */
-	private _textures = new Cache<Texture>((name: string) => {
-		return new Texture(name, this._gl);
-	}, (texture: Texture, url: string) => {
-		texture.setSource(url);
+	private _textures = new Cache<Texture>(() => {
+		return new Texture(this._gl);
 	}, (texture: Texture) => {
 		texture.destroy();
-	}, (texture: Texture) => {
-		return texture.name;
 	});
 
 	/** The models. */

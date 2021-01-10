@@ -228,13 +228,9 @@ export class Engine {
 	// Resource Caches
 
 	/** The sound cache. */
-	private _sounds = new Cache<Sound>((name: string) => {
-		return new Sound(name, this._audioContext);
-	}, (object: Sound, url: string) => {
-		object.setUrl(url);
+	private _sounds = new Cache<Sound>(() => {
+		return new Sound(this._audioContext);
 	}, (object: Sound) => {
 		object.destroy();
-	}, (object: Sound) => {
-		return object.url;
 	});
 }

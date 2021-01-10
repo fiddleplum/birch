@@ -1,10 +1,7 @@
 import { Vector2 } from '../utils/vector2';
 
 export class Texture {
-	constructor(name: string, gl: WebGL2RenderingContext) {
-		// Save the name.
-		this._name = name;
-
+	constructor(gl: WebGL2RenderingContext) {
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -20,11 +17,6 @@ export class Texture {
 	destroy(): void {
 		// Delete the texture.
 		this._gl.deleteTexture(this._handle);
-	}
-
-	/** Gets the name. */
-	get name(): string {
-		return this._name;
 	}
 
 	/** Gets the format. */
@@ -43,7 +35,7 @@ export class Texture {
 	}
 
 	/** Sets the source of the texture. */
-	setSource(source: undefined | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): void {
+	setSource(source: undefined | string | TexImageSource | Uint8Array | Uint16Array | Uint32Array, width?: number, height?: number, format?: Texture.Format): Promise<void> {
 		// Depending on the type of source, set the formats, size, and apply the source.
 		if (typeof source === 'string') {
 			// Set the texture to hot pink 1x1 RGB until the image loads.
@@ -53,7 +45,7 @@ export class Texture {
 			this._setGLTexture(new Uint8Array([255, 105, 180]));
 			// Load the image and then set the texture.
 			const image = new Image();
-			this._loadedPromise = new Promise<void>((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				image.onload = (): void => {
 					// The texture has already been destroyed before it was loaded, so do nothing.
 					if (!this._gl.isTexture(this._handle)) {
@@ -124,6 +116,7 @@ export class Texture {
 			this._source = source.toString();
 			this._setGLTexture(source);
 		}
+		return Promise.resolve();
 	}
 
 	/** Binds the texture to the given bindingIndex. */
@@ -201,9 +194,6 @@ export class Texture {
 				return this._gl.UNSIGNED_INT;
 		}
 	}
-
-	/** The name of the texture. */
-	private _name: string;
 
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
