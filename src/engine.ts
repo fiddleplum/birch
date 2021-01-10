@@ -225,8 +225,16 @@ export class Engine {
 		this._viewportOrder.remove(viewport);
 	});
 
+	// Resource Caches
+
 	/** The sound cache. */
-	private _sounds = new Cache<Sound>((name: string) => new Sound(name, this._audioContext),
-		(_object: Sound) => {},
-		(object: Sound) => object.url);
+	private _sounds = new Cache<Sound>((name: string) => {
+		return new Sound(name, this._audioContext);
+	}, (object: Sound, url: string) => {
+		object.setUrl(url);
+	}, (object: Sound) => {
+		object.destroy();
+	}, (object: Sound) => {
+		return object.url;
+	});
 }

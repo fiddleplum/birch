@@ -1,8 +1,22 @@
+/*
+The cache should:
+
+create - creates a new object. doesn't change use count. it doesn't do any name-specific loading.
+destroy - destroys an object. it's removed from the system. throws an error if the use count is > 0.
+get - gets an object, but if it doesn't exist, it returns undefined. incs use count.
+getOrCreate - gets an object, but if it doesn't exist it creates it
+release - releases an object. decs use count.
+
+*/
+
 /** A cache is a set of named objects with use counts that are automatically created and destroyed. */
 export class Cache<Type> {
-	/** The constructor. */
-	constructor(createObject: (name: string) => Type, destroyObject: (object: Type) => void, objectToName: (object: Type) => string) {
+	/** The constructor.
+	 * @param createObject - The function that's called when creating a new object.
+	*/
+	constructor(createObject: (name: string) => Type, loadObject: (object: Type, url: string) => void, destroyObject: (object: Type) => void, objectToName: (object: Type) => string) {
 		this._createObject = createObject;
+		this._loadObject = loadObject;
 		this._destroyObject = destroyObject;
 		this._objectToName = objectToName;
 	}
@@ -29,16 +43,25 @@ export class Cache<Type> {
 		return entry.object;
 	}
 
-	/** Loads the named object. If it's already loaded, it increases its use count. */
-	load(name: string): void {
+	/** Loads a new named object. If the name is already created, it increases its use count. */
+	loadNew(name: string): Type {
 		let entry = this._objects.get(name);
 		if (entry === undefined) {
 			entry = {
-				object: this._createObject(this._nameToUrlFunction ? this._nameToUrlFunction(name) : name),
+				object: this._createObject(name),
 				useCount: 0
 			};
+			this._objects.set(name, entry);
 		}
 		entry.useCount += 1;
+		return entry.object;
+	}
+
+	/** Loads the named object using the nameToUrl function. If it's already loaded, it increases its use count. */
+	load(name: string): Type {
+		const object = this.loadNew(name);
+		this._loadObject(object, this._nameToUrlFunction ? this._nameToUrlFunction(name) : name);
+		return object;
 	}
 
 	/** Unloads the named object. If it was loaded more than once, it decreases its use count. If it is already unloaded, it does nothing. */
@@ -77,10 +100,14 @@ export class Cache<Type> {
 		}
 	}
 
+	/** The mapping of names to objects and their use counts. */
 	private _objects: Map<string, { object: Type, useCount: number }> = new Map();
 
 	/** The create object function. */
 	private _createObject: (name: string) => Type;
+
+	/** The load object function. */
+	private _loadObject: (object: Type, url: string) => void;
 
 	/** The destroy object function. */
 	private _destroyObject: (object: Type) => void;

@@ -7,6 +7,7 @@ import { Texture } from './texture';
 import { UniformGroup } from './uniform_group';
 import { Collection } from '../utils/collection';
 import { FastOrderedSet } from '../utils/fast_ordered_set';
+import { Cache } from '../utils/cache';
 
 export class Renderer {
 	/** Constructs this. */
@@ -33,7 +34,7 @@ export class Renderer {
 		}
 		this._meshes.clear();
 		this._shaders.clear();
-		this._textures.clear();
+		this._textures.destroy();
 		this._models.clear();
 		this._stages.clear();
 		this._uniforms.clear();
@@ -56,7 +57,7 @@ export class Renderer {
 	}
 
 	/** Gets the textures. */
-	get textures(): Collection<Texture> {
+	get textures(): Cache<Texture> {
 		return this._textures;
 	}
 
@@ -117,11 +118,15 @@ export class Renderer {
 		shader.destroy();
 	});
 
-	/** The textures. */
-	private _textures: Collection<Texture> = new Collection(() => {
-		return new Texture(this._gl);
+	/** The texture cache. */
+	private _textures = new Cache<Texture>((name: string) => {
+		return new Texture(name, this._gl);
+	}, (texture: Texture, url: string) => {
+		texture.setSource(url);
 	}, (texture: Texture) => {
 		texture.destroy();
+	}, (texture: Texture) => {
+		return texture.name;
 	});
 
 	/** The models. */

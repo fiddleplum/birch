@@ -1,7 +1,10 @@
 import { Vector2 } from '../utils/vector2';
 
 export class Texture {
-	constructor(gl: WebGL2RenderingContext) {
+	constructor(name: string, gl: WebGL2RenderingContext) {
+		// Save the name.
+		this._name = name;
+
 		// Save the WebGL context.
 		this._gl = gl;
 
@@ -17,6 +20,26 @@ export class Texture {
 	destroy(): void {
 		// Delete the texture.
 		this._gl.deleteTexture(this._handle);
+	}
+
+	/** Gets the name. */
+	get name(): string {
+		return this._name;
+	}
+
+	/** Gets the format. */
+	get format(): Texture.Format {
+		return this._format;
+	}
+
+	/** Gets the size in pixels. */
+	get size(): Vector2 {
+		return this._size;
+	}
+
+	/** Gets the source. */
+	get source(): string {
+		return this._source;
 	}
 
 	/** Sets the source of the texture. */
@@ -103,21 +126,6 @@ export class Texture {
 		}
 	}
 
-	/** Gets the format. */
-	get format(): Texture.Format {
-		return this._format;
-	}
-
-	/** Gets the size in pixels. */
-	get size(): Vector2 {
-		return this._size;
-	}
-
-	/** Gets the source. */
-	get source(): string {
-		return this._source;
-	}
-
 	/** Binds the texture to the given bindingIndex. */
 	bind(bindingIndex: number): void {
 		this._gl.activeTexture(this._gl.TEXTURE0 + bindingIndex);
@@ -193,6 +201,9 @@ export class Texture {
 				return this._gl.UNSIGNED_INT;
 		}
 	}
+
+	/** The name of the texture. */
+	private _name: string;
 
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
