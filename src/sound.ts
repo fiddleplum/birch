@@ -3,48 +3,41 @@ export class Sound {
 	constructor(audioContext: AudioContext) {
 		// Save the audio context.
 		this._audioContext = audioContext;
-
-		// Create the element and source node.
-		this._elem = new Audio();
-		this._sourceNode = audioContext.createMediaElementSource(this._elem);
-		this._sourceNode.connect(this._audioContext.destination);
 	}
 
 	/** The destructor. */
 	destroy(): void {
-		this._sourceNode.disconnect(this._audioContext.destination);
 	}
 
 	/** Gets the url. */
 	get url(): string {
-		return this._elem.src;
+		return this._url;
 	}
 
 	/** Sets the url. Returns a promise when it is loaded. */
-	setUrl(url: string): Promise<void> {
-		return new Promise((resolve, rejected) => {
-			this._elem.src = url;
-			this._elem.addEventListener('canplaythrough', (): void => {
-				resolve();
-			}, true);
-			this._elem.addEventListener('error', (): void => {
-				rejected();
-			}, true);
-			this._elem.load();
-		});
+	async setUrl(url: string): Promise<void> {
+		this._url = url;
+		const response = await fetch(url);
+		const arrayBuffer = await response.arrayBuffer();
+		this._audioBuffer = await this._audioContext.decodeAudioData(arrayBuffer);
 	}
 
 	/** Plays the sound. */
 	play(): void {
-		this._elem.play();
+		if (this._audioBuffer !== undefined) {
+			const track = this._audioContext.createBufferSource();
+			track.buffer = this._audioBuffer;
+			track.connect(this._audioContext.destination);
+			track.start();
+		}
 	}
+
+	/** The url. */
+	private _url: string = '';
+
+	/** The audio buffer. */
+	private _audioBuffer: AudioBuffer | undefined;
 
 	/** The audio context. */
 	private _audioContext: AudioContext;
-
-	/** The audio element. */
-	private _elem: HTMLAudioElement;
-
-	/** The source node. */
-	private _sourceNode: MediaElementAudioSourceNode;
 }
