@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
-		"outDir": "dist",
 		"target": "ES2018",
 		"strict": true,
-		"module": "ES2015",
-		"moduleResolution": "node",
+		"forceConsistentCasingInFileNames": true,
+		"inlineSources": true,
 		"noImplicitOverride": true,
 		"noImplicitReturns": true,
 		"noPropertyAccessFromIndexSignature": true,
 		"noFallthroughCasesInSwitch": true,
+		"noUnusedParameters": true,
 		"preserveConstEnums": true,
 		"removeComments": true,
 		"sourceMap": true
@@ -16,8 +16,5 @@
 	"include": [
 		"src/**/*.ts",
 		"docs/**/*.js"
-	],
-	"exclude": [
-		"dist/*",
 	]
 }

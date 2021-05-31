@@ -254,23 +254,6 @@ export class Shader extends UniqueId.Object {
 		}
 	}
 
-	/** Returns true if every element in a and b are equal. It assumes that a and b have the same length l. */
-	private static _arrayEquals(a: number[], b: number[], l: number): boolean {
-		for (let i = 0; i < l; i++) {
-			if (a[i] !== b[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/** Copies every element in b to a. It assumes that b has length l. */
-	private static _arrayCopy(a: number[], b: number[], l: number): void {
-		for (let i = 0; i < l; i++) {
-			a[i] = b[i];
-		}
-	}
-
 	/**  The WebGL context. */
 	private _gl: WebGL2RenderingContext;
 

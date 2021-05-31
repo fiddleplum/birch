@@ -5,7 +5,7 @@
 	"private": false,
 	"scripts": {
 		"setup": "yarn install --pure-lockfile; mkdir -p dist",
-		"update": "rm -rf yarn.lock; yarn install",
+		"update": "rm -f yarn.lock; yarn install",
 		"build": "webpack --config webpack.dev.js",
 		"build-production": "webpack --config webpack.prod.js",
 		"docs": "typedoc --options docs/typedoc.json"
