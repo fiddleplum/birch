@@ -6,8 +6,8 @@
 	"scripts": {
 		"setup": "yarn install --pure-lockfile; mkdir -p dist",
 		"update": "rm -rf yarn.lock; yarn install",
-		"build": "webpack --config webpack.dev.ts",
-		"build-production": "webpack --config webpack.prod.ts",
+		"build": "webpack --config webpack.dev.js",
+		"build-production": "webpack --config webpack.prod.js",
 		"docs": "typedoc --options docs/typedoc.json"
 	},
 	"repository": {
@@ -25,7 +25,6 @@
 		"ts-node": "latest",
 		"@types/node": "latest",
 		"@types/webpack": "latest",
-		"@types/terser-webpack-plugin": "latest",
 		"ts-loader": "latest",
 		"raw-loader": "latest",
 		"typedoc": "latest",
@@ -35,7 +34,6 @@
 		"eslint": "latest",
 		"eslint-plugin-no-null": "latest",
 
-		"terser-webpack-plugin": "latest",
 		"webpack": "latest",
 		"webpack-cli": "latest",
 		"webpack-merge": "latest"

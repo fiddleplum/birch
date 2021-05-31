@@ -1,6 +1,4 @@
-import * as webpack from 'webpack';
-
-const config: webpack.Configuration = {
+module.exports = {
 	entry: './src/index.ts',
 	output: {
 		filename: 'script.js',
@@ -20,5 +18,3 @@ const config: webpack.Configuration = {
 		}]
 	}
 };
-
-export default config;
