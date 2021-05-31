@@ -1,17 +1,23 @@
 {
 	"compilerOptions": {
 		"target": "ES2018",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"moduleResolution": "Node",
 		"noImplicitAny": true,
-		"strictPropertyInitialization": true,
-		"strictNullChecks": true,
 		"noImplicitReturns": true,
-		"removeComments": true,
 		"preserveConstEnums": true,
+		"removeComments": true,
 		"sourceMap": true,
-		"types": []
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true
 	},
 	"include": [
 		"src/**/*.ts",
+		"webpack.*.ts",
 		"docs/**/*.js"
+	],
+	"exclude": [
+		"dist/*"
 	]
 }

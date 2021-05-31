@@ -1,11 +1,10 @@
 {
 	"name": "Birch",
 	"includeVersion": true,
-	"inputFiles": ["src"],
-	"mode": "file",
+	"entryPoints": ["src/index.ts"],
 	"out": "docs/api",
 	"excludePrivate": true,
-	"stripInternal": true,
+	"excludeInternal": true,
 	"disableSources": true,
 	"theme": "docs/typedoc_theme"
 }
