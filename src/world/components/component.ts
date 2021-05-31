@@ -12,7 +12,7 @@ export class Component extends EventSource {
 	}
 
 	/** Destroys the component. */
-	destroy(): void {
+	override destroy(): void {
 		super.destroy();
 	}
 

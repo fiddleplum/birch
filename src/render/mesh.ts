@@ -46,7 +46,7 @@ export class Mesh extends UniqueId.Object {
 	}
 
 	/** Destroys the mesh. */
-	destroy(): void {
+	override destroy(): void {
 		for (let i = 0; i < this._vertexBuffers.length; i++) {
 			this._gl.deleteBuffer(this._vertexBuffers[i]);
 		}

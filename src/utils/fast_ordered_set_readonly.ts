@@ -27,7 +27,7 @@ export class FastOrderedSetReadonly<Value> extends FastIterableBase<Value> {
 	}
 
 	/** Gets the list of all values. They must be string-able. */
-	toString(): string {
+	override toString(): string {
 		let s = '[';
 		let n = this._head;
 		while (n !== undefined) {
@@ -64,7 +64,7 @@ export namespace FastOrderedSetReadonly {
 		private node: Node<Value> | undefined = undefined;
 
 		/** The constructor. */
-		constructor(getHead: () => Node<Value>) {
+		constructor(getHead: () => Node<Value> | undefined) {
 			super();
 			this._getHead = getHead;
 		}

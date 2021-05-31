@@ -31,7 +31,7 @@ export class Model extends UniqueId.Object {
 	}
 
 	/** Destroys this. */
-	destroy(): void {
+	override destroy(): void {
 		this._uniforms.destroy();
 		super.destroy();
 	}

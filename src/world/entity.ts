@@ -19,7 +19,7 @@ export class Entity extends UniqueId.Object {
 	}
 
 	/** Destroys this. */
-	destroy(): void {
+	override destroy(): void {
 		this._components.clear();
 	}
 

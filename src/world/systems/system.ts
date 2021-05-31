@@ -11,7 +11,7 @@ export abstract class System extends EventSink {
 	}
 
 	/** Destroys the system. */
-	destroy(): void {
+	override destroy(): void {
 		super.destroy();
 	}
 

@@ -18,7 +18,7 @@ export class Shader extends UniqueId.Object {
 	}
 
 	/** Destructs the shader. */
-	destroy(): void {
+	override destroy(): void {
 		// Delete the program.
 		this._gl.deleteProgram(this._program);
 		super.destroy();

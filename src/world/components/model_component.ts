@@ -14,7 +14,7 @@ export class ModelComponent extends Component {
 	}
 
 	/** Destroys the model component. */
-	destroy(): void {
+	override destroy(): void {
 		// Remove the model from the scene.
 		this.entity.world.scene.models.remove(this._model);
 

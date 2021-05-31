@@ -41,7 +41,7 @@ export class CollectionTyped<Item extends { [key: string]: any }> extends Collec
 	}
 
 	/** Destroys an item. Takes the item or its name. */
-	destroy(nameOrItem: string | Item | undefined): boolean {
+	override destroy(nameOrItem: string | Item | undefined): boolean {
 		// Get the item, if from a name.
 		let item: Item;
 		if (typeof nameOrItem === 'string') {
