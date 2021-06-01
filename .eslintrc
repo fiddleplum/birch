@@ -40,11 +40,8 @@
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-this-alias": "off",
 		"@typescript-eslint/no-use-before-define": "off",
-		"@typescript-eslint/no-unused-vars": ["error", {
-			"argsIgnorePattern": "^_",
-			"varsIgnorePattern": "^_",
-			"caughtErrorsIgnorePattern": "^_"
-		}],
+		"@typescript-eslint/no-unused-vars": "off", // Turn this off so that the experimental one can be used.
+		"@typescript-eslint/no-unused-vars-experimental": "warn",
 		"@typescript-eslint/strict-boolean-expressions": ["error"]
 	}
   }
