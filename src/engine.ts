@@ -1,3 +1,4 @@
+import { FPS } from './fps';
 import { Downloader, Input, Render, FastOrderedSet, Viewport, Collection } from './internal';
 import { Sound } from './sound';
 import { Cache } from './utils/cache';
@@ -38,6 +39,11 @@ export class Engine {
 	/** Gets the root element. */
 	get rootElement(): HTMLDivElement {
 		return this._rootElement;
+	}
+
+	/** Gets the FPS. */
+	get fps(): number {
+		return this._fps.fps;
 	}
 
 	/** Gets the renderer. */
@@ -112,6 +118,7 @@ export class Engine {
 		const timeNow = Date.now();
 		this._deltaTime = (timeNow - this._lastTime) / 1000.0;
 		this._lastTime = timeNow;
+		this._fps.add(this._deltaTime);
 
 		// Check the canvas size and resize if needed.
 		const canvas = this._canvas;
@@ -196,6 +203,9 @@ export class Engine {
 
 	/** The time elapsed since the last frame. */
 	private _deltaTime: number = 0;
+
+	/** The FPS system. */
+	private _fps: FPS = new FPS();
 
 	/** The renderer. */
 	private _renderer: Render.Renderer;
