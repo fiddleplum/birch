@@ -119,6 +119,29 @@ export class Texture {
 		return Promise.resolve();
 	}
 
+	/** Sets the wrapping mode of the texture's UV coordinates. */
+	setWrapModes(wrapU: 'repeat' | 'clamp' | 'mirror-repeat', wrapV: 'repeat' | 'clamp' | 'mirror-repeat') {
+		this._gl.bindTexture(this._gl.TEXTURE_2D, this._handle);
+		if (wrapU === 'repeat') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, this._gl.REPEAT);
+		}
+		else if (wrapU === 'clamp') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, this._gl.CLAMP_TO_EDGE);
+		}
+		else if (wrapU === 'mirror-repeat') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_S, this._gl.MIRRORED_REPEAT);
+		}
+		if (wrapV === 'repeat') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, this._gl.REPEAT);
+		}
+		else if (wrapV === 'clamp') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, this._gl.CLAMP_TO_EDGE);
+		}
+		else if (wrapV === 'mirror-repeat') {
+			this._gl.texParameteri(this._gl.TEXTURE_2D, this._gl.TEXTURE_WRAP_T, this._gl.MIRRORED_REPEAT);
+		}
+	}
+
 	/** Binds the texture to the given bindingIndex. */
 	bind(bindingIndex: number): void {
 		this._gl.activeTexture(this._gl.TEXTURE0 + bindingIndex);
