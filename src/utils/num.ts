@@ -18,7 +18,7 @@ export class Num {
 	/** Returns the point *x* between *a* and *b* as if they were a cycle. */
 	static wrap(x: number, a: number, b: number): number {
 		let phase = (x - a) % (b - a) + a;
-		if (phase < b) {
+		if (phase < a) {
 			phase += b - a;
 		}
 		return phase;
